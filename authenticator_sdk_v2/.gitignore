@@ -1,0 +1,6 @@
+# Gradle files
+.gradle/
+build/
+**/build/
+!src/**/build/
+jacoco.exec
