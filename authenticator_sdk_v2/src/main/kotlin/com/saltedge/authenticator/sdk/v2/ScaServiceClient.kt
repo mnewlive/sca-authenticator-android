@@ -88,7 +88,7 @@ class ScaServiceClient : ScaServiceClientAbs {
         resultCallback: ConnectionCreateListener
     ) {
         val publicKey = KeyStoreManager.createRsaPublicKeyAsString(appContext, connection.guid)
-        //TODO: Generate DH keypair 
+        //TODO: Generate DH keypair
 
         if (publicKey == null) {
             resultCallback.onConnectionCreateFailure(
