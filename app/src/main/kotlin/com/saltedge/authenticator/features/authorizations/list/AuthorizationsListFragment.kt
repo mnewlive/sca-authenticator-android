@@ -81,7 +81,7 @@ class AuthorizationsListFragment : BaseFragment(), AppbarMenuItemClickListener, 
         savedInstanceState: Bundle?
     ): View {
         activityComponents?.updateAppbar(
-            titleResId = R.string.app_name,
+            titleResId = R.string.authenticator,
             showMenu = arrayOf(MenuItem.SCAN_QR, MenuItem.MORE_MENU)
         )
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_authorizations_list, container, false)
