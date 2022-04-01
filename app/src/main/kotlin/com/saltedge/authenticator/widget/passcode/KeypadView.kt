@@ -56,7 +56,6 @@ class KeypadView(context: Context, attrs: AttributeSet) : LinearLayout(context, 
             R.id.fingerActionView -> clickListener?.onFingerKeyClick()
             R.id.successActionView -> clickListener?.onSuccessKeyClick()
             R.id.forgotActionView -> clickListener?.onForgotKeyClick()
-            R.id.disabledSuccessActionView -> clickListener?.showErrorMessage()
             else -> clickListener?.onDigitKeyClick((view as? TextView)?.text.toString())
         }
     }
@@ -65,7 +64,6 @@ class KeypadView(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         fingerActionView?.setVisible(active)
         forgotActionView?.setVisible(active)
         successActionView?.setVisible(!active)
-        disabledSuccessActionView?.setVisible(!active)
     }
 
     @Suppress("DEPRECATION")
@@ -77,20 +75,12 @@ class KeypadView(context: Context, attrs: AttributeSet) : LinearLayout(context, 
 
     fun showSuccessView() {
         fingerActionView?.setVisible(show = false)
-        disabledSuccessActionView?.setVisible(show = false)
         successActionView?.setVisible(show = true)
-    }
-
-    fun showDisabledSuccessView() {
-        successActionView?.setVisible(show = false)
-        fingerActionView?.setVisible(show = false)
-        disabledSuccessActionView?.setVisible(show = true)
     }
 
     fun showFingerView() {
         fingerActionView?.setVisible(show = true)
         successActionView?.setVisible(show = false)
-        disabledSuccessActionView?.setVisible(show = false)
     }
 
     interface KeypadClickListener {
@@ -98,6 +88,5 @@ class KeypadView(context: Context, attrs: AttributeSet) : LinearLayout(context, 
         fun onFingerKeyClick()
         fun onForgotKeyClick()
         fun onSuccessKeyClick()
-        fun showErrorMessage()
     }
 }

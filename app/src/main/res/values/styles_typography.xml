@@ -21,7 +21,7 @@
 -->
 <resources>
     <style name="app_bar_title">
-        <item name="android:textColor">@color/dark_100_and_grey_40</item>
+        <item name="android:textColor">@color/dark_100_and_white</item>
         <item name="android:textSize">@dimen/text_30</item>
         <item name="android:fontFamily">@font/roboto_bold</item>
     </style>
@@ -34,7 +34,7 @@
 
     <style name="TextSecondary">
         <item name="android:ellipsize">end</item>
-        <item name="android:textColor">@color/dark_60_and_grey_100</item>
+        <item name="android:textColor">@color/dark_60_and_grey_80</item>
         <item name="android:fontFamily">@font/roboto_regular</item>
     </style>
 

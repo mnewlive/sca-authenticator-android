@@ -20,6 +20,6 @@
     under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/white_and_dark_100" />
+    <solid android:color="@color/white_and_dark_80" />
     <corners android:radius="@dimen/dp_12" />
 </shape>

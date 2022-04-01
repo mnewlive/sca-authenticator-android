@@ -50,7 +50,7 @@
                 android:id="@+id/connectionLogoView"
                 android:layout_width="@dimen/dp_36"
                 android:layout_height="@dimen/dp_36"
-                android:background="@color/grey_light_extra_and_dark_100"
+                android:background="@color/grey_light_extra_and_dark_80"
                 android:contentDescription="@string/connections_feature_title"
                 android:scaleType="fitCenter"
                 app:connectionLogoUrl="@{viewModel.logoUrlData}"

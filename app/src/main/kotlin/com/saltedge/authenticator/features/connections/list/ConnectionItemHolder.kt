@@ -44,7 +44,7 @@ class ConnectionItemHolder(parent: ViewGroup, private val listener: ListItemClic
     private val titleView = itemView.findViewById<TextView>(R.id.titleView)
     private val subTitleView = itemView.findViewById<TextView>(R.id.subTitleView)
     private val listItemView = itemView.findViewById<RelativeLayout>(R.id.listItemView)
-    private val bgColor = ContextCompat.getColor(listItemView.context, R.color.white_and_blue_black)
+    private val bgColor = ContextCompat.getColor(listItemView.context, R.color.white_and_dark_80)
 
     init {
         itemView.setOnClickListener {

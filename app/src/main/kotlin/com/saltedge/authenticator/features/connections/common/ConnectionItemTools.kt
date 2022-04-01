@@ -104,7 +104,7 @@ private fun getConnectionStatusColorRes(connection: ConnectionAbs, shouldRequest
         ConnectionStatus.INACTIVE -> R.color.red_and_red_light
         ConnectionStatus.ACTIVE -> {
             if (shouldRequestPermission) R.color.yellow
-            else R.color.dark_60_and_grey_100
+            else R.color.dark_60_and_grey_80
         }
     }
 }

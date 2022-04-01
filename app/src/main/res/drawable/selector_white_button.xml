@@ -25,7 +25,7 @@
         android:state_enabled="true">
         <shape android:shape="rectangle" >
             <corners android:radius="@dimen/dp_4" />
-            <solid android:color="@color/white_and_blue_black" />
+            <solid android:color="@color/white_and_dark_80" />
         </shape>
     </item>
     <item
@@ -33,13 +33,13 @@
         android:state_enabled="true" >
         <shape android:shape="rectangle"  >
             <corners android:radius="@dimen/dp_4" />
-            <solid android:color="@color/white_and_blue_black" />
+            <solid android:color="@color/white_and_dark_80" />
         </shape>
     </item>
     <item android:state_enabled="true" >
         <shape android:shape="rectangle" >
             <corners android:radius="@dimen/dp_4" />
-            <solid android:color="@color/white_and_blue_black" />
+            <solid android:color="@color/white_and_dark_80" />
         </shape>
     </item>
     <item android:state_enabled="false" >

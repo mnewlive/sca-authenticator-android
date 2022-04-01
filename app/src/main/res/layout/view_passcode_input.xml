@@ -67,19 +67,26 @@
             android:inputType="numberPassword"
             android:lines="1"
             android:paddingEnd="@dimen/dp_14"
-            tools:text="1234567890"/>
+            tools:text="1234567890" />
 
-        <ImageView
+
+        <FrameLayout
             android:id="@+id/deleteActionView"
-            android:layout_width="@dimen/dp_24"
-            android:layout_height="17dp"
-            android:layout_gravity="center"
-            android:contentDescription="@string/actions_remove"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="@dimen/dp_14"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/ic_numpad_clear" />
+            android:padding="@dimen/dp_14"
+            android:background="@drawable/selector_delete_action">
+
+            <ImageView
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="17dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/actions_remove"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_numpad_clear" />
+        </FrameLayout>
     </RelativeLayout>
 
     <TextView
