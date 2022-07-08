@@ -31,7 +31,7 @@
         android:layout_width="@dimen/popupMenuItemWidth"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/white_and_dark_40"
+        android:background="@color/white_and_dark_80"
         android:paddingTop="@dimen/popupMenuTopBottomPadding"
         android:paddingBottom="@dimen/popupMenuTopBottomPadding"/>
 </androidx.cardview.widget.CardView>

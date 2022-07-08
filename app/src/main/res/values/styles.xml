@@ -48,6 +48,7 @@
         <item name="android:layout_marginEnd">@dimen/dp_58</item>
     </style>
 
+<!--    <item name="android:textColor">@color/dark_100_and_grey_40</item> -->
     <style name="WhiteButton" parent="@style/Widget.AppCompat.Button.Colored">
         <item name="android:layout_height">@dimen/button_height</item>
         <item name="android:fontFamily">@font/roboto_medium</item>
@@ -100,7 +101,7 @@
         <item name="android:layout_marginStart">@dimen/dp_16</item>
         <item name="android:layout_marginEnd">@dimen/dp_16</item>
         <item name="android:scaleType">fitCenter</item>
-        <item name="android:background">@color/grey_light_extra_and_dark_80</item>
+        <item name="android:background">@color/grey_extra_and_dark_extra</item>
         <item name="android:contentDescription">@string/connections_feature_title</item>
     </style>
 

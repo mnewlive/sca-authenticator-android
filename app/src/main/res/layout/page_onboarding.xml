@@ -57,7 +57,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/hCenterLine"
         android:ellipsize="end"
-        android:fontFamily="@font/roboto_bold"
+        android:fontFamily="@font/gilroy_bold"
         android:maxLines="2"
         android:textColor="@color/dark_100_and_grey_40"
         android:textSize="@dimen/text_30"

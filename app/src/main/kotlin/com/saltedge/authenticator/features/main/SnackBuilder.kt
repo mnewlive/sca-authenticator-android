@@ -65,7 +65,7 @@ private fun View.buildSnackbar(
     val textView = snackbar.view.findViewById<TextView>(R.id.snackbar_text)
     textView.minimumHeight = context.resources.getDimension(R.dimen.action_bar_size).toInt()
     textView.gravity = Gravity.CENTER_VERTICAL
-    textView.setFont(R.font.roboto_regular)
+    textView.setFont(R.font.adelle_regular)
     textView.setTextColor(ContextCompat.getColor(context, R.color.grey_40))
     textView.maxLines = 7
     snackbar.view.setBackgroundColor(ContextCompat.getColor(context, R.color.blue_black_and_dark_80))

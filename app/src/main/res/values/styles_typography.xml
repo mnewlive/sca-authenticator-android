@@ -23,19 +23,19 @@
     <style name="app_bar_title">
         <item name="android:textColor">@color/dark_100_and_white</item>
         <item name="android:textSize">@dimen/text_30</item>
-        <item name="android:fontFamily">@font/roboto_bold</item>
+        <item name="android:fontFamily">@font/gilroy_bold</item>
     </style>
 
     <style name="TextPrimary">
         <item name="android:ellipsize">end</item>
         <item name="android:textColor">@color/dark_100_and_grey_40</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:fontFamily">@font/adelle_regular</item>
     </style>
 
     <style name="TextSecondary">
         <item name="android:ellipsize">end</item>
         <item name="android:textColor">@color/dark_60_and_grey_80</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:fontFamily">@font/adelle_regular</item>
     </style>
 
     <style name="Text24Primary" parent="TextPrimary">
