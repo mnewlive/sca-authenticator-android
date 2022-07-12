@@ -15,31 +15,7 @@
     under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/theme_background">
-
-    <ImageView
-        android:id="@+id/appImageView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="@dimen/dp_64"
-        android:layout_marginTop="@dimen/dp_122"
-        android:layout_marginEnd="@dimen/dp_64"
-        android:contentDescription="@string/app_name"
-        android:scaleType="center"
-        app:srcCompat="@drawable/ic_logo_argentex" />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/app_name"
-        android:scaleType="fitCenter"
-        app:srcCompat="@drawable/ic_company_background" />
-</RelativeLayout>
+    android:background="@drawable/ic_logo_splash_screen" />
