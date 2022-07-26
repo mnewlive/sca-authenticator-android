@@ -27,13 +27,13 @@
         <item name="android:gravity">center</item>
         <item name="android:textColor">@color/dark_100_and_grey_40</item>
         <item name="android:textSize">@dimen/text_30</item>
-        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:fontFamily">@font/gilroy_medium</item>
         <item name="android:background">@drawable/selector_keypad_action</item>
     </style>
 
     <style name="BlueButton" parent="@style/Widget.AppCompat.Button.Colored">
         <item name="android:layout_height">@dimen/button_height</item>
-        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:fontFamily">@font/gilroy_medium</item>
         <item name="android:textSize">@dimen/text_18</item>
         <item name="android:textColor">@color/selector_blue_button</item>
         <item name="android:background">@drawable/selector_primary_button</item>
@@ -51,7 +51,7 @@
 <!--    <item name="android:textColor">@color/dark_100_and_grey_40</item> -->
     <style name="WhiteButton" parent="@style/Widget.AppCompat.Button.Colored">
         <item name="android:layout_height">@dimen/button_height</item>
-        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:fontFamily">@font/gilroy_medium</item>
         <item name="android:textSize">@dimen/text_18</item>
         <item name="android:textColor">@color/dark_100_and_grey_40</item>
         <item name="android:background">@drawable/selector_white_button</item>

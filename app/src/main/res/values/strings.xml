@@ -91,11 +91,11 @@
 
     <string name="onboarding_allow_notifications_description">Enable notifications, to receive useful alerts and always be up to speed with your transactions.</string>
     <string name="onboarding_allow_notifications_title">Allow Notifications</string>
-    <string name="onboarding_carousel_one_description">Asked to scan QR? Tap QR button to use the quick QR code scanner and take action.</string>
+    <string name="onboarding_carousel_one_description">Scan the QR code to quickly take action.</string>
     <string name="onboarding_carousel_one_title">Use QR codes</string>
-    <string name="onboarding_carousel_three_description">Strong customer authentication brings additional security to your payments, diminishing possibility of fraudulent activity.</string>
+    <string name="onboarding_carousel_three_description">Robust authentication process, securing your payments from fraudulent activity.</string>
     <string name="onboarding_carousel_three_title">Ultimate security</string>
-    <string name="onboarding_carousel_two_description">Made transaction? You will get push notification. Open application, verify the transaction details and simply confirm.</string>
+    <string name="onboarding_carousel_two_description">Receive notifications for every transaction you make.</string>
     <string name="onboarding_carousel_two_title">Full control</string>
     <string name="onboarding_completed_description">Application has been successfully set. Proceed to connect your service provider.</string>
     <string name="onboarding_well_done_title">Well done!</string>
@@ -108,16 +108,16 @@
     <string name="connections_feature_title">Connections</string>
     <string name="choose_connection_feature_title">Choose connection</string>
     <string name="connections_list_empty_title">No connections</string>
-    <string name="connections_list_empty_description">Seems like you didn’t connect to your provider yet. Add new connection to securely confirm your actions.</string>
+    <string name="connections_list_empty_description">Connect with your provider to securely process your actions.</string>
     <string name="connections_list_delete_all_connections">Delete all connections and stop receiving confirmations until another Provider is connected.</string>
     <string name="connection_status_linked_on">Linked on</string>
     <string name="connection_status_inactive">Inactive. Please reconnect.</string>
     <string name="connection_status_access_location">Grant access to location data</string>
     <string name="connect_status_encrypted_connection">Your connection is encrypted and\nsecurely transmitted using SSL</string>
     <string name="connect_status_in_progress">Processing…</string>
-    <string name="connect_status_in_progress_description">This may take some time.</string>
+    <string name="connect_status_in_progress_description">Please wait… We’re processing your request</string>
     <string name="connect_status_provider_success">\%s was successfully connected</string>
-    <string name="connect_status_provider_success_description">You will receive an authentication request every time you make an action.</string>
+    <string name="connect_status_provider_success_description">You will receive an authentication request for every action you make.</string>
 
     <string name="action_new_action_title">New action</string>
     <string name="action_feature_title">Successful action</string>
@@ -131,7 +131,7 @@
 
     <string name="authorization_feature_title">Action</string>
     <string name="authorizations_empty_title">Take an action</string>
-    <string name="authorizations_empty_description">You don’t have any active authentication requests yet. Scan QR code for instant action or to connect new provider.</string>
+    <string name="authorizations_empty_description">No active authentication requests. Scan QR code to connect another account or process your actions.</string>
     <string name="authorizations_no_internet_title">You are offline</string>
     <string name="authorizations_no_internet_description">Please check your network connection.</string>
     <string name="authorizations_loading">Loading…</string>
@@ -182,7 +182,7 @@
 
     <string name="scan_qr_title">Scan QR code</string>
     <string name="scan_qr_description">Scan the QR\nto take action</string>
-    <string name="scan_qr_description_first">Scan the QR\nto make your first connection</string>
+    <string name="scan_qr_description_first">Make your first connection\nby scanning the QR code</string>
 
     <string name="delete_connections_title">Clear app data</string>
     <string name="delete_connections_message">App data including connected providers and user data will be permanently deleted.</string>

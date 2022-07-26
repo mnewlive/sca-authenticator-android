@@ -137,7 +137,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:fontFamily="@font/roboto_medium"
+                    android:fontFamily="@font/gilroy_medium"
                     android:text="@string/actions_skip"
                     android:textColor="@color/primary"
                     android:textSize="@dimen/text_18" />
