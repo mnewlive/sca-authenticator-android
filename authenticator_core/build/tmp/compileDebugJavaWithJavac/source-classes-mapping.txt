@@ -1,0 +1,2 @@
+com/saltedge/authenticator/core/BuildConfig.java
+ com.saltedge.authenticator.core.BuildConfig
