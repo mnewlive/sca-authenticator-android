@@ -77,6 +77,7 @@
     <color name="dark_80_and_grey_100">@color/dark_80</color>
     <color name="dark_60_and_grey_100">@color/dark_60</color>
     <color name="dark_60_and_grey_80">@color/dark_60</color>
+    <color name="dark_60_and_white">@color/dark_60</color>
     <color name="grey_light_extra_and_dark_80">@color/grey_light_extra</color>
     <color name="grey_extra_and_dark_extra">@color/grey_extra</color>
     <color name="grey_light_extra_and_dark_60">@color/grey_light_extra</color>

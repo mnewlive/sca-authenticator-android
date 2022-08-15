@@ -104,7 +104,7 @@ class PopupMenuBuilder(
         itemView.findViewById<TextView>(R.id.labelView).apply {
             item.textRes?.let { setText(it) }
             item.text?.let { text = it }
-            setTextColorResId(R.color.dark_100_and_grey_40)
+            setTextColorResId(R.color.dark_100_and_white)
         }
 
         itemView.setOnClickListener(if (item.isActive) clickListener else null)

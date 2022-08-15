@@ -28,7 +28,7 @@
 
     <style name="TextPrimary">
         <item name="android:ellipsize">end</item>
-        <item name="android:textColor">@color/dark_100_and_grey_40</item>
+        <item name="android:textColor">@color/dark_100_and_white</item>
         <item name="android:fontFamily">@font/adelle_regular</item>
     </style>
 
