@@ -20,6 +20,6 @@
     under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
 -->
 <resources>
-    <string name="app_name">Argentex Authenticator</string>
-    <string name="authenticator">Authenticator</string>
+    <string name="app_name">Argentex</string>
+    <string name="authenticator">Argentex</string>
 </resources>
