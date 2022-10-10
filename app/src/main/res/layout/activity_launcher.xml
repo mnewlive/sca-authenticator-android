@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
      This file is part of the Salt Edge Authenticator distribution
     (https://github.com/saltedge/sca-authenticator-android)
     Copyright (c) 2020 Salt Edge Inc.
@@ -15,49 +14,35 @@
     For the additional permissions granted for Salt Edge Authenticator
     under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
 -->
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/theme_background">
+    android:background="@drawable/ic_background">
 
     <ImageView
         android:id="@+id/appImageView"
-        android:layout_width="@dimen/splash_bg_logo_image_size"
-        android:layout_height="@dimen/splash_bg_logo_image_size"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/dp_137"
-        android:contentDescription="@string/app_name"
-        android:elevation="@dimen/dp_10"
-        android:scaleType="center"
-        android:background="@drawable/shape_bg_app_logo"
-        app:srcCompat="@drawable/ic_logo_application" />
-
-    <TextView
-        android:id="@+id/appNameView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/appImageView"
-        android:layout_marginTop="@dimen/dp_32"
-        android:layout_marginStart="@dimen/dp_32"
-        android:layout_marginEnd="@dimen/dp_32"
-        android:fontFamily="@font/open_sans_regular"
-        android:gravity="center_horizontal"
-        android:text="@string/app_name_in_two_lines"
-        android:textColor="@color/dark_100_and_grey_40"
-        android:lineSpacingExtra="@dimen/text_zero_line"
-        android:textSize="@dimen/text_26" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="@dimen/dp_64"
+        android:layout_marginTop="@dimen/dp_180"
+        android:layout_marginEnd="@dimen/dp_64"
+        android:contentDescription="@string/app_name"
+        android:elevation="@dimen/dp_10"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_logo_application" />
 
     <ImageView
         android:id="@+id/companyLogoImageView"
-        android:layout_width="@dimen/splash_power_image_width"
-        android:layout_height="@dimen/splash_power_image_height"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_20"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/dp_30"
-        android:contentDescription="@string/app_name"
+        android:layout_marginStart="@dimen/dp_32"
+        android:layout_marginEnd="@dimen/dp_32"
+        android:layout_marginBottom="@dimen/dp_75"
         android:scaleType="fitCenter"
-        app:srcCompat="@drawable/ic_logo_salt_edge" />
+        app:srcCompat="@drawable/ic_hashtag" />
 </RelativeLayout>

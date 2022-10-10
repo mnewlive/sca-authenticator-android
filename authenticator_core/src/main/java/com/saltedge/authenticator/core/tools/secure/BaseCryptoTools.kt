@@ -33,7 +33,6 @@ import java.security.Key
 import java.security.MessageDigest
 import java.security.PrivateKey
 import java.security.PublicKey
-import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
@@ -164,7 +163,7 @@ open class BaseCryptoTools : BaseCryptoToolsAbs {
             val encryptedIV = encryptedData.iv
             val encryptedMessage = encryptedData.data
             val key = rsaDecrypt(encryptedKey, rsaPrivateKey) ?: return null
-            val iv = rsaDecrypt(encryptedIV, rsaPrivateKey) ?: return null
+            val iv: ByteArray = rsaDecrypt(encryptedIV, rsaPrivateKey) ?: return null
             val jsonString = aesDecrypt(encryptedMessage, key = key, iv = iv)
             createDefaultGson().fromJson(jsonString, ConsentData::class.java).apply {
                 this.connectionId = encryptedData.connectionId

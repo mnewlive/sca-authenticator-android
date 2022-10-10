@@ -44,7 +44,7 @@ fun loadTestPublicKey(keyString: String = PUBLIC_KEY_PEM): PublicKey {
     return kf.generatePublic(keySpecX509) as RSAPublicKey
 }
 
-private const val PRIVATE_KEY_PEM = "-----BEGIN PRIVATE KEY-----\n" +
+const val PRIVATE_KEY_PEM = "-----BEGIN PRIVATE KEY-----\n" +
     "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDTYrQHUXv3hzgG\n" +
     "WwIqEQ+x3ylfNqi+emse1UkhJzx7dsycxVpw1FtOzXBaiBneyCq1no9CDw1MAsJd\n" +
     "W8WPFl8PbtTfbwtuDnjImndS9DVP5crwSBqB2ke9RYlipf3yi8O9JQ50kaFzXhIs\n" +
@@ -73,7 +73,7 @@ private const val PRIVATE_KEY_PEM = "-----BEGIN PRIVATE KEY-----\n" +
     "SHq9f/edLnB9JAJymXMbPT6I\n" +
     "-----END PRIVATE KEY-----\n"
 
-private const val PUBLIC_KEY_PEM = "-----BEGIN PUBLIC KEY-----\n" +
+const val PUBLIC_KEY_PEM = "-----BEGIN PUBLIC KEY-----\n" +
     "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA02K0B1F794c4BlsCKhEP\n" +
     "sd8pXzaovnprHtVJISc8e3bMnMVacNRbTs1wWogZ3sgqtZ6PQg8NTALCXVvFjxZf\n" +
     "D27U328Lbg54yJp3UvQ1T+XK8EgagdpHvUWJYqX98ovDvSUOdJGhc14SLAaEbiZ6\n" +

@@ -69,7 +69,7 @@ class ConsentAccountsView(context: Context, attrs: AttributeSet) : LinearLayout(
                 it.topMargin = dp10
             }
             setTextColor(labelColor)
-            setFont(R.font.roboto_medium)
+            setFont(R.font.gilroy_medium)
             setTextSize(TypedValue.COMPLEX_UNIT_PX, text16)
             setLines(1)
             ellipsize = TextUtils.TruncateAt.END
@@ -85,7 +85,7 @@ class ConsentAccountsView(context: Context, attrs: AttributeSet) : LinearLayout(
                 it.topMargin = dp6
             }
             setTextColor(labelColor)
-            setFont(R.font.roboto_regular)
+            setFont(R.font.adelle_regular)
             setTextSize(TypedValue.COMPLEX_UNIT_PX, text14)
             setLines(1)
             ellipsize = TextUtils.TruncateAt.END

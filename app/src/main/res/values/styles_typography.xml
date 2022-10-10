@@ -21,21 +21,21 @@
 -->
 <resources>
     <style name="app_bar_title">
-        <item name="android:textColor">@color/dark_100_and_grey_40</item>
+        <item name="android:textColor">@color/dark_100_and_white</item>
         <item name="android:textSize">@dimen/text_30</item>
-        <item name="android:fontFamily">@font/roboto_bold</item>
+        <item name="android:fontFamily">@font/gilroy_bold</item>
     </style>
 
     <style name="TextPrimary">
         <item name="android:ellipsize">end</item>
-        <item name="android:textColor">@color/dark_100_and_grey_40</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textColor">@color/dark_100_and_white</item>
+        <item name="android:fontFamily">@font/adelle_regular</item>
     </style>
 
     <style name="TextSecondary">
         <item name="android:ellipsize">end</item>
-        <item name="android:textColor">@color/dark_60_and_grey_100</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textColor">@color/dark_60_and_grey_80</item>
+        <item name="android:fontFamily">@font/adelle_regular</item>
     </style>
 
     <style name="Text24Primary" parent="TextPrimary">
@@ -48,7 +48,7 @@
 
     <style name="Text22PrimaryMedium" parent="TextPrimary">
         <item name="android:textSize">@dimen/text_22</item>
-        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:fontFamily">@font/gilroy_medium</item>
     </style>
 
     <style name="Text20Primary" parent="TextPrimary">
@@ -68,7 +68,7 @@
         <item name="android:ellipsize">end</item>
         <item name="android:textColor">@color/primary_dark_and_primary_light</item>
         <item name="android:textSize">@dimen/text_18</item>
-        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:fontFamily">@font/gilroy_medium</item>
     </style>
 
     <style name="Text16Primary" parent="TextPrimary">
@@ -83,7 +83,7 @@
         <item name="android:ellipsize">end</item>
         <item name="android:textColor">@color/primary_dark_and_primary_light</item>
         <item name="android:textSize">@dimen/text_14</item>
-        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:fontFamily">@font/gilroy_medium</item>
     </style>
 
     <style name="Text14Primary" parent="TextPrimary">

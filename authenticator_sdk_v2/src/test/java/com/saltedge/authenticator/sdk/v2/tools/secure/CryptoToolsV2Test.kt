@@ -21,12 +21,9 @@
 package com.saltedge.authenticator.sdk.v2.tools.secure
 
 import android.util.Base64
-import com.saltedge.android.test_tools.CommonTestTools
-import com.saltedge.android.test_tools.encryptAesCBCString
-import com.saltedge.android.test_tools.rsaEncrypt
-import com.saltedge.android.test_tools.toJsonString
+import com.saltedge.android.test_tools.*
 import com.saltedge.authenticator.core.api.model.DescriptionData
-import com.saltedge.authenticator.core.tools.encodeToPemBase64String
+import com.saltedge.authenticator.core.api.model.EncryptedBundle
 import com.saltedge.authenticator.sdk.v2.TestTools
 import com.saltedge.authenticator.sdk.v2.api.model.authorization.AuthorizationResponseData
 import com.saltedge.authenticator.sdk.v2.api.model.authorization.AuthorizationV2Data
@@ -45,6 +42,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.ByteArrayOutputStream
+import java.security.PrivateKey
 import java.security.PublicKey
 import java.util.*
 import javax.crypto.Cipher
@@ -74,6 +72,32 @@ class CryptoToolsV2Test {
 
         assertThat(CryptoToolsV2.rsaDecrypt(encryptedKey, CommonTestTools.testPrivateKey), equalTo(CommonTestTools.aesKey))
         assertThat(CryptoToolsV2.rsaDecrypt(encryptedIV, CommonTestTools.testPrivateKey), equalTo(CommonTestTools.aesKey))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun createEncryptedBundleTestCase() {
+        // Create EncryptedBundle with income data
+        val inData = PUBLIC_KEY_PEM
+        val publicKey = CommonTestTools.testPublicKey
+        val cryptoToolsV2 = CryptoToolsV2
+        val encryptedBundle: EncryptedBundle = cryptoToolsV2.createEncryptedBundle(
+            payload = inData,
+            rsaPublicKey = publicKey
+        )!!
+
+        // Decrypt EncryptedBundle
+        val rsaPrivateKey: PrivateKey = loadTestPrivateKey()
+        val encryptedKey = encryptedBundle.encryptedAesKey
+        val encryptedIV = encryptedBundle.encryptedAesIv
+        val encryptedMessage = encryptedBundle.encryptedData
+
+        val key = cryptoToolsV2.rsaDecrypt(encryptedKey, rsaPrivateKey)!!
+        val iv = cryptoToolsV2.rsaDecrypt(encryptedIV, rsaPrivateKey)!!
+        val outData: String = cryptoToolsV2.aesDecrypt(encryptedMessage, key, iv)!!
+
+        // Check that decrypted data from EncryptedBundle is equal to income data
+        assertThat(outData, equalTo(inData))
     }
 
     /**
@@ -218,7 +242,7 @@ class CryptoToolsV2Test {
             val cipherOutputStream = CipherOutputStream(outputStream, encryptCipher)
             cipherOutputStream.write(input)
             cipherOutputStream.close()
-            return Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP or Base64.URL_SAFE)
+            return Base64.encodeToString(outputStream.toByteArray(), Base64.NO_WRAP)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -268,5 +292,9 @@ class CryptoToolsV2Test {
             iv = rsaEncrypt(CommonTestTools.aesIV, publicKey)!!,
             data = encryptAesCBCString(jsonString, CommonTestTools.aesKey, CommonTestTools.aesIV)!!
         )
+    }
+
+    private fun CryptoToolsV2.aesDecrypt(encryptedText: String, key: ByteArray, iv: ByteArray): String {
+        return this.aesDecrypt(encryptedText = encryptedText, key = key, iv = iv)!!
     }
 }

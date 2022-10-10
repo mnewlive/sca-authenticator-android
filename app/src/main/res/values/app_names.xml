@@ -20,7 +20,6 @@
     under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
 -->
 <resources>
-    <string name="app_name">Salt Edge Authenticator</string>
-    <string name="app_name_short">Authenticator</string>
-    <string name="app_name_in_two_lines">Salt Edge\nAuthenticator</string>
+    <string name="app_name">Argentex Authenticator</string>
+    <string name="authenticator">Authenticator</string>
 </resources>

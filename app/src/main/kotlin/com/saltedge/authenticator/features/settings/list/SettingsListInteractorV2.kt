@@ -35,7 +35,7 @@ class SettingsListInteractorV2(
 
     fun sendRevokeRequestForConnections() {
         val richConnections: List<RichConnection> = connectionsRepository.getAllActiveConnections()
-            .filter { it.isActive() }
+            .filter { it.isActive() && it.isV2Api }
             .mapNotNull { it.toRichConnection(keyStoreManager) }
         apiManager.revokeConnections(richConnections = richConnections, callback = null)
     }

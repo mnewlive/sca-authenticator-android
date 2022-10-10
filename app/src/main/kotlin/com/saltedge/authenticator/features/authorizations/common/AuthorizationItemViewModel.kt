@@ -21,6 +21,7 @@
 package com.saltedge.authenticator.features.authorizations.common
 
 import android.view.View
+import androidx.annotation.Keep
 import com.saltedge.authenticator.core.api.model.DescriptionData
 import com.saltedge.authenticator.core.model.ConnectionAbs
 import com.saltedge.authenticator.core.model.ID
@@ -38,6 +39,7 @@ import java.io.Serializable
 
 const val LIFE_TIME_OF_FINAL_MODEL = 4 // seconds
 
+@Keep
 data class AuthorizationItemViewModel(
     val authorizationID: ID,
     var authorizationCode: String,

@@ -86,5 +86,5 @@ fun SpannableStringBuilder.appendColoredText(
 }
 
 val Context.mediumTypefaceSpan: CustomTypefaceSpan?
-    get() = ResourcesCompat.getFont(this, R.font.roboto_medium)?.let { CustomTypefaceSpan(typeface = it) }
+    get() = ResourcesCompat.getFont(this, R.font.gilroy_medium)?.let { CustomTypefaceSpan(typeface = it) }
 

@@ -55,11 +55,11 @@
 
                 <ImageView
                     android:id="@+id/appLogoView"
-                    android:layout_width="@dimen/app_logo_image_size"
-                    android:layout_height="@dimen/app_logo_image_size"
-                    android:layout_gravity="center"
-                    android:contentDescription="@string/app_name_short"
-                    app:srcCompat="@drawable/ic_logo_application" />
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_100"
+                    android:layout_marginTop="@dimen/dp_80"
+                    android:contentDescription="@string/app_name"
+                    app:srcCompat="@drawable/ic_logo_argentex" />
             </FrameLayout>
 
             <com.saltedge.authenticator.widget.passcode.PasscodeInputView
@@ -137,7 +137,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:fontFamily="@font/roboto_medium"
+                    android:fontFamily="@font/gilroy_medium"
                     android:text="@string/actions_skip"
                     android:textColor="@color/primary"
                     android:textSize="@dimen/text_18" />

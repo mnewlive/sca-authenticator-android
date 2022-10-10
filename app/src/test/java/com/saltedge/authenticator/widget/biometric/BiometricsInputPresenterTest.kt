@@ -67,7 +67,7 @@ class BiometricsInputPresenterTest {
         //given
         val arguments: Bundle? = Bundle().apply {
             putInt(KEY_TITLE, R.string.app_name)
-            putInt(KEY_DESCRIPTION, R.string.app_name_in_two_lines)
+            putInt(KEY_DESCRIPTION, R.string.fingerprint_scan_unlock)
         }
         given(mockBiometricTools.createFingerprintCipher()).willReturn(null)
         val presenter = createPresenter(viewContract = mockView)
@@ -107,7 +107,7 @@ class BiometricsInputPresenterTest {
         //given
         val arguments: Bundle? = Bundle().apply {
             putInt(KEY_TITLE, R.string.app_name)
-            putInt(KEY_DESCRIPTION, R.string.app_name_in_two_lines)
+            putInt(KEY_DESCRIPTION, R.string.fingerprint_scan_unlock)
         }
         given(mockBiometricTools.createFingerprintCipher()).willReturn(mockCipher)//Cipher.getInstance("AES/CBC/${KeyProperties.ENCRYPTION_PADDING_PKCS7}")
         val presenter = createPresenter(viewContract = mockView)
@@ -118,7 +118,7 @@ class BiometricsInputPresenterTest {
         //then
         Assert.assertTrue(presenter.initialized)
         assertThat(presenter.titleRes, equalTo(R.string.app_name))
-        assertThat(presenter.descriptionRes, equalTo(R.string.app_name_in_two_lines))
+        assertThat(presenter.descriptionRes, equalTo(R.string.fingerprint_scan_unlock))
         assertThat(presenter.negativeActionTextRes, equalTo(R.string.actions_cancel))
     }
 

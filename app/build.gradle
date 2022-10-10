@@ -57,8 +57,8 @@ android {
     }
 
     defaultConfig {
-        applicationId 'com.saltedge.authenticator'
-        testApplicationId 'com.saltedge.authenticator.tests'
+        applicationId 'com.argentex.authenticator'
+        testApplicationId 'com.argentex.authenticator.tests'
 
         multiDexEnabled = true
         vectorDrawables.useSupportLibrary = true
@@ -68,8 +68,8 @@ android {
         compileSdkVersion 31
         targetSdkVersion 31
 
-        versionCode 54
-        versionName '3.4.0-beta'
+        versionCode 1
+        versionName '1.0.0'
 
         renderscriptTargetApi 21
         renderscriptSupportModeEnabled true
@@ -84,6 +84,7 @@ android {
             signingConfig signingConfigs.release
             lintOptions {
                 disable 'MissingTranslation'
+                abortOnError false
                 // google services plugin is causing missing translation issue
             }
             testCoverageEnabled false

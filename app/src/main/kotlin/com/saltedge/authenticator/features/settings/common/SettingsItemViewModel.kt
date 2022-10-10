@@ -28,7 +28,7 @@ import com.saltedge.authenticator.tools.ResId
 
 data class SettingsItemViewModel(
     @StringRes val titleId: ResId,
-    val titleColorRes: Int = R.color.dark_100_and_grey_40,
+    val titleColorRes: Int = R.color.dark_100_and_white,
     @DrawableRes val iconId: ResId? = null,
     val description: String = "",
     var switchIsChecked: Boolean? = null,
