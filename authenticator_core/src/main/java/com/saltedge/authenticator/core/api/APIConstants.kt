@@ -20,8 +20,8 @@
  */
 package com.saltedge.authenticator.core.api
 
-const val TERMS_LINK = "https://www.saltedge.com/pages/authenticator_terms"
-const val DEFAULT_SUPPORT_EMAIL_LINK = "authenticator@saltedge.com"
+const val TERMS_LINK = "https://www.argentex.com/mobile-authenticator-terms"
+const val DEFAULT_SUPPORT_EMAIL_LINK = "info@argentex.com"
 const val DEFAULT_RETURN_URL = "authenticator://oauth/redirect"
 const val DEFAULT_PLATFORM_NAME = "android"
 const val DEFAULT_EXPIRATION_MINUTES = 5
