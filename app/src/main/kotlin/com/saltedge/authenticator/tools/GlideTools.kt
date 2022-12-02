@@ -1,13 +1,10 @@
 package com.saltedge.authenticator.tools
 
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
+import coil.ImageLoader
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import com.google.android.material.imageview.ShapeableImageView
 import timber.log.Timber
-
-private val imageLoaderOptions = RequestOptions()
-    .diskCacheStrategy(DiskCacheStrategy.ALL)
 
 /**
  * Loads image from remote resource to image view
@@ -18,13 +15,20 @@ private val imageLoaderOptions = RequestOptions()
  */
 fun ShapeableImageView.loadImage(imageUrl: String?, placeholderId: ResId) {
     try {
-        Glide.with(context)
-            .load(imageUrl)
-            .apply(imageLoaderOptions)
+        val imageLoader = ImageLoader.Builder(this.context)
+            .componentRegistry { add(SvgDecoder(this@loadImage.context)) }
+            .build()
+
+        val request = ImageRequest.Builder(this.context)
+            .crossfade(true)
+            .crossfade(500)
             .placeholder(placeholderId)
             .error(placeholderId)
-            .fitCenter()
-            .into(this)
+            .data(imageUrl)
+            .target(this)
+            .build()
+
+        imageLoader.enqueue(request)
     } catch (e: Exception) {
         Timber.e(e)
     }
