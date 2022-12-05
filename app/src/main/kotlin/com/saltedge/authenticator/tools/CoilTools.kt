@@ -2,6 +2,7 @@ package com.saltedge.authenticator.tools
 
 import coil.ImageLoader
 import coil.decode.SvgDecoder
+import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.google.android.material.imageview.ShapeableImageView
 import timber.log.Timber
@@ -22,6 +23,8 @@ fun ShapeableImageView.loadImage(imageUrl: String?, placeholderId: ResId) {
         val request = ImageRequest.Builder(this.context)
             .crossfade(true)
             .crossfade(500)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .diskCachePolicy(CachePolicy.ENABLED)
             .placeholder(placeholderId)
             .error(placeholderId)
             .data(imageUrl)
