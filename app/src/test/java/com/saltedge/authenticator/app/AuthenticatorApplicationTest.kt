@@ -34,6 +34,6 @@ class AuthenticatorApplicationTest {
     @Throws(Exception::class)
     fun useAppContextTest() {
         val context = TestAppTools.applicationContext
-        assertThat(context.packageName, equalTo("com.saltedge.authenticator"))
+        assertThat(context.packageName, equalTo("com.argentex.authenticator"))
     }
 }

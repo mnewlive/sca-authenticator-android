@@ -1,7 +1,7 @@
 /*
  * This file is part of the Salt Edge Authenticator distribution
  * (https://github.com/saltedge/sca-authenticator-android).
- * Copyright (c) 2019 Salt Edge Inc.
+ * Copyright (c) 2022 Salt Edge Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,28 +18,12 @@
  * For the additional permissions granted for Salt Edge Authenticator
  * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
-package com.saltedge.authenticator.sdk.api.model.configuration
+package com.saltedge.authenticator.sdk.v2.api.contract
 
-import com.saltedge.authenticator.sdk.constants.API_V1_VERSION
-import timber.log.Timber
+import com.saltedge.authenticator.core.api.model.error.ApiErrorData
+import com.saltedge.authenticator.sdk.v2.api.model.configuration.ConfigurationDataV2
 
-/**
- * Checks validity of Provider model
- *
- * @receiver Encrypted authorization
- * @return boolean. true if `name`, `code` and `connectUrl` fields are present
- * and version code equal to API_VERSION constant
- */
-fun ProviderConfigurationData.isValid(): Boolean {
-    return try {
-        name.isNotEmpty() &&
-            code.isNotEmpty() &&
-            connectUrl.isNotEmpty() &&
-            !connectUrl.contains("/localhost") &&
-            version == API_V1_VERSION
-    } catch (e: Exception) {
-        if (this.code.isNullOrEmpty()) Timber.e(e)
-        else Timber.wtf(e, this.code, null)
-        false
-    }
+interface ShowConnectionConfigurationListener {
+    fun onShowConnectionConfigurationSuccess(result: ConfigurationDataV2)
+    fun onShowConnectionConfigurationFailed(error: ApiErrorData)
 }
