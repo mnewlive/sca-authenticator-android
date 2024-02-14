@@ -29,7 +29,7 @@ class ConnectProviderViewModel(
     private val interactor: ConnectProviderInteractorAbs
 ) : ViewModel(), LifecycleObserver, ConnectProviderInteractorCallback {
 
-    val backActionIconRes: MutableLiveData<ResId?> = MutableLiveData(R.drawable.ic_appbar_action_close)
+    val backActionIconRes: MutableLiveData<ResId?> = MutableLiveData(null)
     val statusIconRes: MutableLiveData<ResId> = MutableLiveData(R.drawable.ic_status_error)
     val completeTitle: MutableLiveData<SpannableString> = MutableLiveData(SpannableString(""))
     val completeDescription: MutableLiveData<String> = MutableLiveData("")
@@ -158,18 +158,17 @@ class ConnectProviderViewModel(
         backActionIconRes.postValue(if (progressViewIsVisible || completeViewIsVisible) null else R.drawable.ic_appbar_action_close)
     }
 
-    fun updateWebViewVisibility() {
+    private fun updateWebViewVisibility() {
         webViewVisibility.postValue(if (webViewIsVisible) View.VISIBLE else View.GONE)
     }
 
-    fun updateProgressViewVisibility() {
+    private fun updateProgressViewVisibility() {
         progressViewVisibility.postValue(if (progressViewIsVisible) View.VISIBLE else View.GONE)
     }
 
-    fun updateCompleteViewVisibility() {
+    private fun updateCompleteViewVisibility() {
         completeViewVisibility.postValue(if (completeViewIsVisible) View.VISIBLE else View.GONE)
     }
-
 
     private fun getCompleteTitle(): SpannableString {
         return if (viewMode.isCompleteWithSuccess) {
