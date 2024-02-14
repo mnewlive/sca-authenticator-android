@@ -9,10 +9,5 @@ import io.realm.RealmSchema
  * Add the pushToken field to the Connection model
  */
 fun RealmSchema.runMigration5() {
-    get("Connection")?.let { schema ->
-        schema
-            .addField("pushToken", String::class.java)
-            .setNullable("pushToken", true)
-            .transform { it.set("pushToken", null) }
-    }
+    get("Connection")?.addField("pushToken", String::class.java)
 }
