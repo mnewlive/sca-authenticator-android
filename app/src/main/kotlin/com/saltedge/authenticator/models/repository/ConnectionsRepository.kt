@@ -148,8 +148,10 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * Delete all connections from database
      */
     override fun deleteAllConnections() {
-        RealmManager.getDefaultInstance().use {
-            it.executeTransaction { realmDb -> realmDb.delete(Connection::class.java) }
+        coroutineScope.launch {
+            RealmManager.getDefaultInstance().use {
+                it.executeTransaction { realmDb -> realmDb.delete(Connection::class.java) }
+            }
         }
     }
 
@@ -205,15 +207,17 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @param accessTokens - list of access tokens
      */
     override fun invalidateConnectionsByTokens(accessTokens: List<Token>) {
-        RealmManager.getDefaultInstance().use {
-            it.executeTransaction { realmDb ->
-                realmDb.where(Connection::class.java)
-                    .`in`(DB_KEY_ACCESS_TOKEN, accessTokens.toTypedArray())
-                    .findAll()
-                    .forEach { model ->
-                        model.status = ConnectionStatus.INACTIVE.toString()
-                        model.accessToken = ""
-                    }
+        coroutineScope.launch {
+            RealmManager.getDefaultInstance().use {
+                it.executeTransaction { realmDb ->
+                    realmDb.where(Connection::class.java)
+                        .`in`(DB_KEY_ACCESS_TOKEN, accessTokens.toTypedArray())
+                        .findAll()
+                        .forEach { model ->
+                            model.status = ConnectionStatus.INACTIVE.toString()
+                            model.accessToken = ""
+                        }
+                }
             }
         }
     }
