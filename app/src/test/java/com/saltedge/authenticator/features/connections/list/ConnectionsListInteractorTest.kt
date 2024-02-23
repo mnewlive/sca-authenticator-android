@@ -16,10 +16,10 @@ import com.saltedge.authenticator.sdk.v2.ScaServiceClientAbs
 import com.saltedge.authenticator.sdk.v2.api.model.configuration.ConfigurationDataV2
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.BDDMockito.given
@@ -77,7 +77,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun updateNameAndSaveTestCase1() {
+    fun updateNameAndSaveTestCase1() = runTest {
         //given
         val newName = "new name"
         val guid = testFactory.connection2.guid
@@ -91,7 +91,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun updateNameAndSaveTestCase2() {
+    fun updateNameAndSaveTestCase2() = runTest {
         //given
         val newName = "new name"
         val guid = "guidX"

@@ -5,7 +5,6 @@ package com.saltedge.authenticator.features.connections.list
 
 import android.content.Context
 import android.content.DialogInterface
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import androidx.test.core.app.ApplicationProvider
@@ -23,6 +22,7 @@ import com.saltedge.authenticator.models.ViewModelEvent
 import com.saltedge.authenticator.models.location.DeviceLocationManagerAbs
 import com.saltedge.authenticator.sdk.constants.API_V1_VERSION
 import com.saltedge.authenticator.sdk.v2.api.API_V2_VERSION
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert
@@ -83,7 +83,7 @@ class ConnectionsListViewModelTest : ViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onItemNameChangedTestCase1() {
+    fun onItemNameChangedTestCase1() = runTest {
         //given
         viewModel.onDatasetChanged(testFactory.allConnections, testFactory.allConsents)
         val newName = "new name"
@@ -147,7 +147,7 @@ class ConnectionsListViewModelTest : ViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onItemNameChangedTestCase5() {
+    fun onItemNameChangedTestCase5() = runTest {
         //given
         viewModel.onDatasetChanged(testFactory.allConnections, testFactory.allConsents)
         val newName = "new name"
