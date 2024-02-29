@@ -42,8 +42,8 @@ class CryptoToolsV1Test {
         assertThat(CommonTestTools.aesKey.size, equalTo(32)) // AES-256
         assertThat(CommonTestTools.aesIV.size, equalTo(16))
 
-        val encryptedKey = rsaEncrypt(CommonTestTools.aesKey, CommonTestTools.testPublicKey)!!
-        val encryptedIV = rsaEncrypt(CommonTestTools.aesKey, CommonTestTools.testPublicKey)!!
+        val encryptedKey = CryptoToolsV1.rsaEncrypt(CommonTestTools.aesKey, CommonTestTools.testPublicKey)!!
+        val encryptedIV = CryptoToolsV1.rsaEncrypt(CommonTestTools.aesKey, CommonTestTools.testPublicKey)!!
 
         assertThat(CryptoToolsV1.rsaDecrypt(encryptedKey, CommonTestTools.testPrivateKey), equalTo(CommonTestTools.aesKey))
         assertThat(CryptoToolsV1.rsaDecrypt(encryptedIV, CommonTestTools.testPrivateKey), equalTo(CommonTestTools.aesKey))
@@ -63,7 +63,7 @@ class CryptoToolsV1Test {
             override fun getEncoded(): ByteArray = byteArrayOf()
             override fun getFormat(): String = ""
         }
-        Assert.assertNull(rsaEncrypt(byteArrayOf(), invalidCertificate)) // Invalid public key
+        Assert.assertNull(CryptoToolsV1.rsaEncrypt(byteArrayOf(), invalidCertificate)) // Invalid public key
     }
 
     /**
