@@ -100,27 +100,6 @@ fun FragmentActivity.showResetDataDialog(listener: DialogInterface.OnClickListen
     }
 }
 
-/**
- * Show reset data and settings dialog
- *
- * @receiver FragmentActivity
- * @param listener - on dialog action click listener
- * @return AlertDialog object or null
- */
-fun FragmentActivity.showResetDataAndSettingsDialog(listener: DialogInterface.OnClickListener): AlertDialog? {
-    return try {
-        AlertDialog.Builder(this, R.style.AlertDialogTheme)
-            .setTitle(R.string.forgot_passcode_clear_title)
-            .setMessage(R.string.settings_clear_message)
-            .setPositiveButton(R.string.actions_clear, listener)
-            .setNegativeButton(R.string.actions_cancel, listener)
-            .show()
-    } catch (e: java.lang.Exception) {
-        Timber.e(e)
-        null
-    }
-}
-
 fun FragmentActivity.createLanguageDialog(
     items: Array<String>,
     selectedItemIndex: Int,
