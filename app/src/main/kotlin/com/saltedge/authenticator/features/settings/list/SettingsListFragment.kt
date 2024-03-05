@@ -3,7 +3,6 @@
  */
 package com.saltedge.authenticator.features.settings.list
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +28,6 @@ import com.saltedge.authenticator.models.ViewModelEvent
 import com.saltedge.authenticator.tools.createLanguageDialog
 import com.saltedge.authenticator.tools.navigateTo
 import com.saltedge.authenticator.tools.restartApp
-import com.saltedge.authenticator.tools.showResetDataAndSettingsDialog
 import com.saltedge.authenticator.tools.startMailApp
 import com.saltedge.authenticator.widget.fragment.BaseFragment
 import com.saltedge.authenticator.widget.list.SpaceItemDecoration
@@ -110,21 +108,6 @@ class SettingsListFragment : BaseFragment(), DialogHandlerListener, AppbarMenuIt
         viewModel.supportClickEvent.observe(this, Observer<ViewModelEvent<Unit>> { event ->
             event.getContentIfNotHandled()?.let { activity?.startMailApp() }
         })
-        viewModel.clearClickEvent.observe(this, Observer<ViewModelEvent<Unit>> { event ->
-            event.getContentIfNotHandled()?.let {
-                alertDialog = activity?.showResetDataAndSettingsDialog(DialogInterface.OnClickListener { _, dialogActionId ->
-                    viewModel.onDialogActionIdClick(dialogActionId)
-                })
-            }
-        })
-        viewModel.clearSuccessEvent.observe(this, Observer<ViewModelEvent<Unit>> {
-            it.getContentIfNotHandled()?.let {
-                activity?.showWarningSnack(
-                    textResId = R.string.settings_clear_success,
-                    snackBarDuration = Snackbar.LENGTH_SHORT
-                )
-            }
-        })
         viewModel.screenshotClickEvent.observe(this, Observer<ViewModelEvent<Unit>> {
             it.getContentIfNotHandled()?.let {
                 view?.let {
@@ -149,11 +132,6 @@ class SettingsListFragment : BaseFragment(), DialogHandlerListener, AppbarMenuIt
     private fun setupViews() {
         activity?.let {
             binding.recyclerView.layoutManager = LinearLayoutManager(it)
-            binding.recyclerView.addItemDecoration(
-                SpaceItemDecoration(
-                    context = it,
-                    headerPositions = viewModel.spacesPositions)
-            )
         }
         adapter = SettingsAdapter(listener = viewModel).apply {
             viewModel.listItemsValues?.let { data = it }

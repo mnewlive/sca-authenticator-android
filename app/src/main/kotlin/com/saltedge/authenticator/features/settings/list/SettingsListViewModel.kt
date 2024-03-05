@@ -4,7 +4,6 @@
 package com.saltedge.authenticator.features.settings.list
 
 import android.content.Context
-import android.content.DialogInterface
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.saltedge.authenticator.R
@@ -24,8 +23,6 @@ import com.saltedge.authenticator.tools.postUnitEvent
 
 class SettingsListViewModel(
     private val appContext: Context,
-    private val interactorV1: SettingsListInteractorV1,
-    private val interactorV2: SettingsListInteractorV2,
     private val appTools: AppToolsAbs,
     private val preferenceRepository: PreferenceRepositoryAbs
 ) : ViewModel(), ListItemClickListener {
@@ -35,15 +32,11 @@ class SettingsListViewModel(
     val screenshotClickEvent = MutableLiveData<ViewModelEvent<Unit>>()
     val aboutClickEvent = MutableLiveData<ViewModelEvent<Unit>>()
     val supportClickEvent = MutableLiveData<ViewModelEvent<Unit>>()
-    val clearClickEvent = MutableLiveData<ViewModelEvent<Unit>>()
-    val clearSuccessEvent = MutableLiveData<ViewModelEvent<Unit>>()
     val restartClickEvent = MutableLiveData<ViewModelEvent<Unit>>()
     val setNightModelEvent = MutableLiveData<ViewModelEvent<Int>>()
     val listItems = MutableLiveData<List<SettingsItemViewModel>>(collectListItems())
     val listItemsValues: List<SettingsItemViewModel>?
         get() = listItems.value
-    val spacesPositions: Array<Int>
-        get() = arrayOf(0, listItems.value?.lastIndex ?: 0)
 
     private var availableLocales = appContext.getAvailableLocalizations().sorted()
     var languageListItems: Array<String> = availableLocales.map { it.localeCodeToName() }.toTypedArray()
@@ -71,7 +64,6 @@ class SettingsListViewModel(
             R.string.settings_language -> languageClickEvent.postUnitEvent()
             R.string.about_feature_title -> aboutClickEvent.postUnitEvent()
             R.string.settings_report -> supportClickEvent.postUnitEvent()
-            R.string.settings_clear_data -> clearClickEvent.postUnitEvent()
         }
     }
 
@@ -106,15 +98,6 @@ class SettingsListViewModel(
             it.switchIsChecked = false
         }
         setNightModelEvent.postValue(ViewModelEvent(newNighMode))
-    }
-
-    fun onDialogActionIdClick(dialogActionId: Int) {
-        if (dialogActionId == DialogInterface.BUTTON_POSITIVE) {
-            interactorV1.sendRevokeRequestForConnections()
-            interactorV2.sendRevokeRequestForConnections()
-            interactorV1.deleteAllConnectionsAndKeys()
-            clearSuccessEvent.postUnitEvent()
-        }
     }
 
     fun restartConfirmed() {
@@ -156,12 +139,6 @@ class SettingsListViewModel(
                 SettingsItemViewModel(
                     iconId = R.drawable.ic_setting_support,
                     titleId = R.string.settings_report,
-                    itemIsClickable = true
-                ),
-                SettingsItemViewModel(
-                    iconId = R.drawable.ic_setting_clear,
-                    titleId = R.string.settings_clear_data,
-                    titleColorRes = R.color.red,
                     itemIsClickable = true
                 )
             )

@@ -33,8 +33,6 @@ import com.saltedge.authenticator.features.onboarding.OnboardingSetupViewModel
 import com.saltedge.authenticator.features.qr.QrScannerViewModel
 import com.saltedge.authenticator.features.settings.about.AboutViewModel
 import com.saltedge.authenticator.features.settings.licenses.LicensesViewModel
-import com.saltedge.authenticator.features.settings.list.SettingsListInteractorV1
-import com.saltedge.authenticator.features.settings.list.SettingsListInteractorV2
 import com.saltedge.authenticator.features.settings.list.SettingsListViewModel
 import com.saltedge.authenticator.features.settings.passcode.PasscodeEditViewModel
 import com.saltedge.authenticator.models.location.DeviceLocationManager
@@ -204,16 +202,6 @@ class ViewModelsFactory @Inject constructor(
             modelClass.isAssignableFrom(SettingsListViewModel::class.java) -> {
                 return SettingsListViewModel(
                     appContext = appContext,
-                    interactorV1 = SettingsListInteractorV1(
-                        keyStoreManager = keyStoreManager,
-                        connectionsRepository = connectionsRepository,
-                        apiManager = apiManagerV1
-                    ),
-                    interactorV2 = SettingsListInteractorV2(
-                        keyStoreManager = keyStoreManager,
-                        connectionsRepository = connectionsRepository,
-                        apiManager = apiManagerV2
-                    ),
                     appTools = AppTools,
                     preferenceRepository = preferenceRepository
                 ) as T

@@ -141,7 +141,6 @@
     <string name="settings_feature_title">Settings</string>
     <string name="settings_report">Report an issue</string>
     <string name="settings_language">Language</string>
-    <string name="settings_clear_data">Clear all data</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_passcode">Passcode</string>
     <string name="settings_passcode_description">Change passcode</string>
@@ -151,8 +150,6 @@
     <string name="settings_screenshot_lock">Screenshot lock</string>
     <string name="settings_system_dark_mode">System dark mode</string>
     <string name="settings_restart_app">Restart app for these changes to take effect</string>
-    <string name="settings_clear_message">App data including connected providers and user data will be permanently deleted.</string>
-    <string name="settings_clear_success">App data cleared successfully</string>
 
     <string name="about_feature_title">About</string>
     <string name="about_app_version">App Version</string>
