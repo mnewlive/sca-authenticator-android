@@ -25,7 +25,7 @@ open class PushTokenUpdater(
     private var connections: List<Connection> = emptyList()
     private var richConnections: Map<ID, RichConnection> = emptyMap()
 
-    fun updatePushToken() {
+    suspend fun updatePushToken() {
         connections = connectionsRepository.getActiveConnectionsWithoutToken(preferenceRepository.cloudMessagingToken)
         richConnections = connections.mapNotNull { it.toRichConnectionPair(keyStoreManager) }.toMap()
         connections.mapNotNull { connection -> richConnections[connection.id] }

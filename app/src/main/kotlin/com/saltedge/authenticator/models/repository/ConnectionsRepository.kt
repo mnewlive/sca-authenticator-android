@@ -17,6 +17,8 @@ import io.realm.Realm
 import io.realm.RealmQuery
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
@@ -108,12 +110,18 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
         ) }
     }
 
-    override fun getActiveConnectionsWithoutToken(storedPushToken: String): List<Connection> {
-        return RealmManager.getDefaultInstance().use { it.copyFromRealm(
-            it.queryActiveConnections()
-                .notEqualTo(DB_KEY_PUSH_TOKEN, storedPushToken)
-                .findAll()
-        ) }
+    override suspend fun getActiveConnectionsWithoutToken(storedPushToken: String): List<Connection> {
+        return coroutineScope {
+            async(Dispatchers.Default) {
+                RealmManager.getDefaultInstance().use { realm ->
+                    realm.copyFromRealm(
+                        realm.queryActiveConnections()
+                            .notEqualTo(DB_KEY_PUSH_TOKEN, storedPushToken)
+                            .findAll()
+                    )
+                }
+            }.await()
+        }
     }
 
     /**
@@ -328,7 +336,7 @@ interface ConnectionsRepositoryAbs {
     fun getAllActiveConnections(): List<Connection>
     fun getAllActiveConnectionsByApi(apiVersion: String): List<Connection>
     fun getAllActiveByConnectUrl(connectionUrl: String): List<Connection>
-    fun getActiveConnectionsWithoutToken(storedPushToken: String): List<Connection>
+    suspend fun getActiveConnectionsWithoutToken(storedPushToken: String): List<Connection>
     fun getAllActiveByProvider(providerID: ID): List<Connection>
     fun getByGuid(connectionGuid: GUID?): Connection?
     fun getById(connectionID: ID): Connection?

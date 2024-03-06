@@ -9,6 +9,7 @@ import com.saltedge.authenticator.models.Connection
 import com.saltedge.authenticator.models.repository.ConnectionsRepositoryAbs
 import com.saltedge.authenticator.models.repository.PreferenceRepositoryAbs
 import com.saltedge.authenticator.sdk.v2.ScaServiceClientAbs
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -35,8 +36,10 @@ class PushTokenUpdaterTest {
         testFactory.mockRichConnections(mockKeyStoreManager)
 
         Mockito.doReturn("storedPushToken").`when`(mockPreferenceRepository).cloudMessagingToken
-        given(mockConnectionsRepository.getActiveConnectionsWithoutToken(mockPreferenceRepository.cloudMessagingToken))
-            .willReturn(listOf(testFactory.connection2))
+        runBlocking {
+            given(mockConnectionsRepository.getActiveConnectionsWithoutToken(mockPreferenceRepository.cloudMessagingToken))
+                .willReturn(listOf(testFactory.connection2))
+        }
 
         pushTokenUpdater = PushTokenUpdater(
             apiManager = mockApiManagerV2,
@@ -48,7 +51,7 @@ class PushTokenUpdaterTest {
 
     @Test
     @Throws(Exception::class)
-    fun updatePushTokenTest() {
+    fun updatePushTokenTest() = runBlocking {
         pushTokenUpdater.updatePushToken()
 
         Mockito.verify(mockApiManagerV2).updatePushToken(

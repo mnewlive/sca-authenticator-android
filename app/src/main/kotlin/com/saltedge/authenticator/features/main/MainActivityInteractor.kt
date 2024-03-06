@@ -26,7 +26,7 @@ class MainActivityInteractor(
     val noConnections: Boolean
         get() = connectionsRepository.isEmpty()
 
-    fun updatePushToken() {
+    suspend fun updatePushToken() {
         pushTokenUpdater.updatePushToken()
     }
 
