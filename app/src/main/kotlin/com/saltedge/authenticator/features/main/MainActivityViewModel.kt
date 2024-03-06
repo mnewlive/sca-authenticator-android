@@ -26,6 +26,7 @@ import com.saltedge.authenticator.sdk.api.model.authorization.AuthorizationIdent
 import com.saltedge.authenticator.tools.ResId
 import com.saltedge.authenticator.tools.applyPreferenceLocale
 import com.saltedge.authenticator.tools.postUnitEvent
+import kotlinx.coroutines.launch
 
 class MainActivityViewModel(
     private val appContext: Context,
@@ -53,7 +54,9 @@ class MainActivityViewModel(
     private var initialQrScanWasStarted = false
 
     init {
-        interactor.updatePushToken()
+        viewModelScope.launch {
+            interactor.updatePushToken()
+        }
     }
 
     fun bindLifecycleObserver(lifecycle: Lifecycle) {
