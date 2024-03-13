@@ -137,9 +137,11 @@ class MainActivityViewModel(
     }
 
     fun onUnlock() {
-        if (!initialQrScanWasStarted && interactor.noConnections) {
-            onQrScanClickEvent.postUnitEvent()
-            initialQrScanWasStarted = true
+        viewModelScope.launch {
+            if (!initialQrScanWasStarted && interactor.noConnections()) {
+                onQrScanClickEvent.postUnitEvent()
+                initialQrScanWasStarted = true
+            }
         }
     }
 
@@ -177,8 +179,10 @@ class MainActivityViewModel(
     }
 
     fun onClearAppDataEvent() {
-        interactor.sendRevokeRequestForConnections()
-        interactor.wipeApplication()
-        onShowOnboardingEvent.postUnitEvent()
+        viewModelScope.launch {
+            interactor.sendRevokeRequestForConnections()
+            interactor.wipeApplication()
+            onShowOnboardingEvent.postUnitEvent()
+        }
     }
 }

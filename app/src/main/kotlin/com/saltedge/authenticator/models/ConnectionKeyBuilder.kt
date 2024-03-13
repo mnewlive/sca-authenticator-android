@@ -17,7 +17,7 @@ import com.saltedge.authenticator.sdk.v2.api.API_V2_VERSION
  * @param keyStoreManager data source of keys
  * @return Map<ID, ConnectionAndKey>
  */
-fun collectRichConnections(
+suspend fun collectRichConnections(
     repository: ConnectionsRepositoryAbs,
     keyStoreManager: KeyManagerAbs,
     apiVersion: String? = null

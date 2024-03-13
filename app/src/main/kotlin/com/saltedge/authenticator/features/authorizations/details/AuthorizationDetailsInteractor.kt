@@ -12,6 +12,7 @@ import com.saltedge.authenticator.core.model.RichConnection
 import com.saltedge.authenticator.core.tools.secure.KeyManagerAbs
 import com.saltedge.authenticator.models.createRichConnection
 import com.saltedge.authenticator.models.repository.ConnectionsRepositoryAbs
+import kotlinx.coroutines.launch
 
 abstract class AuthorizationDetailsInteractor(
     private val connectionsRepository: ConnectionsRepositoryAbs,
@@ -38,7 +39,9 @@ abstract class AuthorizationDetailsInteractor(
         when {
             error.isConnectionNotFound() -> {
                 richConnection?.connection?.accessToken?.let {
-                    connectionsRepository.invalidateConnectionsByTokens(accessTokens = listOf(it))
+                    contract?.coroutineScope?.launch {
+                        connectionsRepository.invalidateConnectionsByTokens(accessTokens = listOf(it))
+                    }
                 }
                 stopPolling()
                 contract?.onConnectionNotFoundError()

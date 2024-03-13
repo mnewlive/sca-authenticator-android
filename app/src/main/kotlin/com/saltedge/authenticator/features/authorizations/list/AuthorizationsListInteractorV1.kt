@@ -40,12 +40,14 @@ class AuthorizationsListInteractorV1(
     override val noConnections: Boolean
         get() = richConnections.isEmpty()
     private var pollingService = apiManager.createAuthorizationsPollingService()
-    private var richConnections: Map<ID, RichConnection> = collectRichConnections()
+    private var richConnections: Map<ID, RichConnection> = emptyMap()
 
     override fun onResume() {
-        richConnections = collectRichConnections()
-        pollingService.contract = this
-        pollingService.start()
+        contract?.coroutineScope?.launch {
+            richConnections = collectRichConnections()
+            pollingService.contract = this@AuthorizationsListInteractorV1
+            pollingService.start()
+        }
     }
 
     override fun onStop() {
@@ -109,8 +111,10 @@ class AuthorizationsListInteractorV1(
         val invalidTokens = errors.filter { it.isConnectionNotFound() || it.isConnectionRevoked() }
             .mapNotNull { it.accessToken }
         if (invalidTokens.isNotEmpty()) {
-            connectionsRepository.invalidateConnectionsByTokens(accessTokens = invalidTokens)
-            richConnections = collectRichConnections()
+            contract?.coroutineScope?.launch {
+                connectionsRepository.invalidateConnectionsByTokens(accessTokens = invalidTokens)
+                richConnections = collectRichConnections()
+            }
         }
     }
 
@@ -144,5 +148,5 @@ class AuthorizationsListInteractorV1(
         }
     }
 
-    private fun collectRichConnections() = collectRichConnections(connectionsRepository, keyStoreManager, API_V1_VERSION)
+    private suspend fun collectRichConnections() = collectRichConnections(connectionsRepository, keyStoreManager, API_V1_VERSION)
 }

@@ -70,7 +70,9 @@ class ConnectionsListViewModel(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onStart() {
-        interactor.updateConnections()
+        viewModelScope.launch {
+            interactor.updateConnections()
+        }
         interactor.updateConsents()
     }
 
@@ -104,7 +106,9 @@ class ConnectionsListViewModel(
 
     fun deleteItem(guid: GUID) {
         val listItem = listItemsValues.find { it.guid == guid } ?: return
-        interactor.revokeConnection(connectionGuid = listItem.guid)
+        viewModelScope.launch {
+            interactor.revokeConnection(connectionGuid = listItem.guid)
+        }
     }
 
     fun onViewClick(viewId: Int) {
@@ -120,7 +124,9 @@ class ConnectionsListViewModel(
 
     fun updateLocationStateOfConnection() {
         locationManager.startLocationUpdates()
-        interactor.updateConnections()
+        viewModelScope.launch {
+            interactor.updateConnections()
+        }
     }
 
     override fun onMenuItemClick(menuId: Int, itemId: Int) {
@@ -156,7 +162,11 @@ class ConnectionsListViewModel(
                         onShowNoInternetConnectionDialogEvent.postValue(ViewModelEvent(item.guid))
                     }
                     item.isActive -> onDeleteClickEvent.postValue(ViewModelEvent(item.guid))
-                    else -> interactor.revokeConnection(item.guid)
+                    else -> {
+                        viewModelScope.launch {
+                            interactor.revokeConnection(item.guid)
+                        }
+                    }
                 }
             }
             else -> {}

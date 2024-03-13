@@ -13,6 +13,9 @@ import com.saltedge.authenticator.models.repository.PreferenceRepositoryAbs
 import com.saltedge.authenticator.sdk.v2.ScaServiceClientAbs
 import com.saltedge.authenticator.sdk.v2.api.contract.ConnectionUpdateListener
 import com.saltedge.authenticator.models.toRichConnectionPair
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 open class PushTokenUpdater(
@@ -41,7 +44,11 @@ open class PushTokenUpdater(
     override fun onUpdatePushTokenSuccess(connectionID: ID) {
         val connection = richConnections[connectionID]?.connection
         connection?.pushToken = preferenceRepository.cloudMessagingToken
-        connectionsRepository.saveModel(connection as Connection)
+
+        // TODO: Try to use CoroutineScope
+        GlobalScope.launch(Dispatchers.Main) {
+            connectionsRepository.saveModel(connection as Connection)
+        }
     }
 
     override fun onUpdatePushTokenFailed(error: ApiErrorData) {

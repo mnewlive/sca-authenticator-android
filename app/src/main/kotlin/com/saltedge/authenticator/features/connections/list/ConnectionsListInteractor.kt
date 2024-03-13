@@ -47,7 +47,7 @@ class ConnectionsListInteractor(
     val allConsents: List<ConsentData>
         get() = consentsV1 + consentsV2
 
-    override fun updateConnections() {
+    override suspend fun updateConnections() {
         val connections = connectionsRepository.getAllConnections()
         richConnections = connections.mapNotNull { it.toRichConnection(keyStoreManager) }
         notifyDatasetChanges()
@@ -70,8 +70,10 @@ class ConnectionsListInteractor(
         if (connection.isActive()) {
             sendRevokeRequestForConnection(connection)
         } else {
-            deleteConnection(guid = connection.guid)
-            updateConnections()
+            contract?.coroutineScope?.launch(defaultDispatcher) {
+                deleteConnection(guid = connection.guid)
+                updateConnections()
+            }
         }
     }
 
@@ -82,7 +84,11 @@ class ConnectionsListInteractor(
         val errorTokens = apiErrors.mapNotNull { if (it.isConnectivityError()) null else it.accessToken }
         val allGuidsToRevoke = (revokedTokens + errorTokens).mapConnectionsTokensToGuids()
         deleteConnectionsAndKeysByGuid(allGuidsToRevoke)
-        if (allGuidsToRevoke.isNotEmpty()) updateConnections()
+        if (allGuidsToRevoke.isNotEmpty()) {
+            contract?.coroutineScope?.launch(defaultDispatcher) {
+                updateConnections()
+            }
+        }
     }
 
     override fun onConnectionsV2RevokeResult(revokedIDs: List<ID>, apiErrors: List<ApiErrorData>) {
@@ -90,7 +96,11 @@ class ConnectionsListInteractor(
         val errorGuids = errorsTokensToRevoke.mapConnectionsTokensToGuids()
         val successGuids = revokedIDs.mapConnectionsIDsToGuids()
         deleteConnectionsAndKeysByGuid(successGuids + errorGuids)
-        if (errorGuids.isNotEmpty() || successGuids.isNotEmpty()) updateConnections()
+        if (errorGuids.isNotEmpty() || successGuids.isNotEmpty()) {
+            contract?.coroutineScope?.launch(defaultDispatcher) {
+                updateConnections()
+            }
+        }
     }
 
     override fun onFetchEncryptedDataResult(
@@ -151,10 +161,14 @@ class ConnectionsListInteractor(
     }
 
     private fun deleteConnectionsAndKeysByGuid(revokedGuids: List<GUID>) {
-        revokedGuids.forEach { deleteConnection(guid = it) }
+        revokedGuids.forEach {
+            contract?.coroutineScope?.launch(defaultDispatcher) {
+                deleteConnection(guid = it)
+            }
+        }
     }
 
-    private fun deleteConnection(guid: GUID) {
+    private suspend fun deleteConnection(guid: GUID) {
         keyStoreManager.deleteKeyPairIfExist(guid)
         connectionsRepository.deleteConnection(guid)
     }
@@ -214,7 +228,7 @@ class ConnectionsListInteractor(
 
 interface ConnectionsListInteractorAbs {
     var contract: ConnectionsListInteractorCallback?
-    fun updateConnections()
+    suspend fun updateConnections()
     suspend fun updateNameAndSave(connectionGuid: GUID, newConnectionName: String): Boolean
     fun updateConsents()
     fun revokeConnection(connectionGuid: GUID)

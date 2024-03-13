@@ -23,14 +23,16 @@ class MainActivityInteractor(
     private val preferenceRepository: PreferenceRepositoryAbs,
     private val pushTokenUpdater: PushTokenUpdater
 ) {
-    val noConnections: Boolean
-        get() = connectionsRepository.isEmpty()
+
+    suspend fun noConnections(): Boolean {
+        return connectionsRepository.isEmpty()
+    }
 
     suspend fun updatePushToken() {
         pushTokenUpdater.updatePushToken()
     }
 
-    fun sendRevokeRequestForConnections() {
+    suspend fun sendRevokeRequestForConnections() {
         val richConnections: List<RichConnection> = connectionsRepository.getAllActiveConnections()
             .filter { it.isActive() }
             .mapNotNull { it.toRichConnection(keyStoreManager) }
@@ -44,7 +46,7 @@ class MainActivityInteractor(
         )
     }
 
-    fun wipeApplication() {
+    suspend fun wipeApplication() {
         preferenceRepository.clearUserPreferences()
         keyStoreManager.deleteKeyPairsIfExist(connectionsRepository.getAllConnections().map { it.guid })
         connectionsRepository.deleteAllConnections()
