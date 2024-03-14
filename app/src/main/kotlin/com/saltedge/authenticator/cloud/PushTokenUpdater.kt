@@ -14,8 +14,6 @@ import com.saltedge.authenticator.sdk.v2.ScaServiceClientAbs
 import com.saltedge.authenticator.sdk.v2.api.contract.ConnectionUpdateListener
 import com.saltedge.authenticator.models.toRichConnectionPair
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -24,7 +22,7 @@ open class PushTokenUpdater(
     private val keyStoreManager: KeyManagerAbs,
     private val apiManager: ScaServiceClientAbs,
     private val preferenceRepository: PreferenceRepositoryAbs,
-    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+    private val coroutineScope: CoroutineScope
 ) : ConnectionUpdateListener {
 
     private var connections: List<Connection> = emptyList()
