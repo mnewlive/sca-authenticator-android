@@ -15,18 +15,14 @@ import com.saltedge.authenticator.models.realm.RealmManager
 import com.saltedge.authenticator.models.repository.ConnectionsRepository.queryActiveConnections
 import io.realm.Realm
 import io.realm.RealmQuery
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 
 object ConnectionsRepository : ConnectionsRepositoryAbs {
-
-    private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
     /**
      * Checks if the database doesn't contains a connections
@@ -42,7 +38,6 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
             }.await()
         }
     }
-
 
     /**
      * Get count of all connections in database
@@ -146,63 +141,39 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
         }
     }
 
-//    /**
-//     * Get all valid/active Connections filtered by connection url
-//     *
-//     * @param connectionUrl - connection url of Connection
-//     * @return detached connections
-//     */
-//    override suspend fun getAllActiveByConnectUrl(connectionUrl: String): List<Connection> {
-//        return coroutineScope {
-//            async(Dispatchers.Default) {
-//                RealmManager.getDefaultInstance().use {
-//                    it.copyFromRealm(
-//                        it.queryActiveConnections()
-//                            .equalTo(DB_KEY_CONNECT_URL, connectionUrl)
-//                            .findAll()
-//                    )
-//                }
-//            }.await()
-//        }
-//    }
-//
-//    /**
-//     * Get all valid/active Connections filtered by Provider identifier
-//     *
-//     * @param providerID Provider identifier
-//     * @return Connections
-//     */
-//    override suspend fun getAllActiveByProvider(providerID: ID): List<Connection> {
-//        return coroutineScope {
-//            async(Dispatchers.Default) {
-//                RealmManager.getDefaultInstance().use { realmDb ->
-//                    realmDb.queryActiveConnections()
-//                        .equalTo(KEY_CODE, providerID)
-//                        .findAll()
-//                }
-//            }.await()
-//        }
-//    }
-
-    override suspend fun getAllActiveByProvider(providerID: ID): List<Connection> =
-        withContext(Dispatchers.Default) {
+    /**
+     * Get all valid/active Connections filtered by connection url
+     *
+     * @param connectionUrl - connection url of Connection
+     * @return detached connections
+     */
+    override suspend fun getAllActiveByProvider(providerID: ID): List<Connection> {
+        return withContext(Dispatchers.Default) {
             RealmManager.getDefaultInstance().use { realmDb ->
                 realmDb.queryActiveConnections()
                     .equalTo(KEY_CODE, providerID)
                     .findAll()
+                    .let { realmDb.copyFromRealm(it) }
             }
         }
+    }
 
-    override suspend fun getAllActiveByConnectUrl(connectionUrl: String): List<Connection> =
-        withContext(Dispatchers.Default) {
-            RealmManager.getDefaultInstance().use {
-                it.copyFromRealm(
-                    it.queryActiveConnections()
-                        .equalTo(DB_KEY_CONNECT_URL, connectionUrl)
-                        .findAll()
-                )
+    /**
+     * Get all valid/active Connections filtered by Provider identifier
+     *
+     * @param providerID Provider identifier
+     * @return Connections
+     */
+    override suspend fun getAllActiveByConnectUrl(connectionUrl: String): List<Connection> {
+        return withContext(Dispatchers.Default) {
+            RealmManager.getDefaultInstance().use { realmDb ->
+                realmDb.queryActiveConnections()
+                    .equalTo(DB_KEY_CONNECT_URL, connectionUrl)
+                    .findAll()
+                    .let { realmDb.copyFromRealm(it) }
             }
         }
+    }
 
     /**
      * Delete all connections from database
@@ -246,27 +217,11 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @param connection - model of Connection
      * @return saved Connection
      */
-//    override fun saveModel(connection: Connection): Connection? {
-//        var result: Connection? = null
-//
-//        coroutineScope.launch {
-//            if (connection.createdAt == 0L) connection.createdAt = DateTime.now().withZone(DateTimeZone.UTC).millis
-//            connection.updatedAt = DateTime.now().withZone(DateTimeZone.UTC).millis
-//
-//            RealmManager.getDefaultInstance().use { realmDb ->
-//                realmDb.executeTransaction { transaction ->
-//                    result = realmDb.copyFromRealm(transaction.copyToRealmOrUpdate(connection))
-//                }
-//            }
-//        }
-//        return result
-//    }
-
     override suspend fun saveModel(connection: Connection): Connection? = coroutineScope {
         if (connection.createdAt == 0L) connection.createdAt = DateTime.now().withZone(DateTimeZone.UTC).millis
         connection.updatedAt = DateTime.now().withZone(DateTimeZone.UTC).millis
 
-        val deferredResult = async(Dispatchers.IO) {
+        val deferredResult = async(Dispatchers.Default) {
             var result: Connection? = null
             RealmManager.getDefaultInstance().use { realmDb ->
                 realmDb.executeTransaction { transaction ->
@@ -278,8 +233,6 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
 
         deferredResult.await()
     }
-
-
 
     /**
      * Invalidate connections by accessTokens.
