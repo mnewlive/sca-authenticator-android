@@ -79,7 +79,7 @@ class SubmitActionViewModel(
                     else -> showConnectionsSelector(connections)
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.e(e)
             }
         }
     }

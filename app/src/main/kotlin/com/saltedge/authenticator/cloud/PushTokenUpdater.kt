@@ -13,6 +13,7 @@ import com.saltedge.authenticator.models.repository.PreferenceRepositoryAbs
 import com.saltedge.authenticator.sdk.v2.ScaServiceClientAbs
 import com.saltedge.authenticator.sdk.v2.api.contract.ConnectionUpdateListener
 import com.saltedge.authenticator.models.toRichConnectionPair
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -22,7 +23,8 @@ open class PushTokenUpdater(
     private val connectionsRepository: ConnectionsRepositoryAbs,
     private val keyStoreManager: KeyManagerAbs,
     private val apiManager: ScaServiceClientAbs,
-    private val preferenceRepository: PreferenceRepositoryAbs
+    private val preferenceRepository: PreferenceRepositoryAbs,
+    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 ) : ConnectionUpdateListener {
 
     private var connections: List<Connection> = emptyList()
@@ -45,8 +47,7 @@ open class PushTokenUpdater(
         val connection = richConnections[connectionID]?.connection
         connection?.pushToken = preferenceRepository.cloudMessagingToken
 
-        // TODO: Try to use CoroutineScope
-        GlobalScope.launch(Dispatchers.Main) {
+        coroutineScope.launch {
             connectionsRepository.saveModel(connection as Connection)
         }
     }
