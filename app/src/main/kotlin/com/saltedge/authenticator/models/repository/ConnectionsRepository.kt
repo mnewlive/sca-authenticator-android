@@ -30,12 +30,10 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @return boolean, true if the number of connections is zero
      */
     override suspend fun isEmpty(): Boolean {
-        return coroutineScope {
-            async(Dispatchers.Default) {
-                RealmManager.getDefaultInstance().use { realm ->
-                    realm.where(Connection::class.java).count() == 0L
-                }
-            }.await()
+        return withContext(Dispatchers.IO) {
+            RealmManager.getDefaultInstance().use { realm ->
+                realm.where(Connection::class.java).count() == 0L
+            }
         }
     }
 
@@ -57,12 +55,10 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @return the count of connections
      */
     override suspend fun getConnectionsCountForProvider(providerCode: ID): Long {
-        return coroutineScope {
-            async(Dispatchers.Default) {
-                RealmManager.getDefaultInstance().use { realm ->
-                    realm.where(Connection::class.java).equalTo(KEY_CODE, providerCode).count()
-                }
-            }.await()
+        return withContext(Dispatchers.IO) {
+            RealmManager.getDefaultInstance().use { realm ->
+                realm.where(Connection::class.java).equalTo(KEY_CODE, providerCode).count()
+            }
         }
     }
 
@@ -84,12 +80,10 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @return list of connections
      */
     override suspend fun getAllConnections(): List<Connection> {
-        return coroutineScope {
-            async(Dispatchers.Default) {
-                RealmManager.getDefaultInstance().use { realm ->
-                    realm.copyFromRealm(realm.where(Connection::class.java).sort(DB_KEY_CREATED_AT).findAll())
-                }
-            }.await()
+        return withContext(Dispatchers.IO) {
+            RealmManager.getDefaultInstance().use { realm ->
+                realm.copyFromRealm(realm.where(Connection::class.java).sort(DB_KEY_CREATED_AT).findAll())
+            }
         }
     }
 
@@ -100,12 +94,10 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @see queryActiveConnections
      */
     override suspend fun getAllActiveConnections(): List<Connection> {
-        return coroutineScope {
-            async(Dispatchers.Default) {
-                RealmManager.getDefaultInstance().use {
-                    it.copyFromRealm(it.queryActiveConnections().findAll())
-                }
-            }.await()
+        return withContext(Dispatchers.IO) {
+            RealmManager.getDefaultInstance().use { realm ->
+                realm.copyFromRealm(realm.queryActiveConnections().findAll())
+            }
         }
     }
 
@@ -116,28 +108,26 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @see queryActiveConnections
      */
     override suspend fun getAllActiveConnectionsByApi(apiVersion: String): List<Connection> {
-        return coroutineScope {
-            async(Dispatchers.Default) {
-                RealmManager.getDefaultInstance().use { it.copyFromRealm(
-                    it.queryActiveConnections()
+        return withContext(Dispatchers.IO) {
+            RealmManager.getDefaultInstance().use { realm ->
+                realm.copyFromRealm(
+                    realm.queryActiveConnections()
                         .equalTo(DB_KEY_API_VERSION, apiVersion)
-                        .findAll())
-                }
-            }.await()
+                        .findAll()
+                )
+            }
         }
     }
 
     override suspend fun getActiveConnectionsWithoutToken(storedPushToken: String): List<Connection> {
-        return coroutineScope {
-            async(Dispatchers.Default) {
-                RealmManager.getDefaultInstance().use { realm ->
-                    realm.copyFromRealm(
-                        realm.queryActiveConnections()
-                            .notEqualTo(DB_KEY_PUSH_TOKEN, storedPushToken)
-                            .findAll()
-                    )
-                }
-            }.await()
+        return withContext(Dispatchers.IO) {
+            RealmManager.getDefaultInstance().use { realm ->
+                realm.copyFromRealm(
+                    realm.queryActiveConnections()
+                        .notEqualTo(DB_KEY_PUSH_TOKEN, storedPushToken)
+                        .findAll()
+                )
+            }
         }
     }
 
@@ -148,7 +138,7 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @return detached connections
      */
     override suspend fun getAllActiveByProvider(providerID: ID): List<Connection> {
-        return withContext(Dispatchers.Default) {
+        return withContext(Dispatchers.IO) {
             RealmManager.getDefaultInstance().use { realmDb ->
                 realmDb.queryActiveConnections()
                     .equalTo(KEY_CODE, providerID)
@@ -165,7 +155,7 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @return Connections
      */
     override suspend fun getAllActiveByConnectUrl(connectionUrl: String): List<Connection> {
-        return withContext(Dispatchers.Default) {
+        return withContext(Dispatchers.IO) {
             RealmManager.getDefaultInstance().use { realmDb ->
                 realmDb.queryActiveConnections()
                     .equalTo(DB_KEY_CONNECT_URL, connectionUrl)
@@ -179,15 +169,12 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * Delete all connections from database
      */
     override suspend fun deleteAllConnections() {
-        return coroutineScope {
-            async(Dispatchers.IO) {
-                RealmManager.getDefaultInstance().use { realmDb ->
-                    realmDb.executeTransaction { realmDb.delete(Connection::class.java) }
-                }
-            }.await()
+        withContext(Dispatchers.IO) {
+            RealmManager.getDefaultInstance().use { realmDb ->
+                realmDb.executeTransaction { realmDb.delete(Connection::class.java) }
+            }
         }
     }
-
 
     /**
      * Delete connection from database by guid
@@ -217,21 +204,19 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @param connection - model of Connection
      * @return saved Connection
      */
-    override suspend fun saveModel(connection: Connection): Connection? = coroutineScope {
+    override suspend fun saveModel(connection: Connection): Connection? {
         if (connection.createdAt == 0L) connection.createdAt = DateTime.now().withZone(DateTimeZone.UTC).millis
         connection.updatedAt = DateTime.now().withZone(DateTimeZone.UTC).millis
 
-        val deferredResult = async(Dispatchers.Default) {
-            var result: Connection? = null
+        return withContext(Dispatchers.IO) {
+            var savedConnection: Connection? = null
             RealmManager.getDefaultInstance().use { realmDb ->
                 realmDb.executeTransaction { transaction ->
-                    result = realmDb.copyFromRealm(transaction.copyToRealmOrUpdate(connection))
+                    savedConnection = realmDb.copyFromRealm(transaction.copyToRealmOrUpdate(connection))
                 }
             }
-            result
+            savedConnection
         }
-
-        deferredResult.await()
     }
 
     /**
