@@ -65,30 +65,11 @@ class SubmitActionViewModel(
     var completeViewVisibility = MutableLiveData<Int>(View.GONE)
     var actionProcessingVisibility = MutableLiveData<Int>(View.VISIBLE)
 
-//    fun setInitialData(actionAppLinkData: ActionAppLinkData) {
-//        viewModelScope.launch {
-//            val connections = async { collectConnections(actionAppLinkData) }.await()
-//            this@SubmitActionViewModel.actionAppLinkData = actionAppLinkData
-//            when {
-//                connections.isEmpty() -> showActionError(R.string.errors_actions_no_connections_link_app)
-//                connections.size == 1 -> {
-//                    this@SubmitActionViewModel.richConnection = connections.firstOrNull()?.toRichConnection(keyStoreManager)
-//                    if (richConnection == null) viewMode = ViewMode.ACTION_ERROR
-//                }
-//                else -> showConnectionsSelector(connections)
-//            }
-//        }
-//    }
-
     fun setInitialData(actionAppLinkData: ActionAppLinkData) {
         viewModelScope.launch {
             try {
-                val connections = withContext(Dispatchers.Default) {
-                    collectConnections(actionAppLinkData)
-                }
-
+                val connections = withContext(Dispatchers.Default) { collectConnections(actionAppLinkData) }
                 this@SubmitActionViewModel.actionAppLinkData = actionAppLinkData
-
                 when {
                     connections.isEmpty() -> showActionError(R.string.errors_actions_no_connections_link_app)
                     connections.size == 1 -> {
@@ -102,7 +83,6 @@ class SubmitActionViewModel(
             }
         }
     }
-
 
     fun onViewCreated() {
         val currentRichConnection = richConnection
@@ -216,25 +196,17 @@ class SubmitActionViewModel(
         } else showActionError(R.string.errors_actions_not_success)
     }
 
-//    private suspend fun collectConnections(actionAppLinkData: ActionAppLinkData): List<Connection> {
-//        val connections = if (actionAppLinkData.apiVersion == API_V2_VERSION) {
-//            actionAppLinkData.providerID?.let {
-//                connectionsRepository.getAllActiveByProvider(providerID = it)
-//            }
-//        } else {
-//            actionAppLinkData.connectUrl?.let {
-//                connectionsRepository.getAllActiveByConnectUrl(connectionUrl = it)
-//            }
-//        }
-//        return connections ?: emptyList()
-//    }
-
     private suspend fun collectConnections(actionAppLinkData: ActionAppLinkData): List<Connection> {
-        return if (actionAppLinkData.apiVersion == API_V2_VERSION) {
-            actionAppLinkData.providerID?.let { connectionsRepository.getAllActiveByProvider(providerID = it) }
+        val connections = if (actionAppLinkData.apiVersion == API_V2_VERSION) {
+            actionAppLinkData.providerID?.let {
+                connectionsRepository.getAllActiveByProvider(providerID = it)
+            }
         } else {
-            actionAppLinkData.connectUrl?.let { connectionsRepository.getAllActiveByConnectUrl(connectionUrl = it) }
-        } ?: emptyList()
+            actionAppLinkData.connectUrl?.let {
+                connectionsRepository.getAllActiveByConnectUrl(connectionUrl = it)
+            }
+        }
+        return connections ?: emptyList()
     }
 }
 
