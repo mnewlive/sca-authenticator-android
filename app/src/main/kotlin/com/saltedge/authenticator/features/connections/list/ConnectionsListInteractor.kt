@@ -163,9 +163,11 @@ class ConnectionsListInteractor(
     }
 
     private fun deleteConnectionsAndKeysByGuid(revokedGuids: List<GUID>) {
-        revokedGuids.forEach {
-            contract?.coroutineScope?.launch(defaultDispatcher) {
-                deleteConnection(guid = it)
+        contract?.coroutineScope?.launch(defaultDispatcher) {
+            revokedGuids.forEach { guid ->
+                launch {
+                    deleteConnection(guid)
+                }
             }
         }
     }
@@ -179,8 +181,7 @@ class ConnectionsListInteractor(
         encryptedList: List<EncryptedData>,
         apiVersion: String
     ) {
-        val richConnectionsByVersion =
-            richConnections.filter { it.connection.apiVersion == apiVersion }
+        val richConnectionsByVersion = richConnections.filter { it.connection.apiVersion == apiVersion }
         contract?.coroutineScope?.launch(defaultDispatcher) {
             val data = encryptedList.decryptConsents(
                 cryptoTools = cryptoTools,

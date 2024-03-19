@@ -23,7 +23,7 @@ class SubmitActionInteractor(
     override fun collectAndProcessConnections(actionAppLinkData: ActionAppLinkData) {
         contract?.coroutineScope?.launch(defaultDispatcher) {
             val connections = collectConnections(actionAppLinkData)
-            processConnections(connections)
+            contract?.processConnections(connections)
         }
     }
 
@@ -42,10 +42,6 @@ class SubmitActionInteractor(
             }
         }
         return connections ?: emptyList()
-    }
-
-    private fun processConnections(connections: List<Connection>) {
-        contract?.processConnections(connections)
     }
 }
 

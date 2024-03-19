@@ -23,7 +23,6 @@ import com.saltedge.authenticator.features.connections.select.SelectConnectionsF
 import com.saltedge.authenticator.models.Connection
 import com.saltedge.authenticator.models.ViewModelEvent
 import com.saltedge.authenticator.models.location.DeviceLocationManagerAbs
-import com.saltedge.authenticator.models.repository.ConnectionsRepositoryAbs
 import com.saltedge.authenticator.models.toRichConnection
 import com.saltedge.authenticator.sdk.AuthenticatorApiManagerAbs
 import com.saltedge.authenticator.sdk.api.model.authorization.AuthorizationIdentifier
@@ -75,7 +74,7 @@ class SubmitActionViewModel(
         when {
             connections.isEmpty() -> showActionError(R.string.errors_actions_no_connections_link_app)
             connections.size == 1 -> {
-                this@SubmitActionViewModel.richConnection = connections.firstOrNull()?.toRichConnection(keyStoreManager)
+                this.richConnection = connections.firstOrNull()?.toRichConnection(keyStoreManager)
                 if (richConnection == null) viewMode = ViewMode.ACTION_ERROR
             }
             else -> showConnectionsSelector(connections)
