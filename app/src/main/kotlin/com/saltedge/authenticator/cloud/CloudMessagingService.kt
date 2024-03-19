@@ -13,9 +13,6 @@ import com.saltedge.authenticator.core.api.KEY_AUTHORIZATION_ID
 import com.saltedge.authenticator.core.api.KEY_CONNECTION_ID
 import com.saltedge.authenticator.features.main.MainActivity
 import com.saltedge.authenticator.models.repository.PreferenceRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -43,9 +40,7 @@ class CloudMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         saveToken(token)
-        CoroutineScope(Dispatchers.Main).launch {
-            pushTokenUpdater.updatePushToken()
-        }
+        pushTokenUpdater.updatePushToken()
     }
 
     /**

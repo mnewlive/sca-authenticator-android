@@ -35,20 +35,17 @@ import com.saltedge.authenticator.sdk.v2.api.contract.AuthorizationCreateListene
 import com.saltedge.authenticator.tools.ResId
 import com.saltedge.authenticator.tools.getErrorMessage
 import com.saltedge.authenticator.tools.postUnitEvent
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CoroutineScope
 import timber.log.Timber
 
 class SubmitActionViewModel(
     private val appContext: Context,
-    private val connectionsRepository: ConnectionsRepositoryAbs,
     private val keyStoreManager: KeyManagerAbs,
     private val apiManagerV1: AuthenticatorApiManagerAbs,
     private val apiManagerV2: ScaServiceClientAbs,
-    private val locationManager: DeviceLocationManagerAbs
-) : ViewModel(), LifecycleObserver, ActionSubmitListener, AuthorizationCreateListener {
+    private val locationManager: DeviceLocationManagerAbs,
+    private val interactor: SubmitActionInteractorAbs
+) : ViewModel(), LifecycleObserver, ActionSubmitListener, AuthorizationCreateListener, SubmitActionInteractorCallback {
 
     private var viewMode: ViewMode = ViewMode.START
     private var actionAppLinkData: ActionAppLinkData? = null
@@ -65,22 +62,23 @@ class SubmitActionViewModel(
     var completeViewVisibility = MutableLiveData<Int>(View.GONE)
     var actionProcessingVisibility = MutableLiveData<Int>(View.VISIBLE)
 
+    override val coroutineScope: CoroutineScope
+        get() = viewModelScope
+
     fun setInitialData(actionAppLinkData: ActionAppLinkData) {
-        viewModelScope.launch {
-            try {
-                val connections = withContext(Dispatchers.Default) { collectConnections(actionAppLinkData) }
-                this@SubmitActionViewModel.actionAppLinkData = actionAppLinkData
-                when {
-                    connections.isEmpty() -> showActionError(R.string.errors_actions_no_connections_link_app)
-                    connections.size == 1 -> {
-                        this@SubmitActionViewModel.richConnection = connections.firstOrNull()?.toRichConnection(keyStoreManager)
-                        if (richConnection == null) viewMode = ViewMode.ACTION_ERROR
-                    }
-                    else -> showConnectionsSelector(connections)
-                }
-            } catch (e: Exception) {
-                Timber.e(e)
+        interactor.contract = this
+        this.actionAppLinkData = actionAppLinkData
+        interactor.collectAndProcessConnections(actionAppLinkData)
+    }
+
+    override fun processConnections(connections: List<Connection>) {
+        when {
+            connections.isEmpty() -> showActionError(R.string.errors_actions_no_connections_link_app)
+            connections.size == 1 -> {
+                this@SubmitActionViewModel.richConnection = connections.firstOrNull()?.toRichConnection(keyStoreManager)
+                if (richConnection == null) viewMode = ViewMode.ACTION_ERROR
             }
+            else -> showConnectionsSelector(connections)
         }
     }
 
@@ -120,7 +118,7 @@ class SubmitActionViewModel(
         if (guid.isEmpty()) {
             onCloseEvent.postUnitEvent()
         } else {
-            this.richConnection = connectionsRepository.getByGuid(guid)?.toRichConnection(keyStoreManager)
+            this.richConnection = interactor.getConnection(guid = guid)
             viewMode = if (richConnection == null) ViewMode.ACTION_ERROR else ViewMode.START
             onViewCreated()
         }
@@ -194,19 +192,6 @@ class SubmitActionViewModel(
                 )
             )
         } else showActionError(R.string.errors_actions_not_success)
-    }
-
-    private suspend fun collectConnections(actionAppLinkData: ActionAppLinkData): List<Connection> {
-        val connections = if (actionAppLinkData.apiVersion == API_V2_VERSION) {
-            actionAppLinkData.providerID?.let {
-                connectionsRepository.getAllActiveByProvider(providerID = it)
-            }
-        } else {
-            actionAppLinkData.connectUrl?.let {
-                connectionsRepository.getAllActiveByConnectUrl(connectionUrl = it)
-            }
-        }
-        return connections ?: emptyList()
     }
 }
 

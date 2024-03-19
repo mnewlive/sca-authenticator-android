@@ -14,6 +14,7 @@ import com.saltedge.authenticator.sdk.AuthenticatorApiManagerAbs
 import com.saltedge.authenticator.sdk.constants.API_V1_VERSION
 import com.saltedge.authenticator.sdk.v2.ScaServiceClientAbs
 import com.saltedge.authenticator.sdk.v2.api.API_V2_VERSION
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -80,20 +81,20 @@ class MainActivityInteractorTest {
 
     @Test
     @Throws(Exception::class)
-    fun noConnections() {
+    fun noConnections() = runTest {
         Mockito.doReturn(true).`when`(mockConnectionsRepository).isEmpty()
 
-        assertTrue(interactor.noConnections)
+        assertTrue(interactor.noConnections())
 
         Mockito.doReturn(false).`when`(mockConnectionsRepository).isEmpty()
 
-        assertFalse(interactor.noConnections)
+        assertFalse(interactor.noConnections())
     }
 
     @Test
     @Throws(Exception::class)
-    fun wipeApplicationTest() {
-        Mockito.doReturn(listOf(connection1)).`when`(mockConnectionsRepository).getAllActiveConnections()
+    fun wipeApplicationTest() = runTest {
+        Mockito.doReturn(listOf(connection1)).`when`(mockConnectionsRepository).getAllConnections()
 
         interactor.wipeApplication()
 
@@ -105,7 +106,7 @@ class MainActivityInteractorTest {
 
     @Test
     @Throws(Exception::class)
-    fun sendRevokeRequestForConnectionsTestCase1() {
+    fun sendRevokeRequestForConnectionsTestCase1() = runTest {
         val mockConnectionAndKeyV1 = RichConnection(connection1, mockPrivateKey)
         Mockito.doReturn(mockConnectionAndKeyV1).`when`(mockKeyStoreManager).enrichConnection(connection1, addProviderKey = false)
         given(mockConnectionsRepository.getAllActiveConnections()).willReturn(listOf(connection1))
@@ -125,7 +126,7 @@ class MainActivityInteractorTest {
 
     @Test
     @Throws(Exception::class)
-    fun sendRevokeRequestForConnectionsTestCase2() {
+    fun sendRevokeRequestForConnectionsTestCase2() = runTest {
         val mockConnectionAndKeyV2 = RichConnection(connection2, mockPrivateKey)
         Mockito.doReturn(mockConnectionAndKeyV2).`when`(mockKeyStoreManager).enrichConnection(connection2)
         given(mockConnectionsRepository.getAllActiveConnections()).willReturn(listOf(connection2))

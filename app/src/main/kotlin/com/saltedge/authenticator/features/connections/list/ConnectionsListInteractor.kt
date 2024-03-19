@@ -47,13 +47,15 @@ class ConnectionsListInteractor(
     val allConsents: List<ConsentData>
         get() = consentsV1 + consentsV2
 
-    override suspend fun updateConnections() {
-        val connections = connectionsRepository.getAllConnections()
-        richConnections = connections.mapNotNull { it.toRichConnection(keyStoreManager) }
-        notifyDatasetChanges()
+    override fun updateConnections() {
+        contract?.coroutineScope?.launch(defaultDispatcher) {
+            val connections = connectionsRepository.getAllConnections()
+            richConnections = connections.mapNotNull { it.toRichConnection(keyStoreManager) }
+            notifyDatasetChanges()
+        }
     }
 
-    override suspend fun updateNameAndSave(connectionGuid: GUID, newConnectionName: String): Boolean {
+    override fun updateNameAndSave(connectionGuid: GUID, newConnectionName: String): Boolean {
         val connection = connectionsRepository.getByGuid(connectionGuid) ?: return false
         contract?.coroutineScope?.launch(defaultDispatcher) {
             connectionsRepository.updateNameAndSave(connection, newConnectionName)
@@ -228,8 +230,8 @@ class ConnectionsListInteractor(
 
 interface ConnectionsListInteractorAbs {
     var contract: ConnectionsListInteractorCallback?
-    suspend fun updateConnections()
-    suspend fun updateNameAndSave(connectionGuid: GUID, newConnectionName: String): Boolean
+    fun updateConnections()
+    fun updateNameAndSave(connectionGuid: GUID, newConnectionName: String): Boolean
     fun updateConsents()
     fun revokeConnection(connectionGuid: GUID)
     fun getConsents(connectionGuid: GUID): List<ConsentData>

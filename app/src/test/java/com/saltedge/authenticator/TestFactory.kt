@@ -16,6 +16,7 @@ import com.saltedge.authenticator.models.Connection
 import com.saltedge.authenticator.models.repository.ConnectionsRepositoryAbs
 import com.saltedge.authenticator.sdk.constants.API_V1_VERSION
 import com.saltedge.authenticator.sdk.v2.api.API_V2_VERSION
+import kotlinx.coroutines.runBlocking
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.mockito.BDDMockito
@@ -141,11 +142,13 @@ class TestFactory {
     val encV2Consents: List<EncryptedData> = v2Consents.map { it.encryptWithTestKey() }
 
     fun mockConnections(mock: ConnectionsRepositoryAbs) {
-        BDDMockito.given(mock.getByGuid(connection1.guid)).willReturn(connection1)
-        BDDMockito.given(mock.getByGuid(connection2.guid)).willReturn(connection2)
-        BDDMockito.given(mock.getByGuid(connection3Inactive.guid)).willReturn(connection3Inactive)
-        BDDMockito.given(mock.getByGuid(connection4.guid)).willReturn(connection4)
-        BDDMockito.given(mock.getAllConnections()).willReturn(allConnections)
+        runBlocking {
+            BDDMockito.given(mock.getByGuid(connection1.guid)).willReturn(connection1)
+            BDDMockito.given(mock.getByGuid(connection2.guid)).willReturn(connection2)
+            BDDMockito.given(mock.getByGuid(connection3Inactive.guid)).willReturn(connection3Inactive)
+            BDDMockito.given(mock.getByGuid(connection4.guid)).willReturn(connection4)
+            BDDMockito.given(mock.getAllConnections()).willReturn(allConnections)
+        }
     }
 
     fun mockRichConnections(mock: KeyManagerAbs) {

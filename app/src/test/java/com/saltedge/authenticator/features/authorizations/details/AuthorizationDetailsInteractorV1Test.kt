@@ -3,6 +3,7 @@
  */
 package com.saltedge.authenticator.features.authorizations.details
 
+import com.saltedge.android.test_tools.CoroutineViewModelTest
 import com.saltedge.authenticator.app.AppTools
 import com.saltedge.authenticator.core.api.ERROR_CLASS_AUTHORIZATION_NOT_FOUND
 import com.saltedge.authenticator.core.api.ERROR_CLASS_CONNECTION_NOT_FOUND
@@ -26,6 +27,9 @@ import com.saltedge.authenticator.sdk.polling.SingleAuthorizationPollingService
 import com.saltedge.authenticator.sdk.tools.CryptoToolsV1Abs
 import com.saltedge.authenticator.sdk.v2.api.API_V2_VERSION
 import com.saltedge.authenticator.widget.security.ActivityUnlockType
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.joda.time.DateTime
@@ -34,12 +38,14 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.BDDMockito
 import org.mockito.Mockito.*
 import org.robolectric.RobolectricTestRunner
 import java.security.PrivateKey
 
+@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
-class AuthorizationDetailsInteractorV1Test {
+class AuthorizationDetailsInteractorV1Test : CoroutineViewModelTest() {
 
     private lateinit var interactor: AuthorizationDetailsInteractorV1
 
@@ -111,7 +117,9 @@ class AuthorizationDetailsInteractorV1Test {
     }
 
     @Before
-    fun setUp() {
+    override fun setUp() {
+        super.setUp()
+        BDDMockito.given(mockCallback.coroutineScope).willReturn(TestCoroutineScope(testDispatcher))
         AppTools.lastUnlockType = ActivityUnlockType.BIOMETRICS
         doReturn("GEO:52.506931;13.144558").`when`(mockLocationManager).locationDescription
         doReturn(connection1).`when`(mockConnectionsRepository).getById(connection1.id)
@@ -228,7 +236,7 @@ class AuthorizationDetailsInteractorV1Test {
 
     @Test
     @Throws(Exception::class)
-    fun onFetchAuthorizationResultTestCase4() {
+    fun onFetchAuthorizationResultTestCase4() = runTest {
         //given ConnectionNotFound error
         val error = ApiErrorData(
             errorClassName = ERROR_CLASS_CONNECTION_NOT_FOUND,

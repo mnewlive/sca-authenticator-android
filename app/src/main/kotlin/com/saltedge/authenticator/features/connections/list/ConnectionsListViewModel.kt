@@ -70,9 +70,7 @@ class ConnectionsListViewModel(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onStart() {
-        viewModelScope.launch {
-            interactor.updateConnections()
-        }
+        interactor.updateConnections()
         interactor.updateConsents()
     }
 
@@ -82,33 +80,28 @@ class ConnectionsListViewModel(
     }
 
     fun onItemNameChanged(data: Bundle) {
-        viewModelScope.launch {
-            val listItem = listItemsValues.find { it.guid == data.guid }
-            val newConnectionName = data.getString(KEY_NAME)
+        val listItem = listItemsValues.find { it.guid == data.guid }
+        val newConnectionName = data.getString(KEY_NAME)
 
-            runCatching {
-                requireNotNull(listItem) { "Item not found" }
-                requireNotNull(newConnectionName) { "New connection name is null" }
+        try {
+            requireNotNull(listItem) { "Item not found" }
+            requireNotNull(newConnectionName) { "New connection name is null" }
 
-                if (listItem.name != newConnectionName && newConnectionName.isNotEmpty()) {
-                    if (interactor.updateNameAndSave(listItem.guid, newConnectionName)) {
-                        val itemIndex = listItemsValues.indexOf(listItem)
-                        listItems.value?.get(itemIndex)?.name = newConnectionName
-                        listItem.let { updateListItemEvent.postValue(it) }
-                    }
+            if (listItem.name != newConnectionName && newConnectionName.isNotEmpty()) {
+                if (interactor.updateNameAndSave(listItem.guid, newConnectionName)) {
+                    val itemIndex = listItemsValues.indexOf(listItem)
+                    listItems.value?.get(itemIndex)?.name = newConnectionName
+                    listItem.let { updateListItemEvent.postValue(it) }
                 }
-            }.onFailure {
-                Timber.e(it)
             }
+        } catch (e: Exception) {
+            Timber.e(e)
         }
     }
 
-
     fun deleteItem(guid: GUID) {
         val listItem = listItemsValues.find { it.guid == guid } ?: return
-        viewModelScope.launch {
-            interactor.revokeConnection(connectionGuid = listItem.guid)
-        }
+        interactor.revokeConnection(connectionGuid = listItem.guid)
     }
 
     fun onViewClick(viewId: Int) {
@@ -124,9 +117,7 @@ class ConnectionsListViewModel(
 
     fun updateLocationStateOfConnection() {
         locationManager.startLocationUpdates()
-        viewModelScope.launch {
-            interactor.updateConnections()
-        }
+        interactor.updateConnections()
     }
 
     override fun onMenuItemClick(menuId: Int, itemId: Int) {
@@ -162,11 +153,7 @@ class ConnectionsListViewModel(
                         onShowNoInternetConnectionDialogEvent.postValue(ViewModelEvent(item.guid))
                     }
                     item.isActive -> onDeleteClickEvent.postValue(ViewModelEvent(item.guid))
-                    else -> {
-                        viewModelScope.launch {
-                            interactor.revokeConnection(item.guid)
-                        }
-                    }
+                    else -> interactor.revokeConnection(item.guid)
                 }
             }
             else -> {}

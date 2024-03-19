@@ -29,7 +29,9 @@ import com.saltedge.authenticator.sdk.v2.polling.PollingAuthorizationsContract
 import com.saltedge.authenticator.sdk.v2.tools.CryptoToolsV2Abs
 import com.saltedge.authenticator.widget.security.ActivityUnlockType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runTest
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.junit.Assert
@@ -86,7 +88,9 @@ class AuthorizationsListInteractorV2Test : CoroutineViewModelTest() {
         AppTools.lastUnlockType = ActivityUnlockType.BIOMETRICS
         given(mockContract.coroutineScope).willReturn(TestCoroutineScope(testDispatcher))
         given(mockApiManagerV2.createAuthorizationsPollingService()).willReturn(mockPollingServiceV2)
-        given(mockConnectionsRepository.getAllActiveConnectionsByApi(API_V2_VERSION)).willReturn(listOf(mockConnectionV2))
+        runBlocking {
+            given(mockConnectionsRepository.getAllActiveConnectionsByApi(API_V2_VERSION)).willReturn(listOf(mockConnectionV2))
+        }
         given(mockKeyStoreManager.enrichConnection(mockConnectionV2, addProviderKey = true)).willReturn(richConnectionV2)
         encryptedAuthorizations.forEachIndexed { index, encryptedData ->
             given(mockCryptoToolsV2.decryptAuthorizationData(encryptedData, richConnectionV2.private))
@@ -116,7 +120,7 @@ class AuthorizationsListInteractorV2Test : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onResumeCase1() {
+    fun onResumeCase1() = runTest {
         //given onResume event, no connection, no items
         given(mockConnectionsRepository.getAllActiveConnectionsByApi(API_V2_VERSION)).willReturn(emptyList())
 
@@ -131,7 +135,7 @@ class AuthorizationsListInteractorV2Test : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onResumeCase2() {
+    fun onResumeCase2() = runTest {
         //when
         interactor.onResume()
 
@@ -168,7 +172,7 @@ class AuthorizationsListInteractorV2Test : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onFetchAuthorizationsResultTestCase3() {
+    fun onFetchAuthorizationsResultTestCase3() = runTest {
         //when
         interactor.onFetchAuthorizationsResult(
             result = emptyList(),
@@ -382,6 +386,8 @@ class AuthorizationsListInteractorV2Test : CoroutineViewModelTest() {
     @Throws(Exception::class)
     fun updateAuthorizationTestCase1() {
         //when
+        interactor.onResume()
+
         val result = interactor.updateAuthorization(
             connectionID = items[0].connectionID,
             authorizationID = items[0].authorizationID,
@@ -408,6 +414,8 @@ class AuthorizationsListInteractorV2Test : CoroutineViewModelTest() {
     @Throws(Exception::class)
     fun updateAuthorizationTestCase2() {
         //when
+        interactor.onResume()
+
         val result = interactor.updateAuthorization(
             connectionID = items[0].connectionID,
             authorizationID = items[0].authorizationID,

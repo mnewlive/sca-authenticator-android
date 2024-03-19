@@ -6,8 +6,10 @@ package com.saltedge.authenticator.features.qr
 import android.util.SparseArray
 import androidx.annotation.StringRes
 import androidx.core.util.forEach
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.vision.barcode.Barcode
@@ -27,7 +29,8 @@ class QrScannerViewModel(
     val errorMessageResId = MutableLiveData<ResId?>()
     val descriptionRes = MutableLiveData<ResId>()
 
-    init {
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onResume() {
         viewModelScope.launch {
             val resId = if (connectionsRepository.isEmpty()) R.string.scan_qr_description_first else R.string.scan_qr_description
             descriptionRes.postValue(resId)

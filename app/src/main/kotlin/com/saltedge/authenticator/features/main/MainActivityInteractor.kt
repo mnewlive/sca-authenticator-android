@@ -28,7 +28,7 @@ class MainActivityInteractor(
         return connectionsRepository.isEmpty()
     }
 
-    suspend fun updatePushToken() {
+    fun updatePushToken() {
         pushTokenUpdater.updatePushToken()
     }
 

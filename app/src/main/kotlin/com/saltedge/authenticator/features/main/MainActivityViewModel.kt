@@ -53,12 +53,6 @@ class MainActivityViewModel(
 
     private var initialQrScanWasStarted = false
 
-    init {
-        viewModelScope.launch {
-            interactor.updatePushToken()
-        }
-    }
-
     fun bindLifecycleObserver(lifecycle: Lifecycle) {
         lifecycle.let {
             it.removeObserver(this)
@@ -77,6 +71,7 @@ class MainActivityViewModel(
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onLifeCycleResume() {
         appContext.applyPreferenceLocale()
+        interactor.updatePushToken()
     }
 
     /**

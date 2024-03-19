@@ -24,6 +24,7 @@ import com.saltedge.authenticator.sdk.AuthenticatorApiManagerAbs
 import com.saltedge.authenticator.sdk.constants.API_V1_VERSION
 import com.saltedge.authenticator.sdk.v2.ScaServiceClientAbs
 import junit.framework.TestCase.assertNull
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -64,7 +65,9 @@ class SettingsListViewModelTest : ViewModelTest() {
     @Before
     fun setUp() {
         Mockito.doReturn(true).`when`(mockPreferences).screenshotLockEnabled
-        given(mockConnectionsRepository.getAllActiveConnections()).willReturn(listOf(mockConnectionV1))
+        runBlocking {
+            given(mockConnectionsRepository.getAllActiveConnections()).willReturn(listOf(mockConnectionV1))
+        }
         given(mockKeyStoreManager.enrichConnection(mockConnectionV1, addProviderKey = false)).willReturn(richConnectionV1)
 
         viewModel = SettingsListViewModel(
