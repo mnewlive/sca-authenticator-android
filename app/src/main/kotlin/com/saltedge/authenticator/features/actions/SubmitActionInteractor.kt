@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2024 Salt Edge Inc.
+ */
 package com.saltedge.authenticator.features.actions
 
 import com.saltedge.authenticator.core.model.ActionAppLinkData
