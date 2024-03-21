@@ -84,7 +84,9 @@ fun Context.getCurrentAppLocale(): Locale? {
  * @receiver locale
  * @return language name
  */
-val Locale?.languageName: String get() = this?.getDisplayLanguage(this)?.capitalize() ?: ""
+val Locale?.languageName: String get() = this?.getDisplayLanguage(this)
+    ?.replaceFirstChar { it.titlecase(Locale.getDefault()) }
+    ?: ""
 
 /**
  * Convert locale code to language name

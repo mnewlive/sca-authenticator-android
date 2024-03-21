@@ -73,7 +73,7 @@ class ConsentsListFragment : BaseFragment(), ListItemClickListener {
             headerDecorator.footerPositions = arrayOf(it.count() - 1)
             adapter.data = it
         })
-        viewModel.logoUrlData.observe(this, Observer<String> { logoUrl ->
+        viewModel.logoUrlData.observe(this, Observer<String?> { logoUrl ->
             if (logoUrl == null) { //move this logic to vm
                 binding?.connectionLogoView?.setImageDrawable(null)
             } else {

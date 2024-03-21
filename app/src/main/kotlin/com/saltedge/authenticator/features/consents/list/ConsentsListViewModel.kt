@@ -40,7 +40,7 @@ class ConsentsListViewModel(
     val listItems = MutableLiveData<List<ConsentItem>>()
     val onListItemClickEvent = MutableLiveData<ViewModelEvent<Bundle>>()
     val onConsentRemovedEvent = MutableLiveData<ViewModelEvent<String>>()
-    val logoUrlData = MutableLiveData<String>()
+    val logoUrlData = MutableLiveData<String?>()
     val connectionTitleData = MutableLiveData<String>()
     val consentsCount = MutableLiveData<String>()
 

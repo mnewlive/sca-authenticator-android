@@ -4,7 +4,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'idea'
-apply plugin: 'maven-publish'
 
 def libVersionCode = 1
 def libVersionName = "1.0.0"
@@ -12,9 +11,7 @@ def libVersionName = "1.0.0"
 android {
     defaultConfig {
         minSdkVersion 19
-        compileSdk 33
-        versionCode libVersionCode
-        versionName libVersionName
+        compileSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -24,7 +21,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            debuggable false
         }
     }
 
@@ -36,23 +32,11 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+    namespace 'com.saltedge.android.security'
 }
 
 dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test:runner:1.3.0'
-}
-
-group 'com.saltedge.authenticator.security'
-version libVersionName
-
-sourceCompatibility = 1.8
-
-publishing {
-    repositories {
-        maven {
-            url = uri("${rootProject.projectDir}/maven-repo")
-        }
-    }
+    androidTestImplementation 'androidx.test:runner:1.5.2'
 }

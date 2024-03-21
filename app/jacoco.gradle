@@ -4,11 +4,12 @@
 apply plugin: 'jacoco'
 
 jacoco {
-    toolVersion = "0.8.7"
-    reportsDir = file("$buildDir/reports")
+    toolVersion = "0.8.11"
+    reportsDirectory = file("$buildDir/reports")
 }
 
-task jacocoTestReport(type:JacocoReport, dependsOn: ['testDebugUnitTest']) {
+tasks.register('jacocoTestReport', JacocoReport) {
+    dependsOn['testDebugUnitTest']
     println ":${project.name}: Generating Jacoco reports"
     group = "Reporting"
     description = "Generate Jacoco coverage reports for Debug build"
@@ -21,51 +22,51 @@ task jacocoTestReport(type:JacocoReport, dependsOn: ['testDebugUnitTest']) {
     // what to exclude from coverage report
     // UI, "noise", generated classes, platform classes, etc.
     def fileFilter = [
-            '**/R.class',
-            '**/R$*.class',
-            '**/*$ViewBinder*.*',
-            '**/*$InjectAdapter*.*',
-            '**/*Injector*.*',
-            '**/Dagger*Component.*',
-            '**/Dagger*Component$Builder.*',
-            '**/*Module_*Factory.*',
-            '**/*Provider_*Factory.*',
-            '**/*_Factory.*',
-            '**/BuildConfig.*',
-            '**/Manifest*.*',
-            '**/*Test*.*',
-            'io/realm/**/*.*',
-            '**/*Activity.*',
-            '**/*Service.*',
-            '**/*Fragment.*',
-            '**/*Dialog.*',
-            '**/*Behavior.*',
-            '**/*BottomSheetCallback.*',
-            '**/*Listener.*',
-            '**/*Transformer.*',
-            '**/*Drawer.*',
-            '**/*View.*',
-            '**/*ViewPager.*',
-            '**/*Layout.*',
-            '**/*Adapter.*',
-            '**/*Holder.*',
-            '**/*Animation.*',
-            '**/*Renderer.*',
-            '**/*ViewModel.*',
-            '**/*Data.*',
-            '**/*NavigationHelper*.*',
-            '**/NotificationManager*.*',
-            '**/DialogManager*.*',
-            '**/SnackbarBuilder*.*',
-            '**/AnimationHelper*.*',
-            '**/animation/opengl/*.*',
-            '**/widget/pageindicator/*.*',
-            '**/widget/biometric/*.*',
-            '**/di/*.*',
-            '**/tool/ViewTools*.*',
-            '**/tool/DialogTools*.*',
-            '**/tool/GlideTools*.*',
-            '**/tool/NotificationTools*.*'
+        '**/R.class',
+        '**/R$*.class',
+        '**/*$ViewBinder*.*',
+        '**/*$InjectAdapter*.*',
+        '**/*Injector*.*',
+        '**/Dagger*Component.*',
+        '**/Dagger*Component$Builder.*',
+        '**/*Module_*Factory.*',
+        '**/*Provider_*Factory.*',
+        '**/*_Factory.*',
+        '**/BuildConfig.*',
+        '**/Manifest*.*',
+        '**/*Test*.*',
+        'io/realm/**/*.*',
+        '**/*Activity.*',
+        '**/*Service.*',
+        '**/*Fragment.*',
+        '**/*Dialog.*',
+        '**/*Behavior.*',
+        '**/*BottomSheetCallback.*',
+        '**/*Listener.*',
+        '**/*Transformer.*',
+        '**/*Drawer.*',
+        '**/*View.*',
+        '**/*ViewPager.*',
+        '**/*Layout.*',
+        '**/*Adapter.*',
+        '**/*Holder.*',
+        '**/*Animation.*',
+        '**/*Renderer.*',
+        '**/*ViewModel.*',
+        '**/*Data.*',
+        '**/*NavigationHelper*.*',
+        '**/NotificationManager*.*',
+        '**/DialogManager*.*',
+        '**/SnackbarBuilder*.*',
+        '**/AnimationHelper*.*',
+        '**/animation/opengl/*.*',
+        '**/widget/pageindicator/*.*',
+        '**/widget/biometric/*.*',
+        '**/di/*.*',
+        '**/tool/ViewTools*.*',
+        '**/tool/DialogTools*.*',
+        '**/tool/GlideTools*.*',
+        '**/tool/NotificationTools*.*'
     ]
     // generated classes
     def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
@@ -73,8 +74,8 @@ task jacocoTestReport(type:JacocoReport, dependsOn: ['testDebugUnitTest']) {
     getClassDirectories().setFrom(files([debugTree], [kotlinDebugTree]))
 
     getSourceDirectories().setFrom(files([
-            "$project.projectDir/src/main/java",
-            "$project.projectDir/src/main/kotlin"
+        "$project.projectDir/src/main/java",
+        "$project.projectDir/src/main/kotlin"
     ]))
     getExecutionData().setFrom(fileTree(dir: project.buildDir, includes: ['**/*.exec', '**/*.ec']))
 }

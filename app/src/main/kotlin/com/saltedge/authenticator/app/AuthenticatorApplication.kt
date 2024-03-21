@@ -27,9 +27,6 @@ open class AuthenticatorApplication : Application(), Application.ActivityLifecyc
 
     override fun onCreate() {
         super.onCreate()
-        // JodaTime init
-        JodaTimeAndroid.init(this)
-
         // Crashlytics init
         initFirebaseModules()
 
