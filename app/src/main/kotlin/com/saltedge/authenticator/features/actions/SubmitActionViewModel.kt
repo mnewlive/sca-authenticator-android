@@ -47,8 +47,7 @@ class SubmitActionViewModel(
 ) : ViewModel(), LifecycleObserver, ActionSubmitListener, AuthorizationCreateListener, SubmitActionInteractorCallback {
 
     private var viewMode: ViewMode = ViewMode.START
-    private var actionAppLinkData: ActionAppLinkData? = null
-    private var richConnection: RichConnection? = null
+    private var richConnection: RichConnection? = null //check
     val onCloseEvent = MutableLiveData<ViewModelEvent<Unit>>()
     val onOpenLinkEvent = MutableLiveData<ViewModelEvent<Uri>>()
     val showConnectionsSelectorFragmentEvent = MutableLiveData<ViewModelEvent<Bundle>>()
@@ -66,7 +65,6 @@ class SubmitActionViewModel(
 
     fun setInitialData(actionAppLinkData: ActionAppLinkData) {
         interactor.contract = this
-        this.actionAppLinkData = actionAppLinkData
         interactor.collectAndProcessConnections(actionAppLinkData)
     }
 
@@ -84,7 +82,7 @@ class SubmitActionViewModel(
     fun onViewCreated() {
         val currentRichConnection = richConnection
         if (viewMode == ViewMode.START && currentRichConnection != null) {
-            sendActionRequest(currentRichConnection, actionAppLinkData?.actionIdentifier ?: "")
+            sendActionRequest(currentRichConnection, interactor.getId())
             viewMode = ViewMode.PROCESSING
         }
         updateViewsContent()
@@ -172,7 +170,7 @@ class SubmitActionViewModel(
     }
 
     private fun openReturnToUrl() {
-        val returnTo = actionAppLinkData?.returnTo ?: return
+        val returnTo = interactor.getReturnTo()
         if (returnTo.isNotEmpty()) {
             try {
                 onOpenLinkEvent.postValue(ViewModelEvent(Uri.parse(returnTo)))

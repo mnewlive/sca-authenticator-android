@@ -22,12 +22,22 @@ class SubmitActionInteractor(
     ): SubmitActionInteractorAbs {
 
     override var contract: SubmitActionInteractorCallback? = null
+    private var appLinkData: ActionAppLinkData? = null
 
     override fun collectAndProcessConnections(actionAppLinkData: ActionAppLinkData) {
         contract?.coroutineScope?.launch(defaultDispatcher) {
             val connections = collectConnections(actionAppLinkData)
+            appLinkData = actionAppLinkData
             contract?.processConnections(connections)
         }
+    }
+
+    override fun getReturnTo(): String {
+        return appLinkData?.returnTo ?: ""
+    }
+
+    override fun getId(): String {
+        return appLinkData?.actionIdentifier ?: ""
     }
 
     override fun getConnection(guid: GUID): RichConnection? {
@@ -52,6 +62,8 @@ interface SubmitActionInteractorAbs {
     fun collectAndProcessConnections(actionAppLinkData: ActionAppLinkData)
     fun getConnection(guid: GUID): RichConnection?
     var contract: SubmitActionInteractorCallback?
+    fun getId(): String
+    fun getReturnTo(): String
 }
 
 interface SubmitActionInteractorCallback {
