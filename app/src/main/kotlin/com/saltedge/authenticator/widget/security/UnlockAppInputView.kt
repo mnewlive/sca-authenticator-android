@@ -18,7 +18,7 @@ class UnlockAppInputView(context: Context, attrs: AttributeSet) : LinearLayout(c
     private var binding: ViewUnlockBinding
 
     var biometricsActionIsAvailable: Boolean
-        get() = binding.passcodeInputView.biometricsActionIsAvailable ?: false
+        get() = binding.passcodeInputView.biometricsActionIsAvailable
         set(value) {
             binding.passcodeInputView.biometricsActionIsAvailable = value
         }

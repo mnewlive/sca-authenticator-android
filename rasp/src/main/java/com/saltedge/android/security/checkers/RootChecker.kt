@@ -4,7 +4,9 @@
 package com.saltedge.android.security.checkers
 
 import android.content.Context
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import com.saltedge.android.security.checkers.RaspConstants.Companion.BINARY_MAGISK
 import com.saltedge.android.security.checkers.RaspConstants.Companion.BINARY_SU
@@ -139,7 +141,7 @@ private fun checkSuExists(): Boolean {
     var process: Process? = null
     return try {
         process = Runtime.getRuntime().exec(arrayOf("which", BINARY_SU))
-        var line = BufferedReader(InputStreamReader(process.inputStream)).readLine()
+        val line = BufferedReader(InputStreamReader(process.inputStream)).readLine()
         if (line != null) Log.e("RootChecker", "Detected SU: $line ")
         line != null
     } catch (t: Throwable) {
@@ -158,9 +160,11 @@ private fun checkSuExists(): Boolean {
  * @return true if any of the packages are installed
  */
 private fun Context.isAnyPackageFromListInstalled(packages: Array<String>): Boolean {
-    val manager = this.packageManager
-    val result = packages.any { manager.packageInstalled(packageName = it) }
-    if (result) Log.e("RootChecker", "Detected harmful packages: [${packages.filter { manager.packageInstalled(packageName = it) }.joinToString(separator = ", ")}]")
+    val result = packages.any { this.packageInstalled(packageName = it) }
+    if (result) {
+        val list = packages.filter { this.packageInstalled(packageName = it) }.joinToString(separator = ", ")
+        Log.e("RootChecker", "Detected harmful packages: [$list]")
+    }
     return result
 }
 
@@ -171,9 +175,14 @@ private fun Context.isAnyPackageFromListInstalled(packages: Array<String>): Bool
  * @param packageName - packageName to search for
  * @return true if the package is installed
  */
-private fun PackageManager.packageInstalled(packageName: String): Boolean {
+@Suppress("DEPRECATION")
+private fun Context.packageInstalled(packageName: String): Boolean {
     return try {
-        this.getPackageInfo(packageName, 0)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
+        } else {
+            packageManager.getPackageInfo(packageName, 0)
+        }
         true
     } catch (ignored: PackageManager.NameNotFoundException) {
         false

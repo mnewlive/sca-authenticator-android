@@ -90,7 +90,7 @@ class SelectConnectionsFragment : BaseFragment(), OnBackPressListener, ListItemC
         viewModel.listItems.observe(this, Observer<List<ConnectionItem>> {
             headerDecorator?.setHeaderForAllItems(it.count())
             headerDecorator?.footerPositions = arrayOf(it.count() - 1)
-            it?.let { adapter.data = it }
+            it.let { adapter.data = it }
         })
 
         viewModel.onListItemClickEvent.observe(this, Observer<ViewModelEvent<Int>> { event ->

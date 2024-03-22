@@ -52,7 +52,7 @@ and [Android Authenticator workflow](docs/WORKFLOW.md).
 ## Prerequisites
 In order to build Salt Edge Authenticator for Android locally, it is necessary to install the following tools on the local machine:
 
-* JDK 8
+* JDK 17
 * Android SDK
 * Android Studio
 

@@ -54,10 +54,10 @@ class AboutListFragment : BaseFragment() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(AboutViewModel::class.java)
 
         viewModel.licenseItemClickEvent.observe(this, Observer<ViewModelEvent<Unit>> {
-            it?.let { navigateTo(R.id.license) }
+            it.let { navigateTo(R.id.license) }
         })
         viewModel.termsOfServiceItemClickEvent.observe(this, Observer<ViewModelEvent<Bundle>> {
-            it?.getContentIfNotHandled()?.let { bundle ->
+            it.getContentIfNotHandled()?.let { bundle ->
                 navigateTo(
                     actionRes = R.id.terms_of_services,
                     bundle = bundle

@@ -105,7 +105,7 @@ class SubmitActionFragment : BaseFragment() {
             binding?.completeView?.setMainActionText(mainActionTextResId)
         })
         viewModel.showConnectionsSelectorFragmentEvent.observe(this, Observer<ViewModelEvent<Bundle>> {
-                it?.getContentIfNotHandled()?.let { bundle ->
+                it.getContentIfNotHandled()?.let { bundle ->
                     navigateTo(actionRes = R.id.select_connections, bundle = bundle)
                 }
             })

@@ -5,21 +5,20 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.8.22'
+    ext.kotlin_version = '1.9.23'
     ext.realm_version = '10.16.1'
-    ext.nav_version = '2.7.6'
+    ext.nav_version = '2.7.7'
     repositories {
-        jcenter()
         google()
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:8.3.1'
         classpath "org.jacoco:org.jacoco.core:0.8.8"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.4.0'
+        classpath 'com.google.gms:google-services:4.4.1'
         classpath "io.realm:realm-gradle-plugin:$realm_version"
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.9'
         classpath "org.jlleitschuh.gradle:ktlint-gradle:8.2.0"
@@ -37,10 +36,10 @@ subprojects {
 
 allprojects {
     repositories {
-        jcenter()
         google()
         maven { url "https://jitpack.io" }
         mavenLocal()
+        mavenCentral()
     }
     configurations.configureEach {
         resolutionStrategy {
@@ -50,5 +49,5 @@ allprojects {
 }
 
 tasks.register('clean', Delete) {
-    delete rootProject.buildDir
+    delete rootProject.buildDirectory
 }

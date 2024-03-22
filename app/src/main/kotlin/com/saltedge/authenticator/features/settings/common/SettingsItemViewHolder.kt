@@ -25,10 +25,10 @@ class SettingsItemViewHolder(val binding: ViewItemSettingBinding) :
             )
         )
         binding.valueView.visibility = item.descriptionVisibility
-        binding.valueView.setText(item.description)
+        binding.valueView.text = item.description
         binding.checkView.visibility = item.switchVisibility
         binding.checkView.isChecked = item.switchIsChecked ?: false
-        binding.checkView.setOnCheckedChangeListener { buttonView, isChecked ->
+        binding.checkView.setOnCheckedChangeListener { _, isChecked ->
             listener.onListItemCheckedStateChanged(item.titleId, isChecked)
         }
     }

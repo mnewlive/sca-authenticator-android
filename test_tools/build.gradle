@@ -4,9 +4,7 @@ apply plugin: 'kotlin-android'
 android {
     defaultConfig {
         minSdkVersion 21
-        compileSdk 33
-        versionCode 1
-        versionName "1.0"
+        compileSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -23,10 +21,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    namespace 'com.saltedge.android.test_tools'
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation project(':authenticator_sdk_v1')
     implementation project(':authenticator_sdk_v2')
