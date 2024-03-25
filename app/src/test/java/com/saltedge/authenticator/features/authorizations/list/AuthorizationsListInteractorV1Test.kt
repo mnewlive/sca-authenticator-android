@@ -26,7 +26,9 @@ import com.saltedge.authenticator.sdk.polling.FetchAuthorizationsContract
 import com.saltedge.authenticator.sdk.tools.CryptoToolsV1Abs
 import com.saltedge.authenticator.widget.security.ActivityUnlockType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runTest
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.junit.Assert
@@ -75,11 +77,27 @@ class AuthorizationsListInteractorV1Test : CoroutineViewModelTest() {
         super.setUp()
         given(mockContract.coroutineScope).willReturn(TestCoroutineScope(testDispatcher))
         AppTools.lastUnlockType = ActivityUnlockType.BIOMETRICS
-        given(mockApiManagerV1.createAuthorizationsPollingService()).willReturn(mockPollingServiceV1)
-        given(mockConnectionsRepository.getAllActiveConnectionsByApi(API_V1_VERSION)).willReturn(listOf(mockConnectionV1))
-        given(mockKeyStoreManager.enrichConnection(mockConnectionV1, addProviderKey = false)).willReturn(richConnectionV1)
+        given(mockApiManagerV1.createAuthorizationsPollingService()).willReturn(
+            mockPollingServiceV1
+        )
+        runBlocking {
+            given(mockConnectionsRepository.getAllActiveConnectionsByApi(API_V1_VERSION)).willReturn(
+                listOf(mockConnectionV1)
+            )
+        }
+        given(
+            mockKeyStoreManager.enrichConnection(
+                mockConnectionV1,
+                addProviderKey = false
+            )
+        ).willReturn(richConnectionV1)
         encryptedAuthorizations.forEachIndexed { index, encryptedData ->
-            given(mockCryptoToolsV1.decryptAuthorizationData(encryptedData, richConnectionV1.private))
+            given(
+                mockCryptoToolsV1.decryptAuthorizationData(
+                    encryptedData,
+                    richConnectionV1.private
+                )
+            )
                 .willReturn(authorizations[index])
         }
         interactor = AuthorizationsListInteractorV1(
@@ -90,7 +108,12 @@ class AuthorizationsListInteractorV1Test : CoroutineViewModelTest() {
             defaultDispatcher = testDispatcher
         )
         interactor.contract = mockContract
-        Mockito.clearInvocations(mockConnectionsRepository, mockKeyStoreManager, mockCryptoToolsV1, mockApiManagerV1)
+        Mockito.clearInvocations(
+            mockConnectionsRepository,
+            mockKeyStoreManager,
+            mockCryptoToolsV1,
+            mockApiManagerV1
+        )
     }
 
     @Test
@@ -106,7 +129,7 @@ class AuthorizationsListInteractorV1Test : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onResumeCase1() {
+    fun onResumeCase1() = runTest {
         //given onResume event, no connection, no items
         given(mockConnectionsRepository.getAllActiveConnectionsByApi(API_V1_VERSION)).willReturn(emptyList())
 
@@ -157,7 +180,7 @@ class AuthorizationsListInteractorV1Test : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onFetchEncryptedDataResultTestCase3() {
+    fun onFetchEncryptedDataResultTestCase3() = runTest {
         //when
         interactor.onFetchEncryptedDataResult(
             result = emptyList(),
@@ -178,6 +201,7 @@ class AuthorizationsListInteractorV1Test : CoroutineViewModelTest() {
     @Throws(Exception::class)
     fun onFetchEncryptedDataResultTestCase4() {
         //when
+        interactor.onResume()
         interactor.onFetchEncryptedDataResult(result = encryptedAuthorizations, errors = emptyList())
 
         //then
@@ -188,6 +212,8 @@ class AuthorizationsListInteractorV1Test : CoroutineViewModelTest() {
     @Throws(Exception::class)
     fun updateAuthorizationTestCase1() {
         //when
+        interactor.onResume()
+
         val result = interactor.updateAuthorization(
             connectionID = items[0].connectionID,
             authorizationID = items[0].authorizationID,
@@ -212,6 +238,8 @@ class AuthorizationsListInteractorV1Test : CoroutineViewModelTest() {
     @Throws(Exception::class)
     fun updateAuthorizationTestCase2() {
         //when
+        interactor.onResume()
+
         val result = interactor.updateAuthorization(
             connectionID = items[0].connectionID,
             authorizationID = items[0].authorizationID,
@@ -285,7 +313,6 @@ class AuthorizationsListInteractorV1Test : CoroutineViewModelTest() {
     fun onConfirmDenyFailureTest() {
         //given
         val error = createRequestError(404)
-
 
         //when
         interactor.onConfirmDenyFailure(error = error, connectionID = "1", authorizationID = "2")

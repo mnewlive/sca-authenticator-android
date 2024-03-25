@@ -30,6 +30,8 @@ import com.saltedge.authenticator.widget.biometric.BiometricPromptManagerV28
 import com.saltedge.authenticator.widget.biometric.BiometricsInputDialog
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 @Module
@@ -132,12 +134,19 @@ class AppModule(context: Context) {
 
     @Provides
     @Singleton
+    fun provideCoroutineScope(): CoroutineScope {
+        return CoroutineScope(Dispatchers.Main)
+    }
+
+    @Provides
+    @Singleton
     fun providePushTokenUpdater(
         connectionsRepository: ConnectionsRepositoryAbs,
         keyStoreManager: KeyManagerAbs,
         apiManagerV2: ScaServiceClient,
-        preferenceRepository: PreferenceRepositoryAbs
+        preferenceRepository: PreferenceRepositoryAbs,
+        coroutineScope: CoroutineScope
     ): PushTokenUpdater {
-        return PushTokenUpdater(connectionsRepository, keyStoreManager, apiManagerV2, preferenceRepository)
+        return PushTokenUpdater(connectionsRepository, keyStoreManager, apiManagerV2, preferenceRepository, coroutineScope)
     }
 }

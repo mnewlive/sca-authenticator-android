@@ -10,6 +10,8 @@ import com.saltedge.authenticator.models.repository.ConnectionsRepositoryAbs
 import com.saltedge.authenticator.models.repository.PreferenceRepositoryAbs
 import com.saltedge.authenticator.sdk.v2.ScaServiceClientAbs
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestCoroutineScope
+import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -28,6 +30,7 @@ class PushTokenUpdaterTest {
     private val mockKeyStoreManager = Mockito.mock(KeyManagerAbs::class.java)
     private val mockApiManagerV2 = Mockito.mock(ScaServiceClientAbs::class.java)
     private val mockPreferenceRepository = Mockito.mock(PreferenceRepositoryAbs::class.java)
+    private val testCoroutineScope = TestCoroutineScope()
 
     @Before
     fun setUp() {
@@ -45,8 +48,14 @@ class PushTokenUpdaterTest {
             apiManager = mockApiManagerV2,
             connectionsRepository = mockConnectionsRepository,
             keyStoreManager = mockKeyStoreManager,
-            preferenceRepository = mockPreferenceRepository
+            preferenceRepository = mockPreferenceRepository,
+            coroutineScope = testCoroutineScope
         )
+    }
+
+    @After
+    fun tearDown() {
+        testCoroutineScope.cleanupTestCoroutines()
     }
 
     @Test

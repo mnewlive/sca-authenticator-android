@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.saltedge.authenticator.cloud.PushTokenUpdater
 import com.saltedge.authenticator.core.tools.biometric.BiometricToolsAbs
 import com.saltedge.authenticator.core.tools.secure.KeyManagerAbs
+import com.saltedge.authenticator.features.actions.SubmitActionInteractor
 import com.saltedge.authenticator.features.actions.SubmitActionViewModel
 import com.saltedge.authenticator.features.authorizations.details.AuthorizationDetailsInteractorV1
 import com.saltedge.authenticator.features.authorizations.details.AuthorizationDetailsInteractorV2
@@ -189,11 +190,15 @@ class ViewModelsFactory @Inject constructor(
             modelClass.isAssignableFrom(SubmitActionViewModel::class.java) -> {
                 return SubmitActionViewModel(
                     appContext = appContext,
-                    connectionsRepository = connectionsRepository,
                     keyStoreManager = keyStoreManager,
                     apiManagerV1 = apiManagerV1,
                     apiManagerV2 = apiManagerV2,
-                    locationManager = DeviceLocationManager
+                    locationManager = DeviceLocationManager,
+                    interactor = SubmitActionInteractor(
+                        defaultDispatcher = Dispatchers.Default,
+                        connectionsRepository = connectionsRepository,
+                        keyStoreManager = keyStoreManager
+                    )
                 ) as T
             }
             modelClass.isAssignableFrom(SelectConnectionsViewModel::class.java) -> {

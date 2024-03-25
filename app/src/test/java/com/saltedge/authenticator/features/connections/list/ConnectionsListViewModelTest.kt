@@ -62,7 +62,7 @@ class ConnectionsListViewModelTest : ViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onStartTest() {
+    fun onStartTest() = runTest {
         //when
         viewModel.onStart()
 
@@ -316,7 +316,7 @@ class ConnectionsListViewModelTest : ViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun updateLocationStateOfConnectionTest() {
+    fun updateLocationStateOfConnectionTest() = runTest {
 
         viewModel.updateLocationStateOfConnection()
 

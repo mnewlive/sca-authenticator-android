@@ -13,35 +13,43 @@ import com.saltedge.authenticator.models.repository.PreferenceRepositoryAbs
 import com.saltedge.authenticator.sdk.v2.ScaServiceClientAbs
 import com.saltedge.authenticator.sdk.v2.api.contract.ConnectionUpdateListener
 import com.saltedge.authenticator.models.toRichConnectionPair
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 open class PushTokenUpdater(
     private val connectionsRepository: ConnectionsRepositoryAbs,
     private val keyStoreManager: KeyManagerAbs,
     private val apiManager: ScaServiceClientAbs,
-    private val preferenceRepository: PreferenceRepositoryAbs
+    private val preferenceRepository: PreferenceRepositoryAbs,
+    private val coroutineScope: CoroutineScope
 ) : ConnectionUpdateListener {
 
     private var connections: List<Connection> = emptyList()
     private var richConnections: Map<ID, RichConnection> = emptyMap()
 
-    suspend fun updatePushToken() {
-        connections = connectionsRepository.getActiveConnectionsWithoutToken(preferenceRepository.cloudMessagingToken)
-        richConnections = connections.mapNotNull { it.toRichConnectionPair(keyStoreManager) }.toMap()
-        connections.mapNotNull { connection -> richConnections[connection.id] }
-            .forEach { richConnection ->
-                apiManager.updatePushToken(
-                    richConnection = richConnection,
-                    currentPushToken = richConnection.connection.pushToken,
-                    callback = this
-                )
-            }
+    fun updatePushToken() {
+        coroutineScope.launch {
+            connections = connectionsRepository.getActiveConnectionsWithoutToken(preferenceRepository.cloudMessagingToken)
+            richConnections = connections.mapNotNull { it.toRichConnectionPair(keyStoreManager) }.toMap()
+            connections.mapNotNull { connection -> richConnections[connection.id] }
+                .forEach { richConnection ->
+                    apiManager.updatePushToken(
+                        richConnection = richConnection,
+                        currentPushToken = richConnection.connection.pushToken,
+                        callback = this@PushTokenUpdater
+                    )
+                }
+        }
     }
 
     override fun onUpdatePushTokenSuccess(connectionID: ID) {
         val connection = richConnections[connectionID]?.connection
         connection?.pushToken = preferenceRepository.cloudMessagingToken
-        connectionsRepository.saveModel(connection as Connection)
+
+        coroutineScope.launch {
+            connectionsRepository.saveModel(connection as Connection)
+        }
     }
 
     override fun onUpdatePushTokenFailed(error: ApiErrorData) {

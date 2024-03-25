@@ -53,12 +53,6 @@ class MainActivityViewModel(
 
     private var initialQrScanWasStarted = false
 
-    init {
-        viewModelScope.launch {
-            interactor.updatePushToken()
-        }
-    }
-
     fun bindLifecycleObserver(lifecycle: Lifecycle) {
         lifecycle.let {
             it.removeObserver(this)
@@ -77,6 +71,7 @@ class MainActivityViewModel(
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onLifeCycleResume() {
         appContext.applyPreferenceLocale()
+        interactor.updatePushToken()
     }
 
     /**
@@ -137,9 +132,11 @@ class MainActivityViewModel(
     }
 
     fun onUnlock() {
-        if (!initialQrScanWasStarted && interactor.noConnections) {
-            onQrScanClickEvent.postUnitEvent()
-            initialQrScanWasStarted = true
+        viewModelScope.launch {
+            if (!initialQrScanWasStarted && interactor.noConnections()) {
+                onQrScanClickEvent.postUnitEvent()
+                initialQrScanWasStarted = true
+            }
         }
     }
 
@@ -177,8 +174,10 @@ class MainActivityViewModel(
     }
 
     fun onClearAppDataEvent() {
-        interactor.sendRevokeRequestForConnections()
-        interactor.wipeApplication()
-        onShowOnboardingEvent.postUnitEvent()
+        viewModelScope.launch {
+            interactor.sendRevokeRequestForConnections()
+            interactor.wipeApplication()
+            onShowOnboardingEvent.postUnitEvent()
+        }
     }
 }

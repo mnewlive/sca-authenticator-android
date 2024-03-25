@@ -10,6 +10,7 @@ import android.view.View
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.saltedge.authenticator.R
 import com.saltedge.authenticator.core.api.model.error.ApiErrorData
 import com.saltedge.authenticator.core.model.ActionAppLinkData
@@ -22,7 +23,6 @@ import com.saltedge.authenticator.features.connections.select.SelectConnectionsF
 import com.saltedge.authenticator.models.Connection
 import com.saltedge.authenticator.models.ViewModelEvent
 import com.saltedge.authenticator.models.location.DeviceLocationManagerAbs
-import com.saltedge.authenticator.models.repository.ConnectionsRepositoryAbs
 import com.saltedge.authenticator.models.toRichConnection
 import com.saltedge.authenticator.sdk.AuthenticatorApiManagerAbs
 import com.saltedge.authenticator.sdk.api.model.authorization.AuthorizationIdentifier
@@ -34,20 +34,20 @@ import com.saltedge.authenticator.sdk.v2.api.contract.AuthorizationCreateListene
 import com.saltedge.authenticator.tools.ResId
 import com.saltedge.authenticator.tools.getErrorMessage
 import com.saltedge.authenticator.tools.postUnitEvent
+import kotlinx.coroutines.CoroutineScope
 import timber.log.Timber
 
 class SubmitActionViewModel(
     private val appContext: Context,
-    private val connectionsRepository: ConnectionsRepositoryAbs,
     private val keyStoreManager: KeyManagerAbs,
     private val apiManagerV1: AuthenticatorApiManagerAbs,
     private val apiManagerV2: ScaServiceClientAbs,
-    private val locationManager: DeviceLocationManagerAbs
-) : ViewModel(), LifecycleObserver, ActionSubmitListener, AuthorizationCreateListener {
+    private val locationManager: DeviceLocationManagerAbs,
+    private val interactor: SubmitActionInteractorAbs
+) : ViewModel(), LifecycleObserver, ActionSubmitListener, AuthorizationCreateListener, SubmitActionInteractorCallback {
 
     private var viewMode: ViewMode = ViewMode.START
-    private var actionAppLinkData: ActionAppLinkData? = null
-    private var richConnection: RichConnection? = null
+    private var richConnection: RichConnection? = null //check
     val onCloseEvent = MutableLiveData<ViewModelEvent<Unit>>()
     val onOpenLinkEvent = MutableLiveData<ViewModelEvent<Uri>>()
     val showConnectionsSelectorFragmentEvent = MutableLiveData<ViewModelEvent<Bundle>>()
@@ -60,9 +60,15 @@ class SubmitActionViewModel(
     var completeViewVisibility = MutableLiveData<Int>(View.GONE)
     var actionProcessingVisibility = MutableLiveData<Int>(View.VISIBLE)
 
+    override val coroutineScope: CoroutineScope
+        get() = viewModelScope
+
     fun setInitialData(actionAppLinkData: ActionAppLinkData) {
-        val connections = collectConnections(actionAppLinkData)
-        this.actionAppLinkData = actionAppLinkData
+        interactor.contract = this
+        interactor.collectAndProcessConnections(actionAppLinkData)
+    }
+
+    override fun processConnections(connections: List<Connection>) {
         when {
             connections.isEmpty() -> showActionError(R.string.errors_actions_no_connections_link_app)
             connections.size == 1 -> {
@@ -76,7 +82,7 @@ class SubmitActionViewModel(
     fun onViewCreated() {
         val currentRichConnection = richConnection
         if (viewMode == ViewMode.START && currentRichConnection != null) {
-            sendActionRequest(currentRichConnection, actionAppLinkData?.actionIdentifier ?: "")
+            sendActionRequest(currentRichConnection, interactor.getId())
             viewMode = ViewMode.PROCESSING
         }
         updateViewsContent()
@@ -109,7 +115,7 @@ class SubmitActionViewModel(
         if (guid.isEmpty()) {
             onCloseEvent.postUnitEvent()
         } else {
-            this.richConnection = connectionsRepository.getByGuid(guid)?.toRichConnection(keyStoreManager)
+            this.richConnection = interactor.getConnection(guid = guid)
             viewMode = if (richConnection == null) ViewMode.ACTION_ERROR else ViewMode.START
             onViewCreated()
         }
@@ -164,7 +170,7 @@ class SubmitActionViewModel(
     }
 
     private fun openReturnToUrl() {
-        val returnTo = actionAppLinkData?.returnTo ?: return
+        val returnTo = interactor.getReturnTo()
         if (returnTo.isNotEmpty()) {
             try {
                 onOpenLinkEvent.postValue(ViewModelEvent(Uri.parse(returnTo)))
@@ -183,19 +189,6 @@ class SubmitActionViewModel(
                 )
             )
         } else showActionError(R.string.errors_actions_not_success)
-    }
-
-    private fun collectConnections(actionAppLinkData: ActionAppLinkData): List<Connection> {
-        val connections = if (actionAppLinkData.apiVersion == API_V2_VERSION) {
-            actionAppLinkData.providerID?.let {
-                connectionsRepository.getAllActiveByProvider(providerID = it)
-            }
-        } else {
-            actionAppLinkData.connectUrl?.let {
-                connectionsRepository.getAllActiveByConnectUrl(connectionUrl = it)
-            }
-        }
-        return connections ?: emptyList()
     }
 }
 
