@@ -40,7 +40,12 @@ allprojects {
         maven { url "https://jitpack.io" }
         mavenLocal()
         mavenCentral()
-        maven { url 'https://github.com/saltedge/sca-authenticator-android-sdk/tree/master/maven/' }
+        maven {
+            Properties properties = new Properties()
+            InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream() ;
+            properties.load( inputStream )
+            url properties.getProperty('authenticatorSdkDir').toString()
+        }
     }
     configurations.configureEach {
         resolutionStrategy {

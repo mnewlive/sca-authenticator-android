@@ -135,7 +135,6 @@ dependencies {
     implementation 'net.danlew:android.joda:2.12.7'
     implementation("io.coil-kt:coil-svg:1.2.0")
     implementation 'com.jakewharton.timber:timber:4.7.1'
-    implementation 'com.fivehundredpx:blurringview:1.0.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
     implementation project(':rasp')
@@ -176,7 +175,6 @@ repositories {
     mavenCentral()
     google()
     maven { url 'https://maven.fabric.io/public' }
-    maven { url 'https://github.com/500px/500px-android-blur/raw/master/releases/' }
 }
 
 setupSigning("./signing.properties", "release")
