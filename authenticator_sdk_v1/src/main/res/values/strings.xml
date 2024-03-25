@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-   Copyright (c) 2019 Salt Edge Inc.
--->
-<resources>
-    <string name="errors_no_connection">Unable to establish a connection.\nPlease try again later or contact service provider.</string>
-    <string name="errors_request_error">Request error</string>
-    <string name="errors_secure_connection">Unable to establish a secure connection.\nPlease contact service provider</string>
-</resources>

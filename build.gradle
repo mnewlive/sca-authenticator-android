@@ -40,6 +40,7 @@ allprojects {
         maven { url "https://jitpack.io" }
         mavenLocal()
         mavenCentral()
+        maven { url 'https://github.com/saltedge/sca-authenticator-android-sdk/tree/master/maven/' }
     }
     configurations.configureEach {
         resolutionStrategy {
@@ -49,5 +50,5 @@ allprojects {
 }
 
 tasks.register('clean', Delete) {
-    delete rootProject.buildDirectory
+    delete rootProject.buildDir
 }

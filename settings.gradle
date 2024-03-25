@@ -1,2 +1,1 @@
-include ':authenticator_core', ':authenticator_sdk_v1', ':authenticator_sdk_v2'
 include ':app', ':rasp', ':ktlint_rules', ':test_tools'
