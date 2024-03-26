@@ -40,6 +40,12 @@ allprojects {
         maven { url "https://jitpack.io" }
         mavenLocal()
         mavenCentral()
+        maven {
+            Properties properties = new Properties()
+            InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream() ;
+            properties.load( inputStream )
+            url properties.getProperty('authenticatorSdkDir').toString()
+        }
     }
     configurations.configureEach {
         resolutionStrategy {
@@ -49,5 +55,5 @@ allprojects {
 }
 
 tasks.register('clean', Delete) {
-    delete rootProject.buildDirectory
+    delete rootProject.buildDir
 }

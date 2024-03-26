@@ -14,9 +14,7 @@ import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import com.fivehundredpx.android.blur.BlurringView
 import com.saltedge.authenticator.R
-import com.saltedge.authenticator.app.buildVersionLessThan23
 import com.saltedge.authenticator.core.api.model.DescriptionData
 import com.saltedge.authenticator.databinding.ViewAuthorizationContentBinding
 import com.saltedge.authenticator.tools.applyAlphaToColor
@@ -36,10 +34,6 @@ class AuthorizationContentView : LinearLayout {
         binding = ViewAuthorizationContentBinding.inflate(LayoutInflater.from(context), this, true)
         initBlurringView()
         binding.statusLayout.addView(blurringView, 0)
-        (blurringView as? BlurringView)?.let {
-            it.setBlurredView(binding.blurredView)
-            it.invalidate()
-        }
     }
 
     fun setViewMode(viewMode: AuthorizationStatus) {
@@ -187,18 +181,10 @@ class AuthorizationContentView : LinearLayout {
             ConstraintLayout.LayoutParams.MATCH_PARENT
         )
         val overlayColor = ContextCompat.getColor(context, R.color.theme_background).applyAlphaToColor(0.8f)
-        blurringView = if (buildVersionLessThan23) {
-            View(context).apply {
-                layoutParams = viewLayoutParams
-                setBackgroundColor(overlayColor)
-            }
-        } else {
-            BlurringView(context).apply {
-                layoutParams = viewLayoutParams
-                setOverlayColor(overlayColor)
-                setBlurRadius(24)
-                setDownsampleFactor(4)
-            }
+        blurringView = View(context).apply {
+            layoutParams = viewLayoutParams
+            setBackgroundColor(overlayColor)
         }
+
     }
 }

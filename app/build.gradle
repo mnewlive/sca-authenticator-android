@@ -30,12 +30,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     defaultConfig {
@@ -135,21 +135,22 @@ dependencies {
     implementation 'net.danlew:android.joda:2.12.7'
     implementation("io.coil-kt:coil-svg:1.2.0")
     implementation 'com.jakewharton.timber:timber:4.7.1'
-    implementation 'com.fivehundredpx:blurringview:1.0.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
-    implementation project(':authenticator_sdk_v1')
-    implementation project(':authenticator_sdk_v2')
     implementation project(':rasp')
+    implementation ('com.saltedge.authenticator:sdk_v1:1.6.0@aar')
+    implementation ('com.saltedge.authenticator:sdk_v2:2.2.0@aar') {
+        transitive = true
+    }
 
     androidTestUtil 'com.android.support.test:orchestrator:1.0.2'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.test:core:1.5.0'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
-    testImplementation 'org.robolectric:robolectric:4.9'
+    testImplementation 'org.robolectric:robolectric:4.11.1'
     testImplementation 'org.robolectric:shadows-playservices:4.9'
-    testImplementation 'org.mockito:mockito-core:4.0.0'
-    testImplementation "io.mockk:mockk:1.10.2"
+    testImplementation 'org.mockito:mockito-core:4.5.1'
+    testImplementation "io.mockk:mockk:1.13.10"
     testImplementation project(':test_tools')
     testImplementation 'org.hamcrest:hamcrest-core:2.2'
     testImplementation 'org.hamcrest:hamcrest-library:2.2'
@@ -174,7 +175,6 @@ repositories {
     mavenCentral()
     google()
     maven { url 'https://maven.fabric.io/public' }
-    maven { url 'https://github.com/500px/500px-android-blur/raw/master/releases/' }
 }
 
 setupSigning("./signing.properties", "release")
