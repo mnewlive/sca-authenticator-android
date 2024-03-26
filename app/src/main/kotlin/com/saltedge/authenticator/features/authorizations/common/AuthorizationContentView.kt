@@ -132,6 +132,10 @@ class AuthorizationContentView : LinearLayout {
                     binding.referenceView.setTitle(R.string.description_reference)
                     binding.referenceView.setDescription(it)
                 }
+
+                binding.paymentDescriptionTextView.setVisible(show = description.payment?.description != null)
+                description.payment?.description?.let { binding.paymentDescriptionTextView.text = it }
+
                 if (extraContent) showExtraContent(description = description)
             }
             textContent -> {
