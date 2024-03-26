@@ -26,12 +26,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-//    implementation project(':authenticator_sdk_v1')
-//    implementation project(':authenticator_sdk_v2')
-//    implementation project(':authenticator_core')
     api ('com.saltedge.authenticator:sdk_core:1.2.0@aar')
     implementation ('com.saltedge.authenticator:sdk_v1:1.6.0@aar')
-    implementation ('com.saltedge.authenticator:sdk_v2:2.2.0@aar') {
+    implementation ('com.saltedge.authenticator:sdk_v2:2.3.0@aar') {
         transitive = true
     }
 

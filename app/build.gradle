@@ -49,8 +49,8 @@ android {
         targetSdkVersion 34
         compileSdk 34
 
-        versionCode 74
-        versionName '3.6.1.2'
+        versionCode 75
+        versionName '3.7.0'
 
         renderscriptTargetApi 21
         renderscriptSupportModeEnabled true
@@ -139,7 +139,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
     implementation project(':rasp')
     implementation ('com.saltedge.authenticator:sdk_v1:1.6.0@aar')
-    implementation ('com.saltedge.authenticator:sdk_v2:2.2.0@aar') {
+    implementation ('com.saltedge.authenticator:sdk_v2:2.3.0@aar') {
         transitive = true
     }
 
