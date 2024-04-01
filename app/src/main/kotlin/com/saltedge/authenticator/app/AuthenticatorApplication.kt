@@ -17,7 +17,6 @@ import com.saltedge.authenticator.models.realm.RealmManager
 import com.saltedge.authenticator.sdk.config.ApiV1Config
 import com.saltedge.authenticator.sdk.v2.config.ApiV2Config
 import com.saltedge.authenticator.tools.createCrashlyticsKit
-import net.danlew.android.joda.JodaTimeAndroid
 import timber.log.Timber
 
 open class AuthenticatorApplication : Application(), Application.ActivityLifecycleCallbacks {
