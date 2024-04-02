@@ -19,6 +19,7 @@ import com.saltedge.authenticator.core.api.KEY_DATA
 import com.saltedge.authenticator.core.api.model.ConsentData
 import com.saltedge.authenticator.core.model.GUID
 import com.saltedge.authenticator.core.model.ID
+import com.saltedge.authenticator.core.model.RichConnection
 import com.saltedge.authenticator.features.consents.common.countDescription
 import com.saltedge.authenticator.features.consents.common.countOfDays
 import com.saltedge.authenticator.features.consents.common.toConsentTypeDescription
@@ -55,11 +56,15 @@ class ConsentsListViewModel(
     }
 
     fun setInitialData(bundle: Bundle?) {
-        interactor.updateConnection(bundle?.guid)?.let {
-            logoUrlData.postValue(it.logoUrl)
-            connectionTitleData.postValue(it.name)
-        }
+        interactor.updateConnection(bundle?.guid)
         interactor.onNewConsentsReceived(bundle?.consents ?: emptyList())
+    }
+
+    override fun onConnectionUpdated(optRichConnection: RichConnection?) {
+        optRichConnection?.let {
+            logoUrlData.postValue(it.connection.logoUrl)
+            connectionTitleData.postValue(it.connection.name)
+        }
     }
 
     fun refreshConsents() {

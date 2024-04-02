@@ -28,11 +28,13 @@ abstract class AuthorizationDetailsInteractor(
         get() = richConnection?.connection?.apiVersion
 
     override fun setInitialData(connectionID: ID) {
-        richConnection = createRichConnection(
-            connectionID = connectionID,
-            repository = connectionsRepository,
-            keyStoreManager = keyStoreManager
-        )
+        contract?.coroutineScope?.launch {
+            richConnection = createRichConnection(
+                connectionID = connectionID,
+                repository = connectionsRepository,
+                keyStoreManager = keyStoreManager
+            )
+        }
     }
 
     protected fun processApiError(error: ApiErrorData) {

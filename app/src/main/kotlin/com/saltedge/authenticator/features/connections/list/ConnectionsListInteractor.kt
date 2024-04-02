@@ -56,8 +56,8 @@ class ConnectionsListInteractor(
     }
 
     override fun updateNameAndSave(connectionGuid: GUID, newConnectionName: String): Boolean {
-        val connection = connectionsRepository.getByGuid(connectionGuid) ?: return false
         contract?.coroutineScope?.launch(defaultDispatcher) {
+            val connection = connectionsRepository.getByGuid(connectionGuid) ?: return@launch
             connectionsRepository.updateNameAndSave(connection, newConnectionName)
         }
         return true
@@ -68,11 +68,11 @@ class ConnectionsListInteractor(
     }
 
     override fun revokeConnection(connectionGuid: GUID) {
-        val connection = connectionsRepository.getByGuid(connectionGuid) ?: return
-        if (connection.isActive()) {
-            sendRevokeRequestForConnection(connection)
-        } else {
-            contract?.coroutineScope?.launch(defaultDispatcher) {
+        contract?.coroutineScope?.launch(defaultDispatcher) {
+            val connection = connectionsRepository.getByGuid(connectionGuid) ?: return@launch
+            if (connection.isActive()) {
+                sendRevokeRequestForConnection(connection)
+            } else {
                 deleteConnection(guid = connection.guid)
                 updateConnections()
             }

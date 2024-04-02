@@ -40,8 +40,11 @@ class SubmitActionInteractor(
         return appLinkData?.actionIdentifier ?: ""
     }
 
-    override fun getConnection(guid: GUID): RichConnection? {
-        return connectionsRepository.getByGuid(guid)?.toRichConnection(keyStoreManager)
+    override fun getConnection(guid: GUID) {
+        contract?.coroutineScope?.launch {
+            val richConnection = connectionsRepository.getByGuid(guid)?.toRichConnection(keyStoreManager)
+            contract?.onDatasetChanged(richConnection)
+        }
     }
 
     private suspend fun collectConnections(actionAppLinkData: ActionAppLinkData): List<Connection> {
@@ -60,7 +63,7 @@ class SubmitActionInteractor(
 
 interface SubmitActionInteractorAbs {
     fun collectAndProcessConnections(actionAppLinkData: ActionAppLinkData)
-    fun getConnection(guid: GUID): RichConnection?
+    fun getConnection(guid: GUID)
     var contract: SubmitActionInteractorCallback?
     fun getId(): String
     fun getReturnTo(): String
@@ -69,4 +72,5 @@ interface SubmitActionInteractorAbs {
 interface SubmitActionInteractorCallback {
     val coroutineScope: CoroutineScope
     fun processConnections(connections: List<Connection>)
+    fun onDatasetChanged(connection: RichConnection?)
 }

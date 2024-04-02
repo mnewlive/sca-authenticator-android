@@ -27,4 +27,4 @@ fun Connection.setUpdatedAt(value: Long): Connection = apply { updatedAt = value
 
 fun Connection.setSupportEmail(value: String): Connection = apply { supportEmail = value }
 
-fun Connection.save(): Connection? = ConnectionsRepository.saveModel(this)
+suspend fun Connection.save(): Connection? = ConnectionsRepository.saveModel(this)

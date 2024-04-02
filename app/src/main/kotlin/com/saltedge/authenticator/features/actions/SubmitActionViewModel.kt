@@ -79,6 +79,12 @@ class SubmitActionViewModel(
         }
     }
 
+    override fun onDatasetChanged(connection: RichConnection?) {
+        this.richConnection = connection
+        viewMode = if (richConnection == null) ViewMode.ACTION_ERROR else ViewMode.START
+        onViewCreated()
+    }
+
     fun onViewCreated() {
         val currentRichConnection = richConnection
         if (viewMode == ViewMode.START && currentRichConnection != null) {
@@ -115,9 +121,7 @@ class SubmitActionViewModel(
         if (guid.isEmpty()) {
             onCloseEvent.postUnitEvent()
         } else {
-            this.richConnection = interactor.getConnection(guid = guid)
-            viewMode = if (richConnection == null) ViewMode.ACTION_ERROR else ViewMode.START
-            onViewCreated()
+            interactor.getConnection(guid = guid)
         }
     }
 

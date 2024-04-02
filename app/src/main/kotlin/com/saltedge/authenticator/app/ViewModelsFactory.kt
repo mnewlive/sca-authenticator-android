@@ -184,6 +184,7 @@ class ViewModelsFactory @Inject constructor(
                         keyStoreManager = keyStoreManager,
                         v1ApiManager = apiManagerV1,
                         v2ApiManager = apiManagerV2,
+                        defaultDispatcher = Dispatchers.Default
                     )
                 ) as T
             }

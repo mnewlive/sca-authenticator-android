@@ -36,7 +36,7 @@ suspend fun collectRichConnections(
  * @param keyStoreManager data source of keys
  * @return ConnectionAndKey
  */
-fun createRichConnection(
+suspend fun createRichConnection(
     connectionID: ID,
     repository: ConnectionsRepositoryAbs,
     keyStoreManager: KeyManagerAbs
