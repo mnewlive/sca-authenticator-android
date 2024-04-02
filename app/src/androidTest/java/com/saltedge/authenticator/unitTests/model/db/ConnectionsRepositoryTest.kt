@@ -15,18 +15,17 @@ import org.junit.Assert
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
-//import kotlinx.coroutines.test.runTest
 
 @RunWith(AndroidJUnit4::class)
 class ConnectionsRepositoryTest : DatabaseTestCase() {
 
-//    @Test
-//    @Throws(Exception::class)
-//    fun isEmptyTest() = runBlocking {
-//        Assert.assertTrue(ConnectionsRepository.isEmpty())
-//        Assert.assertNotNull(Connection().save())
-//        Assert.assertFalse(ConnectionsRepository.isEmpty())
-//    }
+    @Test
+    @Throws(Exception::class)
+    fun isEmptyTest() = runBlocking {
+        Assert.assertTrue(ConnectionsRepository.isEmpty())
+        Assert.assertNotNull(Connection().save())
+        Assert.assertFalse(ConnectionsRepository.isEmpty())
+    }
 
     @Test
     @Throws(Exception::class)
