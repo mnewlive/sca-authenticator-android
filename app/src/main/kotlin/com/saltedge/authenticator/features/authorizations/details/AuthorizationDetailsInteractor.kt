@@ -28,7 +28,6 @@ abstract class AuthorizationDetailsInteractor(
         get() = richConnection?.connection?.apiVersion
 
     override fun setInitialData(connectionID: ID) {
-
         richConnection = createRichConnection(
             connectionID = connectionID,
             repository = connectionsRepository,
