@@ -132,11 +132,9 @@ class MainActivityViewModel(
     }
 
     fun onUnlock() {
-        viewModelScope.launch {
-            if (!initialQrScanWasStarted && interactor.noConnections()) {
-                onQrScanClickEvent.postUnitEvent()
-                initialQrScanWasStarted = true
-            }
+        if (!initialQrScanWasStarted && interactor.noConnections()) {
+            onQrScanClickEvent.postUnitEvent()
+            initialQrScanWasStarted = true
         }
     }
 

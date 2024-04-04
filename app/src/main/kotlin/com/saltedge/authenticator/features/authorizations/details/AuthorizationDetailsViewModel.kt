@@ -23,8 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import org.joda.time.DateTime
 
 class AuthorizationDetailsViewModel(
-    private val interactorV1: AuthorizationDetailsInteractorAbs,
-    private val interactorV2: AuthorizationDetailsInteractorAbs,
+    private val interactor: AuthorizationDetailsInteractorAbs,
     private val locationManager: DeviceLocationManagerAbs
 ) : BaseAuthorizationViewModel(locationManager),
     LifecycleObserver,
@@ -37,14 +36,14 @@ class AuthorizationDetailsViewModel(
     val authorizationModel = MutableLiveData<AuthorizationItemViewModel>()
     var titleRes: ResId = R.string.authorization_feature_title
         private set
-    override val coroutineScope: CoroutineScope
-        get() = viewModelScope
-    private lateinit var interactor: AuthorizationDetailsInteractorAbs
     private var closeAppOnBackPress: Boolean = true
     private val currentStatus: AuthorizationStatus
         get() = authorizationModel.value?.status ?: AuthorizationStatus.LOADING
     private val authorizationHasFinalMode: Boolean
         get() = authorizationModel.value?.hasFinalStatus ?: false
+
+    override val coroutineScope: CoroutineScope
+        get() = viewModelScope
 
     fun setInitialData(
         identifier: AuthorizationIdentifier?,
@@ -55,7 +54,8 @@ class AuthorizationDetailsViewModel(
         this.titleRes = titleRes ?: R.string.authorization_feature_title
         if (this.titleRes == 0) this.titleRes = R.string.authorization_feature_title
 
-        initInteractor(connectionID = identifier?.connectionID ?: "")
+        interactor.contract = this
+        interactor.setInitialData(identifier?.connectionID ?: "")
 
         val status = if (interactor.noConnection || identifier == null || !identifier.hasAuthorizationID) {
                 AuthorizationStatus.UNAVAILABLE
@@ -172,13 +172,6 @@ class AuthorizationDetailsViewModel(
     private fun closeView() {
         if (closeAppOnBackPress) onCloseAppEvent.postUnitEvent()
         else onCloseViewEvent.postUnitEvent()
-    }
-
-    private fun initInteractor(connectionID: ID) {
-        interactorV2.setInitialData(connectionID)
-        interactor = if (interactorV2.connectionApiVersion == API_V2_VERSION) interactorV2
-        else interactorV1.apply { setInitialData(connectionID) }
-        interactor.contract = this
     }
 
     private fun createInitialItem(

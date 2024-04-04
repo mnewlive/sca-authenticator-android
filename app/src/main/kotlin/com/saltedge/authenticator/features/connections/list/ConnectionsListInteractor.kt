@@ -48,16 +48,14 @@ class ConnectionsListInteractor(
         get() = consentsV1 + consentsV2
 
     override fun updateConnections() {
-        contract?.coroutineScope?.launch(defaultDispatcher) {
             val connections = connectionsRepository.getAllConnections()
             richConnections = connections.mapNotNull { it.toRichConnection(keyStoreManager) }
             notifyDatasetChanges()
-        }
     }
 
     override fun updateNameAndSave(connectionGuid: GUID, newConnectionName: String): Boolean {
+        val connection = connectionsRepository.getByGuid(connectionGuid) ?: return false
         contract?.coroutineScope?.launch(defaultDispatcher) {
-            val connection = connectionsRepository.getByGuid(connectionGuid) ?: return@launch
             connectionsRepository.updateNameAndSave(connection, newConnectionName)
         }
         return true
@@ -68,8 +66,8 @@ class ConnectionsListInteractor(
     }
 
     override fun revokeConnection(connectionGuid: GUID) {
+        val connection = connectionsRepository.getByGuid(connectionGuid) ?: return
         contract?.coroutineScope?.launch(defaultDispatcher) {
-            val connection = connectionsRepository.getByGuid(connectionGuid) ?: return@launch
             if (connection.isActive()) {
                 sendRevokeRequestForConnection(connection)
             } else {

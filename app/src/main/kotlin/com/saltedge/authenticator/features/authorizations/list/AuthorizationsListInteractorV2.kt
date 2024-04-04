@@ -45,8 +45,7 @@ class AuthorizationsListInteractorV2(
 ) : AuthorizationsListInteractorAbs,
     AuthorizationConfirmListener,
     AuthorizationDenyListener,
-    PollingAuthorizationsContract
-{
+    PollingAuthorizationsContract {
     override var contract: AuthorizationsListInteractorCallback? = null
     override val noConnections: Boolean
         get() = richConnections.isEmpty()
@@ -54,11 +53,9 @@ class AuthorizationsListInteractorV2(
     private var richConnections: Map<ID, RichConnection> = emptyMap()
 
     override fun onResume() {
-        contract?.coroutineScope?.launch {
-            richConnections = collectRichConnections()
-            pollingService.contract = this@AuthorizationsListInteractorV2
-            pollingService.start()
-        }
+        richConnections = collectRichConnections()
+        pollingService.contract = this
+        pollingService.start()
     }
 
     override fun onStop() {
@@ -173,7 +170,10 @@ class AuthorizationsListInteractorV2(
             val items: List<AuthorizationItemViewModel> = createViewModels((activeData.filter { it.isNotExpired() } + finishedData))
 
             withContext(Dispatchers.Main) {
-                contract?.onAuthorizationsReceived(data = items, newModelsApiVersion = API_V2_VERSION)
+                contract?.onAuthorizationsReceived(
+                    data = items,
+                    newModelsApiVersion = API_V2_VERSION
+                )
             }
         }
     }
@@ -215,5 +215,5 @@ class AuthorizationsListInteractorV2(
         }
     }
 
-    private suspend fun collectRichConnections() = collectRichConnections(connectionsRepository, keyStoreManager, API_V2_VERSION)
+    private fun collectRichConnections() = collectRichConnections(connectionsRepository, keyStoreManager, API_V2_VERSION)
 }

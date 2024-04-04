@@ -44,9 +44,7 @@ abstract class ConnectProviderInteractor(
 
     override fun setInitialData(initialConnectData: ConnectAppLinkData?, connectionGuid: GUID?) {
         this.initialConnectData = initialConnectData
-        contract?.coroutineScope?.launch(defaultDispatcher) {
-            this@ConnectProviderInteractor.connection = connectionsRepository.getByGuid(connectionGuid) ?: Connection()
-        }
+        this.connection = connectionsRepository.getByGuid(connectionGuid) ?: Connection()
     }
 
     override fun fetchScaConfiguration() {

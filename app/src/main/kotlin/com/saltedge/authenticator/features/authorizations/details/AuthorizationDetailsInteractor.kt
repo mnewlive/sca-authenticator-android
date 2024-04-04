@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 abstract class AuthorizationDetailsInteractor(
     private val connectionsRepository: ConnectionsRepositoryAbs,
-    private val keyStoreManager: KeyManagerAbs,
+    private val keyStoreManager: KeyManagerAbs
 ) : AuthorizationDetailsInteractorAbs {
 
     override var contract: AuthorizationDetailsInteractorCallback? = null
@@ -28,13 +28,12 @@ abstract class AuthorizationDetailsInteractor(
         get() = richConnection?.connection?.apiVersion
 
     override fun setInitialData(connectionID: ID) {
-        contract?.coroutineScope?.launch {
-            richConnection = createRichConnection(
-                connectionID = connectionID,
-                repository = connectionsRepository,
-                keyStoreManager = keyStoreManager
-            )
-        }
+
+        richConnection = createRichConnection(
+            connectionID = connectionID,
+            repository = connectionsRepository,
+            keyStoreManager = keyStoreManager
+        )
     }
 
     protected fun processApiError(error: ApiErrorData) {

@@ -27,15 +27,7 @@ class QrScannerViewModel(
     val onCloseEvent = MutableLiveData<ViewModelEvent<Unit>>()
     val setActivityResult = MutableLiveData<String>()
     val errorMessageResId = MutableLiveData<ResId?>()
-    val descriptionRes = MutableLiveData<ResId>()
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun onResume() {
-        viewModelScope.launch {
-            val resId = if (connectionsRepository.isEmpty()) R.string.scan_qr_description_first else R.string.scan_qr_description
-            descriptionRes.postValue(resId)
-        }
-    }
+    val descriptionRes: ResId = if (connectionsRepository.isEmpty()) R.string.scan_qr_description_first else R.string.scan_qr_description
 
     fun onViewClick(viewId: Int) {
         if (viewId == R.id.closeImageView) onCloseEvent.postUnitEvent()

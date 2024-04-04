@@ -96,9 +96,6 @@ class QrScannerActivity : LockableActivity(), SnackbarAnchorContainer {
     private fun setupViewModel() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(QrScannerViewModel::class.java)
 
-        viewModel.descriptionRes.observe(this, Observer { resId ->
-            binding?.descriptionView?.setText(resId)
-        })
         viewModel.onCloseEvent.observe(this, Observer<ViewModelEvent<Unit>> {
             it.getContentIfNotHandled()?.let { finish() }
         })
@@ -120,6 +117,7 @@ class QrScannerActivity : LockableActivity(), SnackbarAnchorContainer {
 
     private fun setupViews() {
         binding?.closeImageView?.setOnClickListener { view -> viewModel.onViewClick(view.id) }
+        binding?.descriptionView?.setText(viewModel.descriptionRes)
         setupBarcodeDetector()
         setupCameraSource()
         setupSurface()

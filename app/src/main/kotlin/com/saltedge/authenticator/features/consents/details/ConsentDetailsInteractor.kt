@@ -25,7 +25,6 @@ class ConsentDetailsInteractor(
     private val keyStoreManager: KeyManagerAbs,
     private val v1ApiManager: AuthenticatorApiManagerAbs,
     private val v2ApiManager: ScaServiceClientAbs,
-    private val defaultDispatcher: CoroutineDispatcher
 ) : ConsentDetailsInteractorAbs, ConsentRevokeListener {
 
     private var optRichConnection: RichConnection? = null
@@ -37,11 +36,9 @@ class ConsentDetailsInteractor(
         get() = optRichConnection?.connection?.name
 
     override fun setInitialData(connectionGuid: GUID?, consent: ConsentData?) {
-        contract?.coroutineScope?.launch(defaultDispatcher) {
-            val connection = connectionsRepository.getByGuid(connectionGuid) ?: return@launch
-            this@ConsentDetailsInteractor.optRichConnection = connection.toRichConnection(keyStoreManager)
-            this@ConsentDetailsInteractor._consentData = consent
-        }
+        val connection = connectionsRepository.getByGuid(connectionGuid) ?: return
+        this.optRichConnection = connection.toRichConnection(keyStoreManager)
+        this._consentData = consent
     }
 
     override fun revokeConsent() {
@@ -83,7 +80,6 @@ interface ConsentDetailsInteractorAbs {
 }
 
 interface ConsentDetailsInteractorCallback {
-    val coroutineScope: CoroutineScope
     fun onConsentRevokeFailure(error: String)
     fun onConsentRevokeSuccess(consentID: ID)
 }

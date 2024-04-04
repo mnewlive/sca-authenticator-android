@@ -16,8 +16,6 @@ import com.saltedge.authenticator.models.repository.ConnectionsRepository.queryA
 import io.realm.Realm
 import io.realm.RealmQuery
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
@@ -29,11 +27,9 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      *
      * @return boolean, true if the number of connections is zero
      */
-    override suspend fun isEmpty(): Boolean {
-        return withContext(Dispatchers.IO) {
-            RealmManager.getDefaultInstance().use { realm ->
-                realm.where(Connection::class.java).count() == 0L
-            }
+    override fun isEmpty(): Boolean {
+        return RealmManager.getDefaultInstance().use { realm ->
+            realm.where(Connection::class.java).count() == 0L
         }
     }
 
@@ -42,11 +38,9 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      *
      * @return the count of connections
      */
-    override suspend fun getConnectionsCount(): Long {
-        return withContext(Dispatchers.IO) {
-            RealmManager.getDefaultInstance().use { realm ->
-                realm.where(Connection::class.java).count()
-            }
+    override fun getConnectionsCount(): Long {
+        return RealmManager.getDefaultInstance().use { realm ->
+            realm.where(Connection::class.java).count()
         }
     }
 
@@ -56,11 +50,9 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @param providerCode - providerCode of Connection
      * @return the count of connections
      */
-    override suspend fun getConnectionsCountForProvider(providerCode: ID): Long {
-        return withContext(Dispatchers.IO) {
-            RealmManager.getDefaultInstance().use { realm ->
-                realm.where(Connection::class.java).equalTo(KEY_CODE, providerCode).count()
-            }
+    override fun getConnectionsCountForProvider(providerCode: ID): Long {
+        return RealmManager.getDefaultInstance().use { realm ->
+            realm.where(Connection::class.java).equalTo(KEY_CODE, providerCode).count()
         }
     }
 
@@ -70,11 +62,9 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @return boolean, true if count of valid connections is more than 0
      * @see queryActiveConnections
      */
-    override suspend fun hasActiveConnections(): Boolean {
-        return withContext(Dispatchers.IO) {
-            RealmManager.getDefaultInstance().use {
-                it.queryActiveConnections().count() > 0L
-            }
+    override fun hasActiveConnections(): Boolean {
+        return RealmManager.getDefaultInstance().use {
+            it.queryActiveConnections().count() > 0L
         }
     }
 
@@ -83,11 +73,11 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      *
      * @return list of connections
      */
-    override suspend fun getAllConnections(): List<Connection> {
-        return withContext(Dispatchers.IO) {
-            RealmManager.getDefaultInstance().use { realm ->
-                realm.copyFromRealm(realm.where(Connection::class.java).sort(DB_KEY_CREATED_AT).findAll())
-            }
+    override fun getAllConnections(): List<Connection> {
+        return RealmManager.getDefaultInstance().use { realm ->
+            realm.copyFromRealm(
+                realm.where(Connection::class.java).sort(DB_KEY_CREATED_AT).findAll()
+            )
         }
     }
 
@@ -97,11 +87,9 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @return detached connections
      * @see queryActiveConnections
      */
-    override suspend fun getAllActiveConnections(): List<Connection> {
-        return withContext(Dispatchers.IO) {
-            RealmManager.getDefaultInstance().use { realm ->
-                realm.copyFromRealm(realm.queryActiveConnections().findAll())
-            }
+    override fun getAllActiveConnections(): List<Connection> {
+        return RealmManager.getDefaultInstance().use { realm ->
+            realm.copyFromRealm(realm.queryActiveConnections().findAll())
         }
     }
 
@@ -111,27 +99,23 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @return detached connections
      * @see queryActiveConnections
      */
-    override suspend fun getAllActiveConnectionsByApi(apiVersion: String): List<Connection> {
-        return withContext(Dispatchers.IO) {
-            RealmManager.getDefaultInstance().use { realm ->
-                realm.copyFromRealm(
-                    realm.queryActiveConnections()
-                        .equalTo(DB_KEY_API_VERSION, apiVersion)
-                        .findAll()
-                )
-            }
+    override fun getAllActiveConnectionsByApi(apiVersion: String): List<Connection> {
+        return RealmManager.getDefaultInstance().use { realm ->
+            realm.copyFromRealm(
+                realm.queryActiveConnections()
+                    .equalTo(DB_KEY_API_VERSION, apiVersion)
+                    .findAll()
+            )
         }
     }
 
-    override suspend fun getActiveConnectionsWithoutToken(storedPushToken: String): List<Connection> {
-        return withContext(Dispatchers.IO) {
-            RealmManager.getDefaultInstance().use { realm ->
-                realm.copyFromRealm(
-                    realm.queryActiveConnections()
-                        .notEqualTo(DB_KEY_PUSH_TOKEN, storedPushToken)
-                        .findAll()
-                )
-            }
+    override fun getActiveConnectionsWithoutToken(storedPushToken: String): List<Connection> {
+        return RealmManager.getDefaultInstance().use { realm ->
+            realm.copyFromRealm(
+                realm.queryActiveConnections()
+                    .notEqualTo(DB_KEY_PUSH_TOKEN, storedPushToken)
+                    .findAll()
+            )
         }
     }
 
@@ -141,14 +125,11 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @param connectionUrl - connection url of Connection
      * @return detached connections
      */
-    override suspend fun getAllActiveByProvider(providerID: ID): List<Connection> {
-        return withContext(Dispatchers.IO) {
-            RealmManager.getDefaultInstance().use { realmDb ->
-                realmDb.queryActiveConnections()
-                    .equalTo(KEY_CODE, providerID)
-                    .findAll()
-                    .let { realmDb.copyFromRealm(it) }
-            }
+    override fun getAllActiveByProvider(providerID: ID): List<Connection> {
+        return RealmManager.getDefaultInstance().use { realmDb ->
+            realmDb.queryActiveConnections()
+                .equalTo(KEY_CODE, providerID)
+                .findAll()
         }
     }
 
@@ -158,14 +139,12 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @param providerID Provider identifier
      * @return Connections
      */
-    override suspend fun getAllActiveByConnectUrl(connectionUrl: String): List<Connection> {
-        return withContext(Dispatchers.IO) {
-            RealmManager.getDefaultInstance().use { realmDb ->
-                realmDb.queryActiveConnections()
-                    .equalTo(DB_KEY_CONNECT_URL, connectionUrl)
-                    .findAll()
-                    .let { realmDb.copyFromRealm(it) }
-            }
+    override fun getAllActiveByConnectUrl(connectionUrl: String): List<Connection> {
+        return RealmManager.getDefaultInstance().use { realmDb ->
+            realmDb.queryActiveConnections()
+                .equalTo(DB_KEY_CONNECT_URL, connectionUrl)
+                .findAll()
+                .let { realmDb.copyFromRealm(it) }
         }
     }
 
@@ -209,7 +188,8 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @return saved Connection
      */
     override suspend fun saveModel(connection: Connection): Connection? {
-        if (connection.createdAt == 0L) connection.createdAt = DateTime.now().withZone(DateTimeZone.UTC).millis
+        if (connection.createdAt == 0L) connection.createdAt =
+            DateTime.now().withZone(DateTimeZone.UTC).millis
         connection.updatedAt = DateTime.now().withZone(DateTimeZone.UTC).millis
 
         return withContext(Dispatchers.IO) {
@@ -257,7 +237,7 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @param connection - Connection model
      * @return boolean, true if connection exists
      */
-    override suspend fun connectionExists(connection: Connection): Boolean =
+    override fun connectionExists(connection: Connection): Boolean =
         connectionExists(connection.guid)
 
     /**
@@ -267,7 +247,7 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @return boolean, true if connection exist
      * @see getByGuid
      */
-    override suspend fun connectionExists(connectionGuid: GUID?): Boolean =
+    override fun connectionExists(connectionGuid: GUID?): Boolean =
         getByGuid(connectionGuid) != null
 
     /**
@@ -276,21 +256,17 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @param connectionGuid - guid (optional) of Connection
      * @return Connection with a specific guid
      */
-    override suspend fun getByGuid(connectionGuid: GUID?): Connection? {
-        return withContext(Dispatchers.IO) {
-            var savedConnection: Connection? = null
-            RealmManager.getDefaultInstance().use { realmDb ->
-                if (connectionGuid.isNullOrEmpty()) null
-                else {
-                    realmDb.where(Connection::class.java).equalTo(
-                        KEY_GUID,
-                        connectionGuid
-                    ).findFirst()?.let {
-                        savedConnection = realmDb.copyFromRealm(it)
-                    }
+    override fun getByGuid(connectionGuid: GUID?): Connection? {
+        return RealmManager.getDefaultInstance().use { realmDb ->
+            if (connectionGuid.isNullOrEmpty()) null
+            else {
+                realmDb.where(Connection::class.java).equalTo(
+                    KEY_GUID,
+                    connectionGuid
+                ).findFirst()?.let {
+                    realmDb.copyFromRealm(it)
                 }
             }
-            savedConnection
         }
     }
 
@@ -300,14 +276,12 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @param connectionID - id of Connection
      * @return Connection by id
      */
-    override suspend fun getById(connectionID: String): Connection? = withContext(Dispatchers.IO) {
-        var savedConnection: Connection? = null
-        RealmManager.getDefaultInstance().use { realmDb ->
+    override fun getById(connectionID: String): Connection? {
+        return RealmManager.getDefaultInstance().use { realmDb ->
             realmDb.where(Connection::class.java).equalTo(KEY_ID, connectionID).findFirst()?.let {
-                savedConnection = realmDb.copyFromRealm(it)
+                realmDb.copyFromRealm(it)
             }
         }
-        savedConnection
     }
 
     /**
@@ -352,20 +326,20 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
 }
 
 interface ConnectionsRepositoryAbs {
-    suspend fun isEmpty(): Boolean
-    suspend fun getConnectionsCount(): Long
-    suspend fun getConnectionsCountForProvider(providerCode: ID): Long
-    suspend fun hasActiveConnections(): Boolean
-    suspend fun connectionExists(connection: Connection): Boolean
-    suspend fun connectionExists(connectionGuid: GUID?): Boolean
-    suspend fun getAllConnections(): List<Connection>
-    suspend fun getAllActiveConnections(): List<Connection>
-    suspend fun getAllActiveConnectionsByApi(apiVersion: String): List<Connection>
-    suspend fun getAllActiveByConnectUrl(connectionUrl: String): List<Connection>
-    suspend fun getActiveConnectionsWithoutToken(storedPushToken: String): List<Connection>
-    suspend fun getAllActiveByProvider(providerID: ID): List<Connection>
-    suspend fun getByGuid(connectionGuid: GUID?): Connection?
-    suspend fun getById(connectionID: ID): Connection?
+    fun isEmpty(): Boolean
+    fun getConnectionsCount(): Long
+    fun getConnectionsCountForProvider(providerCode: ID): Long
+    fun hasActiveConnections(): Boolean
+    fun connectionExists(connection: Connection): Boolean
+    fun connectionExists(connectionGuid: GUID?): Boolean
+    fun getAllConnections(): List<Connection>
+    fun getAllActiveConnections(): List<Connection>
+    fun getAllActiveConnectionsByApi(apiVersion: String): List<Connection>
+    fun getAllActiveByConnectUrl(connectionUrl: String): List<Connection>
+    fun getActiveConnectionsWithoutToken(storedPushToken: String): List<Connection>
+    fun getAllActiveByProvider(providerID: ID): List<Connection>
+    fun getByGuid(connectionGuid: GUID?): Connection?
+    fun getById(connectionID: ID): Connection?
     suspend fun deleteAllConnections()
     suspend fun deleteConnection(connectionGuid: GUID): Boolean
     suspend fun invalidateConnectionsByTokens(accessTokens: List<Token>)

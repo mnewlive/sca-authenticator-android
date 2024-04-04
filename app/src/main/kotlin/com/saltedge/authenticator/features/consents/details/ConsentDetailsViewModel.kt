@@ -52,9 +52,6 @@ class ConsentDetailsViewModel(
     val revokeErrorEvent = MutableLiveData<ViewModelEvent<String>>()
     val revokeSuccessEvent = MutableLiveData<ViewModelEvent<String>>()
 
-    override val coroutineScope: CoroutineScope
-        get() = viewModelScope
-
     init {
         context?.getString(R.string.consent_details_feature_title)?.let {
             fragmentTitle.postValue(it)

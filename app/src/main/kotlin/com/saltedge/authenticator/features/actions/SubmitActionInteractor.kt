@@ -13,23 +13,19 @@ import com.saltedge.authenticator.models.toRichConnection
 import com.saltedge.authenticator.sdk.v2.api.API_V2_VERSION
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 class SubmitActionInteractor(
-    private val defaultDispatcher: CoroutineDispatcher,
     private val connectionsRepository: ConnectionsRepositoryAbs,
     private val keyStoreManager: KeyManagerAbs
-    ): SubmitActionInteractorAbs {
+) : SubmitActionInteractorAbs {
 
     override var contract: SubmitActionInteractorCallback? = null
     private var appLinkData: ActionAppLinkData? = null
 
     override fun collectAndProcessConnections(actionAppLinkData: ActionAppLinkData) {
-        contract?.coroutineScope?.launch(defaultDispatcher) {
-            val connections = collectConnections(actionAppLinkData)
-            appLinkData = actionAppLinkData
-            contract?.processConnections(connections)
-        }
+        val connections = collectConnections(actionAppLinkData)
+        appLinkData = actionAppLinkData
+        contract?.processConnections(connections)
     }
 
     override fun getReturnTo(): String {
@@ -41,13 +37,11 @@ class SubmitActionInteractor(
     }
 
     override fun getConnection(guid: GUID) {
-        contract?.coroutineScope?.launch {
-            val richConnection = connectionsRepository.getByGuid(guid)?.toRichConnection(keyStoreManager)
-            contract?.onDatasetChanged(richConnection)
-        }
+        val richConnection = connectionsRepository.getByGuid(guid)?.toRichConnection(keyStoreManager)
+        contract?.onDatasetChanged(richConnection)
     }
 
-    private suspend fun collectConnections(actionAppLinkData: ActionAppLinkData): List<Connection> {
+    private fun collectConnections(actionAppLinkData: ActionAppLinkData): List<Connection> {
         val connections = if (actionAppLinkData.apiVersion == API_V2_VERSION) {
             actionAppLinkData.providerID?.let {
                 connectionsRepository.getAllActiveByProvider(providerID = it)
