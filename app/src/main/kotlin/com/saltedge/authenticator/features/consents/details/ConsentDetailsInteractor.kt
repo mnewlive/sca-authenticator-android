@@ -16,6 +16,9 @@ import com.saltedge.authenticator.sdk.AuthenticatorApiManagerAbs
 import com.saltedge.authenticator.sdk.constants.API_V1_VERSION
 import com.saltedge.authenticator.sdk.v2.ScaServiceClientAbs
 import com.saltedge.authenticator.sdk.v2.api.API_V2_VERSION
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 class ConsentDetailsInteractor(
     private val connectionsRepository: ConnectionsRepositoryAbs,

@@ -37,9 +37,11 @@ class ConsentsListInteractor(
     override var consents: List<ConsentData> = emptyList()
     private var optRichConnection: RichConnection? = null
 
-    override fun updateConnection(connectionGuid: GUID?): ConnectionAbs? {
-        return connectionsRepository.getByGuid(connectionGuid)?.also {
-            optRichConnection = it.toRichConnection(keyStoreManager)
+    override fun updateConnection(connectionGuid: GUID?) {
+        contract?.coroutineScope?.launch(defaultDispatcher) {
+            val connection = connectionsRepository.getByGuid(connectionGuid)
+            optRichConnection= connection?.toRichConnection(keyStoreManager)
+            contract?.onConnectionUpdated(optRichConnection)
         }
     }
 
@@ -85,7 +87,7 @@ class ConsentsListInteractor(
 interface ConsentsListInteractorAbs {
     var contract: ConsentsListInteractorCallback?
     var consents: List<ConsentData>
-    fun updateConnection(connectionGuid: GUID?): ConnectionAbs?
+    fun updateConnection(connectionGuid: GUID?)
     fun updateConsents()
     fun onNewConsentsReceived(result: List<ConsentData>)
     fun getConsent(consentId: ID): ConsentData?
@@ -95,4 +97,5 @@ interface ConsentsListInteractorAbs {
 interface ConsentsListInteractorCallback {
     val coroutineScope: CoroutineScope
     fun onDatasetChanged(consents: List<ConsentData>)
+    fun onConnectionUpdated(optRichConnection: RichConnection?)
 }

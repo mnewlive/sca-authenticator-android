@@ -12,6 +12,7 @@ import android.text.SpannedString
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.saltedge.authenticator.R
 import com.saltedge.authenticator.app.KEY_GUID
 import com.saltedge.authenticator.app.guid
@@ -26,6 +27,7 @@ import com.saltedge.authenticator.models.ViewModelEvent
 import com.saltedge.authenticator.tools.daysTillExpire
 import com.saltedge.authenticator.tools.mediumTypefaceSpan
 import com.saltedge.authenticator.tools.toDateFormatString
+import kotlinx.coroutines.CoroutineScope
 import org.joda.time.DateTime
 import java.lang.ref.WeakReference
 

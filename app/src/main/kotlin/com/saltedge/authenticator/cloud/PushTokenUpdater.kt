@@ -29,18 +29,16 @@ open class PushTokenUpdater(
     private var richConnections: Map<ID, RichConnection> = emptyMap()
 
     fun updatePushToken() {
-        coroutineScope.launch {
-            connections = connectionsRepository.getActiveConnectionsWithoutToken(preferenceRepository.cloudMessagingToken)
-            richConnections = connections.mapNotNull { it.toRichConnectionPair(keyStoreManager) }.toMap()
-            connections.mapNotNull { connection -> richConnections[connection.id] }
-                .forEach { richConnection ->
-                    apiManager.updatePushToken(
-                        richConnection = richConnection,
-                        currentPushToken = richConnection.connection.pushToken,
-                        callback = this@PushTokenUpdater
-                    )
-                }
-        }
+        connections = connectionsRepository.getActiveConnectionsWithoutToken(preferenceRepository.cloudMessagingToken)
+        richConnections = connections.mapNotNull { it.toRichConnectionPair(keyStoreManager) }.toMap()
+        connections.mapNotNull { connection -> richConnections[connection.id] }
+            .forEach { richConnection ->
+                apiManager.updatePushToken(
+                    richConnection = richConnection,
+                    currentPushToken = richConnection.connection.pushToken,
+                    callback = this
+                )
+            }
     }
 
     override fun onUpdatePushTokenSuccess(connectionID: ID) {

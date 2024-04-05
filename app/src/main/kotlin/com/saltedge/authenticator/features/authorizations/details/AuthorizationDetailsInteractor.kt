@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 abstract class AuthorizationDetailsInteractor(
     private val connectionsRepository: ConnectionsRepositoryAbs,
-    private val keyStoreManager: KeyManagerAbs,
+    private val keyStoreManager: KeyManagerAbs
 ) : AuthorizationDetailsInteractorAbs {
 
     override var contract: AuthorizationDetailsInteractorCallback? = null

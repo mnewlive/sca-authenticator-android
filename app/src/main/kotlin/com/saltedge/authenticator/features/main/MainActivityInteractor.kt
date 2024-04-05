@@ -24,7 +24,7 @@ class MainActivityInteractor(
     private val pushTokenUpdater: PushTokenUpdater
 ) {
 
-    suspend fun noConnections(): Boolean {
+    fun noConnections(): Boolean {
         return connectionsRepository.isEmpty()
     }
 
@@ -32,7 +32,7 @@ class MainActivityInteractor(
         pushTokenUpdater.updatePushToken()
     }
 
-    suspend fun sendRevokeRequestForConnections() {
+    fun sendRevokeRequestForConnections() {
         val richConnections: List<RichConnection> = connectionsRepository.getAllActiveConnections()
             .filter { it.isActive() }
             .mapNotNull { it.toRichConnection(keyStoreManager) }
