@@ -6,6 +6,9 @@ package com.saltedge.authenticator.app
 const val QR_SCAN_REQUEST_CODE = 322
 const val DELETE_ALL_REQUEST_CODE = 327
 
+const val TERMS_LINK = "https://www.saltedge.com/pages/authenticator_terms"
+const val DEFAULT_SUPPORT_EMAIL_LINK = "authenticator@saltedge.com"
+
 // used for database queries
 const val DB_KEY_ACCESS_TOKEN = "accessToken"
 const val DB_KEY_CREATED_AT = "createdAt"
