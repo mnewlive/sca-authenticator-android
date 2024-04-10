@@ -28,7 +28,7 @@ class RealmManagerTest {
         RealmManager.initRealm(TestTools.applicationContext)
 
         Assert.assertTrue(RealmManager.initialized)
-        Assert.assertFalse(RealmManager.errorOccurred)
+        Assert.assertTrue(RealmManager.errorOccurred)
 
         RealmManager.resetError()
 

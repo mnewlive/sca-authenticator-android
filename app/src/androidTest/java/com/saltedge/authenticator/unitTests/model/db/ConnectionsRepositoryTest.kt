@@ -11,12 +11,12 @@ import com.saltedge.authenticator.models.repository.ConnectionsRepository
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Assert.assertNull
-import org.junit.Test
-import org.junit.runner.RunWith
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Test
+import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ConnectionsRepositoryTest : DatabaseTestCase() {
@@ -91,14 +91,9 @@ class ConnectionsRepositoryTest : DatabaseTestCase() {
         assertTrue(ConnectionsRepository.isEmpty())
 
         Connection().setGuid("guid1").setAccessToken("").setStatus(ConnectionStatus.INACTIVE).save()
-        Thread.sleep(100);
         Connection().setGuid("guid2").setAccessToken("").setStatus(ConnectionStatus.ACTIVE).save()
-        Thread.sleep(100);
-        Connection().setGuid("guid3").setAccessToken("token3").setStatus(ConnectionStatus.INACTIVE)
-            .save()
-        Thread.sleep(100);
-        Connection().setGuid("guid4").setAccessToken("token4").setStatus(ConnectionStatus.ACTIVE)
-            .save()
+        Connection().setGuid("guid3").setAccessToken("token3").setStatus(ConnectionStatus.INACTIVE).save()
+        Connection().setGuid("guid4").setAccessToken("token4").setStatus(ConnectionStatus.ACTIVE).save()
 
         assertThat(
             ConnectionsRepository.getAllConnections().map { it.guid },
@@ -169,10 +164,8 @@ class ConnectionsRepositoryTest : DatabaseTestCase() {
     @Test
     @Throws(Exception::class)
     fun invalidateConnectionsByTokensTest() = runBlocking {
-        Connection().setGuid("guid1").setAccessToken("token3").setStatus(ConnectionStatus.INACTIVE)
-            .save()
-        Connection().setGuid("guid2").setAccessToken("token4").setStatus(ConnectionStatus.ACTIVE)
-            .save()
+        Connection().setGuid("guid1").setAccessToken("token3").setStatus(ConnectionStatus.INACTIVE).save()
+        Connection().setGuid("guid2").setAccessToken("token4").setStatus(ConnectionStatus.ACTIVE).save()
 
         assertThat(
             ConnectionsRepository.getAllActiveConnections().map { it.guid },
@@ -276,12 +269,8 @@ class ConnectionsRepositoryTest : DatabaseTestCase() {
     @Throws(Exception::class)
     fun fixNameAndSaveTest() = runBlocking {
         Connection().setGuid("guid1").setCode("demo").setName("Demo").save()
-        Thread.sleep(100);
         Connection().setGuid("guid2").setCode("test").setName("Test").save()
-        Thread.sleep(100);
-        ConnectionsRepository.fixNameAndSave(
-            Connection().setGuid("guid3").setCode("demo").setName("Demo")
-        )
+        ConnectionsRepository.fixNameAndSave(Connection().setGuid("guid3").setCode("demo").setName("Demo"))
 
         val models = ConnectionsRepository.getAllConnections()
 
@@ -301,13 +290,10 @@ class ConnectionsRepositoryTest : DatabaseTestCase() {
         assertTrue(ConnectionsRepository.isEmpty())
 
         Connection().setGuid("guid1").setAccessToken("token1").setStatus(ConnectionStatus.ACTIVE)
-            .apply {
-                pushToken = "pushToken"
-            }.save()
+            .apply { pushToken = "pushToken" }.save()
 
         assertThat(
-            ConnectionsRepository.getActiveConnectionsWithoutToken(storedPushToken = "storedPushToken")
-                .map { it.guid },
+            ConnectionsRepository.getActiveConnectionsWithoutToken(storedPushToken = "storedPushToken").map { it.guid },
             equalTo(listOf("guid1"))
         )
     }
@@ -318,13 +304,10 @@ class ConnectionsRepositoryTest : DatabaseTestCase() {
         assertTrue(ConnectionsRepository.isEmpty())
 
         Connection().setGuid("guid1").setAccessToken("token1").setStatus(ConnectionStatus.INACTIVE)
-            .apply {
-                pushToken = "pushToken"
-            }.save()
+            .apply { pushToken = "pushToken" }.save()
 
         assertThat(
-            ConnectionsRepository.getActiveConnectionsWithoutToken(storedPushToken = "storedPushToken")
-                .map { it.guid },
+            ConnectionsRepository.getActiveConnectionsWithoutToken(storedPushToken = "storedPushToken").map { it.guid },
             equalTo(listOf())
         )
     }
