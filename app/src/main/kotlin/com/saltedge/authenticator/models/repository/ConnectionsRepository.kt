@@ -3,7 +3,13 @@
  */
 package com.saltedge.authenticator.models.repository
 
-import com.saltedge.authenticator.app.*
+import com.saltedge.authenticator.app.DB_KEY_ACCESS_TOKEN
+import com.saltedge.authenticator.app.DB_KEY_API_VERSION
+import com.saltedge.authenticator.app.DB_KEY_CONNECT_URL
+import com.saltedge.authenticator.app.DB_KEY_CREATED_AT
+import com.saltedge.authenticator.app.DB_KEY_PUSH_TOKEN
+import com.saltedge.authenticator.app.KEY_CODE
+import com.saltedge.authenticator.app.KEY_GUID
 import com.saltedge.authenticator.core.api.KEY_ID
 import com.saltedge.authenticator.core.api.KEY_STATUS
 import com.saltedge.authenticator.core.model.ConnectionStatus
@@ -12,11 +18,9 @@ import com.saltedge.authenticator.core.model.ID
 import com.saltedge.authenticator.core.model.Token
 import com.saltedge.authenticator.models.Connection
 import com.saltedge.authenticator.models.realm.RealmManager
-import com.saltedge.authenticator.models.repository.ConnectionsRepository.queryActiveConnections
 import io.realm.Realm
 import io.realm.RealmQuery
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import io.realm.kotlin.executeTransactionAwait
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 
@@ -39,9 +43,7 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @return the count of connections
      */
     override fun getConnectionsCount(): Long {
-        return RealmManager.getDefaultInstance().use { realm ->
-            realm.where(Connection::class.java).count()
-        }
+        return RealmManager.getDefaultInstance().use { it.where(Connection::class.java).count() }
     }
 
     /**
@@ -63,9 +65,7 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @see queryActiveConnections
      */
     override fun hasActiveConnections(): Boolean {
-        return RealmManager.getDefaultInstance().use {
-            it.queryActiveConnections().count() > 0L
-        }
+        return RealmManager.getDefaultInstance().use { it.queryActiveConnections().count() > 0L }
     }
 
     /**
@@ -75,9 +75,7 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      */
     override fun getAllConnections(): List<Connection> {
         return RealmManager.getDefaultInstance().use { realm ->
-            realm.copyFromRealm(
-                realm.where(Connection::class.java).sort(DB_KEY_CREATED_AT).findAll()
-            )
+            realm.copyFromRealm(realm.where(Connection::class.java).sort(DB_KEY_CREATED_AT).findAll())
         }
     }
 
@@ -88,9 +86,7 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @see queryActiveConnections
      */
     override fun getAllActiveConnections(): List<Connection> {
-        return RealmManager.getDefaultInstance().use { realm ->
-            realm.copyFromRealm(realm.queryActiveConnections().findAll())
-        }
+        return RealmManager.getDefaultInstance().use { it.copyFromRealm(it.queryActiveConnections().findAll()) }
     }
 
     /**
@@ -120,9 +116,9 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
     }
 
     /**
-     * Get all valid/active Connections filtered by connection url
+     * Get all valid/active Connections filtered by provider code
      *
-     * @param connectionUrl - connection url of Connection
+     * @param providerID - code of provider
      * @return detached connections
      */
     override fun getAllActiveByProvider(providerID: ID): List<Connection> {
@@ -134,9 +130,9 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
     }
 
     /**
-     * Get all valid/active Connections filtered by Provider identifier
+     * Get all valid/active Connections filtered by Provider connection url
      *
-     * @param providerID Provider identifier
+     * @param connectionUrl Provider connection URL
      * @return Connections
      */
     override fun getAllActiveByConnectUrl(connectionUrl: String): List<Connection> {
@@ -152,10 +148,8 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * Delete all connections from database
      */
     override suspend fun deleteAllConnections() {
-        withContext(Dispatchers.IO) {
-            RealmManager.getDefaultInstance().use { realmDb ->
-                realmDb.executeTransaction { realmDb.delete(Connection::class.java) }
-            }
+        RealmManager.getDefaultInstance().use { realmDb ->
+            realmDb.executeTransactionAwait { transactionRealm -> transactionRealm.delete(Connection::class.java) }
         }
     }
 
@@ -168,14 +162,12 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
     override suspend fun deleteConnection(connectionGuid: GUID): Boolean {
         if (connectionGuid.isEmpty() || !connectionExists(connectionGuid)) return false
 
-        withContext(Dispatchers.IO) {
-            RealmManager.getDefaultInstance().use { realmDb ->
-                realmDb.executeTransaction { transaction ->
-                    transaction.where(Connection::class.java)
-                        .equalTo(KEY_GUID, connectionGuid)
-                        .findAll()
-                        .deleteAllFromRealm()
-                }
+        RealmManager.getDefaultInstance().use { realmDb ->
+            realmDb.executeTransactionAwait { transactionRealm ->
+                transactionRealm.where(Connection::class.java)
+                    .equalTo(KEY_GUID, connectionGuid)
+                    .findAll()
+                    .deleteAllFromRealm()
             }
         }
         return true
@@ -188,19 +180,16 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @return saved Connection
      */
     override suspend fun saveModel(connection: Connection): Connection? {
-        if (connection.createdAt == 0L) connection.createdAt =
-            DateTime.now().withZone(DateTimeZone.UTC).millis
+        if (connection.createdAt == 0L) connection.createdAt = DateTime.now().withZone(DateTimeZone.UTC).millis
         connection.updatedAt = DateTime.now().withZone(DateTimeZone.UTC).millis
 
-        return withContext(Dispatchers.IO) {
-            var savedConnection: Connection? = null
-            RealmManager.getDefaultInstance().use { realmDb ->
-                realmDb.executeTransaction { transaction ->
-                    savedConnection = realmDb.copyFromRealm(transaction.copyToRealmOrUpdate(connection))
-                }
+        var resultConnection: Connection? = null
+        RealmManager.getDefaultInstance().use { realmDb ->
+            realmDb.executeTransactionAwait { transactionRealm ->
+                resultConnection = transactionRealm.copyFromRealm(transactionRealm.copyToRealmOrUpdate(connection))
             }
-            savedConnection
         }
+        return resultConnection
     }
 
     /**
@@ -211,22 +200,14 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @param accessTokens - list of access tokens
      */
     override suspend fun invalidateConnectionsByTokens(accessTokens: List<Token>) {
-        withContext(Dispatchers.IO) {
-            RealmManager.getDefaultInstance().use { realmDb ->
-                val connections = realmDb.where(Connection::class.java)
+        RealmManager.getDefaultInstance().use { realmDb ->
+            realmDb.executeTransactionAwait { transactionRealm ->
+                transactionRealm.where(Connection::class.java)
                     .`in`(DB_KEY_ACCESS_TOKEN, accessTokens.toTypedArray())
-                    .findAll()
-
-                realmDb.executeTransaction { transaction ->
-                    connections.forEach { connection ->
-                        val model = transaction.where(Connection::class.java)
-                            .equalTo(KEY_GUID, connection.guid)
-                            .findFirst()
-
-                        model?.status = ConnectionStatus.INACTIVE.toString()
-                        model?.accessToken = ""
+                    .findAll().forEach { connection ->
+                        connection?.status = ConnectionStatus.INACTIVE.toString()
+                        connection?.accessToken = ""
                     }
-                }
             }
         }
     }
