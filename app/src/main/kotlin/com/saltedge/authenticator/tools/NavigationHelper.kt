@@ -17,6 +17,7 @@ import com.saltedge.authenticator.R
 import com.saltedge.authenticator.app.DEFAULT_SUPPORT_EMAIL_LINK
 import com.saltedge.authenticator.app.QR_SCAN_REQUEST_CODE
 import com.saltedge.authenticator.app.defaultTransition
+import com.saltedge.authenticator.features.main.MainActivity
 import com.saltedge.authenticator.features.qr.QrScannerActivity
 import com.saltedge.authenticator.widget.security.KEY_SKIP_PIN
 import timber.log.Timber
@@ -80,6 +81,24 @@ fun FragmentActivity.showQrScannerActivity() {
         this.startActivityForResult(
             Intent(this, QrScannerActivity::class.java).apply { putExtra(KEY_SKIP_PIN, true) },
             QR_SCAN_REQUEST_CODE
+        )
+    } catch (ignored: IllegalStateException) {
+    } catch (ignored: ActivityNotFoundException) {
+    } catch (e: Exception) {
+        Timber.e(e)
+    }
+}
+
+/**
+ * Show MainActivity
+ *
+ * @receiver fragment activity
+ */
+fun FragmentActivity.showMainActivity() {
+    try {
+        this.startActivity(Intent(this, MainActivity::class.java)
+                .apply { putExtra(KEY_SKIP_PIN, true) }
+                .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK }
         )
     } catch (ignored: IllegalStateException) {
     } catch (ignored: ActivityNotFoundException) {

@@ -35,6 +35,7 @@ import com.saltedge.authenticator.sdk.api.model.authorization.AuthorizationIdent
 import com.saltedge.authenticator.tools.getErrorMessage
 import com.saltedge.authenticator.tools.popBackStack
 import com.saltedge.authenticator.tools.showInfoDialog
+import com.saltedge.authenticator.tools.showMainActivity
 import com.saltedge.authenticator.widget.fragment.BaseFragment
 import java.util.*
 import javax.inject.Inject
@@ -161,6 +162,9 @@ class AuthorizationDetailsFragment : BaseFragment(),
             binding.headerView.visibility = it.timeViewVisibility
             binding.contentView.setTitleAndDescription(it.title, it.description)
             binding.contentView.setViewMode(it.status)
+        })
+        viewModel.onShowAuthorizationsListEvent.observe(this, Observer<ViewModelEvent<Unit>> {
+            it.getContentIfNotHandled()?.let { activity?.showMainActivity() }
         })
         viewModel.onRequestPermissionEvent.observe(this, Observer { event ->
             event?.let {
