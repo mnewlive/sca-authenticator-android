@@ -75,9 +75,6 @@ class PasscodeEditFragment : BaseFragment(), DialogHandlerListener {
         viewModel.titleRes.observe(this, Observer {
             binding.passcodeEditView.title = getString(it)
         })
-        viewModel.loaderVisibility.observe(this, Observer {
-            binding.loaderView.root.visibility = it
-        })
         viewModel.passcodeInputMode.observe(this, Observer {
             binding.passcodeEditView.inputMode = it
         })
