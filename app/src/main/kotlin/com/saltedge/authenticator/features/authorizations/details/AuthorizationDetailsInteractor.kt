@@ -11,6 +11,7 @@ import com.saltedge.authenticator.core.model.ID
 import com.saltedge.authenticator.core.model.RichConnection
 import com.saltedge.authenticator.core.tools.secure.KeyManagerAbs
 import com.saltedge.authenticator.models.createRichConnection
+import com.saltedge.authenticator.models.repository.ConnectionsRepository
 import com.saltedge.authenticator.models.repository.ConnectionsRepositoryAbs
 import kotlinx.coroutines.launch
 
@@ -26,6 +27,13 @@ abstract class AuthorizationDetailsInteractor(
         get() = richConnection == null
     override val connectionApiVersion: String?
         get() = richConnection?.connection?.apiVersion
+
+    companion object {
+        fun getApiVersion(connectionID: String): String? {
+            val connection = ConnectionsRepository.getById(connectionID)
+            return connection?.apiVersion
+        }
+    }
 
     override fun setInitialData(connectionID: ID) {
         richConnection = createRichConnection(

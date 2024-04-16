@@ -3,6 +3,7 @@
  */
 package com.saltedge.authenticator.features.authorizations.details
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.saltedge.authenticator.R
 import com.saltedge.authenticator.core.api.model.DescriptionData
@@ -41,7 +42,6 @@ class AuthorizationDetailsViewModel(
     var titleRes: ResId = R.string.authorization_feature_title
         private set
     private lateinit var interactor: AuthorizationDetailsInteractorAbs
-    private var savedAuthorizationID: String? = null
     private var isConfirmationInProgress = false
     private var closeAppOnBackPress: Boolean = true
     private val currentStatus: AuthorizationStatus
@@ -59,9 +59,14 @@ class AuthorizationDetailsViewModel(
         if (this.titleRes == 0) this.titleRes = R.string.authorization_feature_title
 
         val connectionID = identifier?.connectionID ?: ""
-        interactorV2.setInitialData(connectionID)
-        interactor = if (interactorV2.connectionApiVersion == API_V2_VERSION) interactorV2
-        else interactorV1.apply { setInitialData(connectionID) }
+        val apiVersion = AuthorizationDetailsInteractor.getApiVersion(connectionID)
+
+        interactor = if (apiVersion == API_V2_VERSION) {
+            interactorV2
+        } else {
+            interactorV1
+        }
+        interactor.setInitialData(connectionID = connectionID)
         interactor.contract = this
 
         val status = if (interactor.noConnection || identifier == null || !identifier.hasAuthorizationID) {
@@ -173,9 +178,8 @@ class AuthorizationDetailsViewModel(
 
     private fun startPolling() {
         val authorizationID = authorizationModel.value?.authorizationID ?: return
-        if (authorizationID != savedAuthorizationID && currentStatus != AuthorizationStatus.UNAVAILABLE &&
+        if (currentStatus != AuthorizationStatus.UNAVAILABLE &&
             !currentStatus.isFinal() && !isConfirmationInProgress) {
-            savedAuthorizationID = authorizationID
             interactor.startPolling(authorizationID = authorizationID)
         } else {
             onShowAuthorizationsListEvent.postUnitEvent()
