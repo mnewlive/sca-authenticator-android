@@ -7,7 +7,6 @@ import androidx.lifecycle.*
 import com.saltedge.authenticator.R
 import com.saltedge.authenticator.core.api.model.DescriptionData
 import com.saltedge.authenticator.core.api.model.error.ApiErrorData
-import com.saltedge.authenticator.core.model.ID
 import com.saltedge.authenticator.features.authorizations.common.AuthorizationItemViewModel
 import com.saltedge.authenticator.features.authorizations.common.AuthorizationStatus
 import com.saltedge.authenticator.features.authorizations.common.BaseAuthorizationViewModel
@@ -23,27 +22,30 @@ import kotlinx.coroutines.CoroutineScope
 import org.joda.time.DateTime
 
 class AuthorizationDetailsViewModel(
-    private val interactor: AuthorizationDetailsInteractorAbs,
+    private val interactorV1: AuthorizationDetailsInteractorAbs,
+    private val interactorV2: AuthorizationDetailsInteractorAbs,
     private val locationManager: DeviceLocationManagerAbs
 ) : BaseAuthorizationViewModel(locationManager),
     LifecycleObserver,
     AuthorizationDetailsInteractorCallback {
 
+    override val coroutineScope: CoroutineScope
+        get() = viewModelScope
     val onErrorEvent = MutableLiveData<ViewModelEvent<ApiErrorData>>()
     val onCloseAppEvent = MutableLiveData<ViewModelEvent<Unit>>()
     val onCloseViewEvent = MutableLiveData<ViewModelEvent<Unit>>()
     val onTimeUpdateEvent = MutableLiveData<ViewModelEvent<Unit>>()
     val authorizationModel = MutableLiveData<AuthorizationItemViewModel>()
+    val onShowAuthorizationsListEvent = MutableLiveData<ViewModelEvent<Unit>>()
     var titleRes: ResId = R.string.authorization_feature_title
         private set
+    private lateinit var interactor: AuthorizationDetailsInteractorAbs
+    private var isConfirmationInProgress = false
     private var closeAppOnBackPress: Boolean = true
     private val currentStatus: AuthorizationStatus
         get() = authorizationModel.value?.status ?: AuthorizationStatus.LOADING
     private val authorizationHasFinalMode: Boolean
         get() = authorizationModel.value?.hasFinalStatus ?: false
-
-    override val coroutineScope: CoroutineScope
-        get() = viewModelScope
 
     fun setInitialData(
         identifier: AuthorizationIdentifier?,
@@ -54,8 +56,16 @@ class AuthorizationDetailsViewModel(
         this.titleRes = titleRes ?: R.string.authorization_feature_title
         if (this.titleRes == 0) this.titleRes = R.string.authorization_feature_title
 
+        val connectionID = identifier?.connectionID ?: ""
+        val apiVersion = AuthorizationDetailsInteractor.getApiVersion(connectionID)
+
+        interactor = if (apiVersion == API_V2_VERSION) {
+            interactorV2
+        } else {
+            interactorV1
+        }
+        interactor.setInitialData(connectionID = connectionID)
         interactor.contract = this
-        interactor.setInitialData(identifier?.connectionID ?: "")
 
         val status = if (interactor.noConnection || identifier == null || !identifier.hasAuthorizationID) {
                 AuthorizationStatus.UNAVAILABLE
@@ -137,10 +147,12 @@ class AuthorizationDetailsViewModel(
     }
 
     override fun onConfirmDenySuccess(newStatus: AuthorizationStatus?) {
+        isConfirmationInProgress = false
         updateAuthorizationStatus(newStatus = newStatus ?: currentStatus.computeConfirmedStatus())
     }
 
     override fun updateAuthorization(item: AuthorizationItemViewModel, confirm: Boolean) {
+        isConfirmationInProgress = true
         updateAuthorizationStatus(if (confirm) AuthorizationStatus.CONFIRM_PROCESSING else AuthorizationStatus.DENY_PROCESSING)
         interactor.updateAuthorization(
             authorizationID = item.authorizationID,
@@ -164,8 +176,11 @@ class AuthorizationDetailsViewModel(
 
     private fun startPolling() {
         val authorizationID = authorizationModel.value?.authorizationID ?: return
-        if (currentStatus != AuthorizationStatus.UNAVAILABLE && !currentStatus.isFinal()) {
+        if (currentStatus != AuthorizationStatus.UNAVAILABLE &&
+            !currentStatus.isFinal() && !isConfirmationInProgress) {
             interactor.startPolling(authorizationID = authorizationID)
+        } else {
+            onShowAuthorizationsListEvent.postUnitEvent()
         }
     }
 

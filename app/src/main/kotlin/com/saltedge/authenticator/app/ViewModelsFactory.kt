@@ -129,7 +129,21 @@ class ViewModelsFactory @Inject constructor(
                 ) as T
             }
             modelClass.isAssignableFrom(AuthorizationDetailsViewModel::class.java) -> {
-                return createAuthorizationDetailsViewModel() as T
+                return AuthorizationDetailsViewModel(
+                    interactorV1 = AuthorizationDetailsInteractorV1(
+                        connectionsRepository = connectionsRepository,
+                        keyStoreManager = keyStoreManager,
+                        cryptoTools = cryptoToolsV1,
+                        apiManager = apiManagerV1
+                    ),
+                    interactorV2 = AuthorizationDetailsInteractorV2(
+                        connectionsRepository = connectionsRepository,
+                        keyStoreManager = keyStoreManager,
+                        cryptoTools = cryptoToolsV2,
+                        apiManager = apiManagerV2
+                    ),
+                    locationManager = DeviceLocationManager
+                ) as T
             }
             modelClass.isAssignableFrom(ConnectProviderViewModel::class.java) -> {
                 return createConnectProviderViewModel() as T
@@ -210,28 +224,6 @@ class ViewModelsFactory @Inject constructor(
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class")
         }
-    }
-
-    private fun createAuthorizationDetailsViewModel(): AuthorizationDetailsViewModel {
-        val interactor = if (scaApiV2IsRequired) {
-            AuthorizationDetailsInteractorV2(
-                connectionsRepository = connectionsRepository,
-                keyStoreManager = keyStoreManager,
-                cryptoTools = cryptoToolsV2,
-                apiManager = apiManagerV2
-            )
-        } else {
-            AuthorizationDetailsInteractorV1(
-                connectionsRepository = connectionsRepository,
-                keyStoreManager = keyStoreManager,
-                cryptoTools = cryptoToolsV1,
-                apiManager = apiManagerV1
-            )
-        }
-        return AuthorizationDetailsViewModel(
-            interactor = interactor,
-            locationManager = DeviceLocationManager
-        )
     }
 
     private fun createConnectProviderViewModel(): ConnectProviderViewModel {

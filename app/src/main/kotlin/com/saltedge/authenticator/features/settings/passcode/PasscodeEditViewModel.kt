@@ -3,7 +3,6 @@
  */
 package com.saltedge.authenticator.features.settings.passcode
 
-import android.view.View
 import androidx.lifecycle.*
 import com.saltedge.authenticator.R
 import com.saltedge.authenticator.models.ViewModelEvent
@@ -28,7 +27,6 @@ class PasscodeEditViewModel(
     val titleRes = MutableLiveData<ResId>(R.string.settings_passcode_input_current)
     val passcodeInputMode = MutableLiveData<PasscodeInputMode>(PasscodeInputMode.CHECK_PASSCODE)
     val initialPasscode = MutableLiveData<String>(savedPasscode)
-    val loaderVisibility = MutableLiveData<Int>()
     val warningEvent = MutableLiveData<ViewModelEvent<ResId>>()
     val infoEvent = MutableLiveData<ViewModelEvent<ResId>>()
     val closeViewEvent = MutableLiveData<ViewModelEvent<Unit>>()
@@ -66,7 +64,6 @@ class PasscodeEditViewModel(
     }
 
     override fun onNewPasscodeConfirmed(passcode: String) {
-        loaderVisibility.postValue(View.VISIBLE)
         viewModelScope.launch(defaultDispatcher) {
             if (savePasscode(passcodeTools, passcode)) {
                 infoEvent.postValue(ViewModelEvent(R.string.settings_passcode_success))
@@ -74,7 +71,6 @@ class PasscodeEditViewModel(
             } else {
                 warningEvent.postValue(ViewModelEvent(R.string.errors_contact_support))
             }
-            loaderVisibility.postValue(View.GONE)
         }
     }
 
