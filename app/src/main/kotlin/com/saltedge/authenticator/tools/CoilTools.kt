@@ -18,6 +18,9 @@ import timber.log.Timber
  * @param placeholderId - image to be set as default
  */
 fun ShapeableImageView.loadImage(imageUrl: String?, placeholderId: ResId) {
+    if (this.tag == imageUrl) return
+    this.tag = imageUrl
+
     try {
         val imageLoader = ImageLoader.Builder(this.context)
             .componentRegistry { add(SvgDecoder(this@loadImage.context)) }
