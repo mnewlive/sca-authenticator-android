@@ -49,8 +49,8 @@ android {
         targetSdkVersion 34
         compileSdk 34
 
-        versionCode 77
-        versionName '3.7.1'
+        versionCode 78
+        versionName '3.7.2'
 
         renderscriptTargetApi 21
         renderscriptSupportModeEnabled true
@@ -114,7 +114,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.activity:activity-ktx:1.8.2'
-    implementation("androidx.fragment:fragment-ktx:1.6.2")
+    implementation 'androidx.fragment:fragment-ktx:1.6.2'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
@@ -133,13 +133,13 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:21.5.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'net.danlew:android.joda:2.12.7'
-    implementation("io.coil-kt:coil-svg:1.2.0")
+    implementation 'io.coil-kt:coil-svg:1.2.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
     implementation project(':rasp')
-    implementation ('com.saltedge.authenticator:sdk_v1:1.6.0@aar')
-    implementation ('com.saltedge.authenticator:sdk_v2:2.3.0@aar') {
+    implementation ('com.saltedge.authenticator:sdk_v1:1.6.1@aar')
+    implementation ('com.saltedge.authenticator:sdk_v2:2.3.1@aar') {
         transitive = true
     }
 
