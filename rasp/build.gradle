@@ -1,28 +1,9 @@
 /*
- * This file is part of the Salt Edge Authenticator distribution
- * (https://github.com/saltedge/sca-authenticator-android).
  * Copyright (c) 2020 Salt Edge Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 or later.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * For the additional permissions granted for Salt Edge Authenticator
- * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'idea'
-apply plugin: 'maven-publish'
 
 def libVersionCode = 1
 def libVersionName = "1.0.0"
@@ -30,9 +11,7 @@ def libVersionName = "1.0.0"
 android {
     defaultConfig {
         minSdkVersion 19
-        compileSdk 33
-        versionCode libVersionCode
-        versionName libVersionName
+        compileSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -42,7 +21,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            debuggable false
         }
     }
 
@@ -54,23 +32,11 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+    namespace 'com.saltedge.android.security'
 }
 
 dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test:runner:1.3.0'
-}
-
-group 'com.saltedge.authenticator.security'
-version libVersionName
-
-sourceCompatibility = 1.8
-
-publishing {
-    repositories {
-        maven {
-            url = uri("${rootProject.projectDir}/maven-repo")
-        }
-    }
+    androidTestImplementation 'androidx.test:runner:1.5.2'
 }

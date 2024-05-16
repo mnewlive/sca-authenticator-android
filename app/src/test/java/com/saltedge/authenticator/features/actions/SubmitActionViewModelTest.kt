@@ -1,29 +1,12 @@
 /*
- * This file is part of the Salt Edge Authenticator distribution
- * (https://github.com/saltedge/sca-authenticator-android).
  * Copyright (c) 2020 Salt Edge Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 or later.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * For the additional permissions granted for Salt Edge Authenticator
- * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
 package com.saltedge.authenticator.features.actions
 
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import com.saltedge.android.test_tools.ViewModelTest
+import com.saltedge.android.test_tools.CoroutineViewModelTest
 import com.saltedge.authenticator.R
 import com.saltedge.authenticator.TestAppTools
 import com.saltedge.authenticator.core.api.ERROR_CLASS_API_RESPONSE
@@ -43,21 +26,29 @@ import com.saltedge.authenticator.sdk.api.model.response.SubmitActionResponseDat
 import com.saltedge.authenticator.sdk.constants.API_V1_VERSION
 import com.saltedge.authenticator.sdk.v2.ScaServiceClientAbs
 import com.saltedge.authenticator.sdk.v2.api.API_V2_VERSION
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestCoroutineScope
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.BDDMockito
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 import java.security.PrivateKey
 
+@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
-class SubmitActionViewModelTest : ViewModelTest() {
+class SubmitActionViewModelTest : CoroutineViewModelTest() {
 
     private lateinit var viewModel: SubmitActionViewModel
+    private lateinit var interactor: SubmitActionInteractor
+    private val mockContract = mock<SubmitActionInteractorCallback>()
     private val mockConnectionsRepository = mock(ConnectionsRepositoryAbs::class.java)
     private val mockKeyStoreManager = mock(KeyManagerAbs::class.java)
     private val mockApiManagerV1 = mock(AuthenticatorApiManagerAbs::class.java)
@@ -99,23 +90,51 @@ class SubmitActionViewModelTest : ViewModelTest() {
     )
 
     @Before
-    fun setUp() {
-        Mockito.`when`(mockConnectionsRepository.getAllActiveByConnectUrl(connectionV1.connectUrl)).thenReturn(listOf(connectionV1))
-        Mockito.`when`(mockConnectionsRepository.getAllActiveByConnectUrl("invalid_url")).thenReturn(emptyList())
-        Mockito.`when`(mockConnectionsRepository.getAllActiveByProvider(connectionV2.code)).thenReturn(listOf(connectionV2))
-        Mockito.`when`(mockConnectionsRepository.getByGuid(connectionV1.guid)).thenReturn(connectionV1)
-        Mockito.`when`(mockConnectionsRepository.getByGuid(connectionV2.guid)).thenReturn(connectionV2)
-        Mockito.`when`(mockKeyStoreManager.enrichConnection(connectionV1, addProviderKey = false)).thenReturn(richConnectionV1)
-        Mockito.`when`(mockKeyStoreManager.enrichConnection(connectionV2, addProviderKey = true)).thenReturn(richConnectionV2)
+    override fun setUp() {
+        super.setUp()
+        BDDMockito.given(mockContract.coroutineScope).willReturn(TestCoroutineScope(testDispatcher))
+        runBlocking {
+            Mockito.`when`(mockConnectionsRepository.getAllActiveByConnectUrl(connectionV1.connectUrl))
+                .thenReturn(listOf(connectionV1))
+            Mockito.`when`(mockConnectionsRepository.getAllActiveByConnectUrl("invalid_url"))
+                .thenReturn(emptyList())
+            Mockito.`when`(mockConnectionsRepository.getAllActiveByProvider(connectionV2.code))
+                .thenReturn(listOf(connectionV2))
+        }
+        Mockito.`when`(mockConnectionsRepository.getByGuid(connectionV1.guid))
+            .thenReturn(connectionV1)
+        Mockito.`when`(mockConnectionsRepository.getByGuid(connectionV2.guid))
+            .thenReturn(connectionV2)
+        Mockito.`when`(
+            mockKeyStoreManager.enrichConnection(
+                connectionV1,
+                addProviderKey = false
+            )
+        ).thenReturn(richConnectionV1)
+        Mockito.`when`(
+            mockKeyStoreManager.enrichConnection(
+                connectionV2,
+                addProviderKey = true
+            )
+        ).thenReturn(richConnectionV2)
+
+        interactor = SubmitActionInteractor(
+            connectionsRepository = mockConnectionsRepository,
+            defaultDispatcher = testDispatcher,
+            keyStoreManager = mockKeyStoreManager,
+        )
+        interactor.contract = mockContract
 
         viewModel = SubmitActionViewModel(
             appContext = TestAppTools.applicationContext,
-            connectionsRepository = mockConnectionsRepository,
             keyStoreManager = mockKeyStoreManager,
             apiManagerV1 = mockApiManagerV1,
             apiManagerV2 = mockApiManagerV2,
-            locationManager = mockLocationManager
+            locationManager = mockLocationManager,
+            interactor = interactor
         )
+
+        Mockito.clearInvocations(mockConnectionsRepository, mockKeyStoreManager, mockApiManagerV1, mockApiManagerV2)
     }
 
     @Test
@@ -148,7 +167,10 @@ class SubmitActionViewModelTest : ViewModelTest() {
         assertThat(viewModel.actionProcessingVisibility.value, equalTo(View.GONE))
         assertThat(viewModel.iconResId.value, equalTo(R.drawable.ic_status_error))
         assertThat(viewModel.completeTitleResId.value, equalTo(R.string.action_error_title))
-        assertThat(viewModel.completeDescription.value, equalTo(TestAppTools.applicationContext.getString(R.string.errors_actions_no_connections_link_app)))
+        assertThat(
+            viewModel.completeDescription.value,
+            equalTo(TestAppTools.applicationContext.getString(R.string.errors_actions_no_connections_link_app))
+        )
         assertThat(viewModel.mainActionTextResId.value, equalTo(R.string.actions_done))
         Mockito.verifyNoInteractions(mockApiManagerV1, mockApiManagerV2)
     }
@@ -189,7 +211,12 @@ class SubmitActionViewModelTest : ViewModelTest() {
 
         assertThat(
             viewModel.setResultAuthorizationIdentifier.value,
-            equalTo(AuthorizationIdentifier(authorizationID = "authorizationId", connectionID = "connectionId"))
+            equalTo(
+                AuthorizationIdentifier(
+                    authorizationID = "authorizationId",
+                    connectionID = "connectionId"
+                )
+            )
         )
 
         //when
@@ -241,7 +268,10 @@ class SubmitActionViewModelTest : ViewModelTest() {
     @Throws(Exception::class)
     fun onViewCreatedTestCase6() {
         //given
-        Mockito.`when`(mockConnectionsRepository.getAllActiveByProvider(connectionV2.code)).thenReturn(listOf(connectionV1, connectionV2))
+        runBlocking {
+            Mockito.`when`(mockConnectionsRepository.getAllActiveByProvider(connectionV2.code))
+                .thenReturn(listOf(connectionV1, connectionV2))
+        }
         viewModel.setInitialData(actionAppLinkData = appLinkDataV2)
 
         //when
@@ -270,7 +300,10 @@ class SubmitActionViewModelTest : ViewModelTest() {
 
         //then
         Assert.assertNotNull(viewModel.onCloseEvent.value)
-        assertThat(viewModel.onOpenLinkEvent.value, equalTo(ViewModelEvent(Uri.parse(appLinkDataV1.returnTo))))
+        assertThat(
+            viewModel.onOpenLinkEvent.value,
+            equalTo(ViewModelEvent(Uri.parse(appLinkDataV1.returnTo)))
+        )
     }
 
     /**
@@ -372,7 +405,10 @@ class SubmitActionViewModelTest : ViewModelTest() {
         assertThat(viewModel.actionProcessingVisibility.value, equalTo(View.GONE))
         assertThat(viewModel.iconResId.value, equalTo(R.drawable.ic_status_error))
         assertThat(viewModel.completeTitleResId.value, equalTo(R.string.action_error_title))
-        assertThat(viewModel.completeDescription.value, equalTo(TestAppTools.applicationContext.getString(R.string.errors_actions_not_success)))
+        assertThat(
+            viewModel.completeDescription.value,
+            equalTo(TestAppTools.applicationContext.getString(R.string.errors_actions_not_success))
+        )
         assertThat(viewModel.mainActionTextResId.value, equalTo(R.string.actions_done))
     }
 
@@ -395,7 +431,12 @@ class SubmitActionViewModelTest : ViewModelTest() {
         //then
         assertThat(
             viewModel.setResultAuthorizationIdentifier.value,
-            equalTo(AuthorizationIdentifier(authorizationID = "authorizationId", connectionID = "connectionId"))
+            equalTo(
+                AuthorizationIdentifier(
+                    authorizationID = "authorizationId",
+                    connectionID = "connectionId"
+                )
+            )
         )
     }
 
@@ -403,7 +444,12 @@ class SubmitActionViewModelTest : ViewModelTest() {
     @Throws(Exception::class)
     fun onConnectionInitFailureTest() {
         //when
-        viewModel.onActionInitFailure(error = ApiErrorData(errorMessage = "test error", errorClassName = ERROR_CLASS_API_RESPONSE))
+        viewModel.onActionInitFailure(
+            error = ApiErrorData(
+                errorMessage = "test error",
+                errorClassName = ERROR_CLASS_API_RESPONSE
+            )
+        )
 
         //then
         assertThat(viewModel.completeViewVisibility.value, equalTo(View.VISIBLE))
@@ -425,7 +471,10 @@ class SubmitActionViewModelTest : ViewModelTest() {
         assertThat(viewModel.actionProcessingVisibility.value, equalTo(View.GONE))
         assertThat(viewModel.iconResId.value, equalTo(R.drawable.ic_status_error))
         assertThat(viewModel.completeTitleResId.value, equalTo(R.string.action_error_title))
-        assertThat(viewModel.completeDescription.value, equalTo(TestAppTools.applicationContext.getString(R.string.errors_actions_not_success)))
+        assertThat(
+            viewModel.completeDescription.value,
+            equalTo(TestAppTools.applicationContext.getString(R.string.errors_actions_not_success))
+        )
         assertThat(viewModel.mainActionTextResId.value, equalTo(R.string.actions_done))
     }
 
@@ -433,12 +482,20 @@ class SubmitActionViewModelTest : ViewModelTest() {
     @Throws(Exception::class)
     fun onAuthorizationCreateSuccessCase2() {
         //when
-        viewModel.onAuthorizationCreateSuccess(authorizationID = "authorizationId", connectionID = "connectionId")
+        viewModel.onAuthorizationCreateSuccess(
+            authorizationID = "authorizationId",
+            connectionID = "connectionId"
+        )
 
         //then
         assertThat(
             viewModel.setResultAuthorizationIdentifier.value,
-            equalTo(AuthorizationIdentifier(authorizationID = "authorizationId", connectionID = "connectionId"))
+            equalTo(
+                AuthorizationIdentifier(
+                    authorizationID = "authorizationId",
+                    connectionID = "connectionId"
+                )
+            )
         )
     }
 
@@ -446,7 +503,12 @@ class SubmitActionViewModelTest : ViewModelTest() {
     @Throws(Exception::class)
     fun onAuthorizationCreateFailureTest() {
         //when
-        viewModel.onAuthorizationCreateFailure(error = ApiErrorData(errorMessage = "test error", errorClassName = ERROR_CLASS_API_RESPONSE))
+        viewModel.onAuthorizationCreateFailure(
+            error = ApiErrorData(
+                errorMessage = "test error",
+                errorClassName = ERROR_CLASS_API_RESPONSE
+            )
+        )
 
         //then
         assertThat(viewModel.completeViewVisibility.value, equalTo(View.VISIBLE))

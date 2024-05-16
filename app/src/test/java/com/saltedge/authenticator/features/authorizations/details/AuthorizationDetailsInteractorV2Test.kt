@@ -1,25 +1,9 @@
 /*
- * This file is part of the Salt Edge Authenticator distribution
- * (https://github.com/saltedge/sca-authenticator-android).
  * Copyright (c) 2021 Salt Edge Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 or later.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * For the additional permissions granted for Salt Edge Authenticator
- * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
 package com.saltedge.authenticator.features.authorizations.details
 
+import com.saltedge.android.test_tools.CoroutineViewModelTest
 import com.saltedge.authenticator.app.AppTools
 import com.saltedge.authenticator.core.api.ERROR_CLASS_AUTHORIZATION_NOT_FOUND
 import com.saltedge.authenticator.core.api.ERROR_CLASS_CONNECTION_NOT_FOUND
@@ -46,6 +30,9 @@ import com.saltedge.authenticator.sdk.v2.api.model.authorization.UpdateAuthoriza
 import com.saltedge.authenticator.sdk.v2.polling.SingleAuthorizationPollingService
 import com.saltedge.authenticator.sdk.v2.tools.CryptoToolsV2Abs
 import com.saltedge.authenticator.widget.security.ActivityUnlockType
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.joda.time.DateTime
@@ -54,12 +41,14 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.BDDMockito
 import org.mockito.Mockito.*
 import org.robolectric.RobolectricTestRunner
 import java.security.PrivateKey
 
+@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
-class AuthorizationDetailsInteractorV2Test {
+class AuthorizationDetailsInteractorV2Test : CoroutineViewModelTest() {
 
     private lateinit var interactor: AuthorizationDetailsInteractorV2
 
@@ -130,7 +119,9 @@ class AuthorizationDetailsInteractorV2Test {
     }
 
     @Before
-    fun setUp() {
+    override fun setUp() {
+        super.setUp()
+        BDDMockito.given(mockCallback.coroutineScope).willReturn(TestCoroutineScope(testDispatcher))
         AppTools.lastUnlockType = ActivityUnlockType.BIOMETRICS
         doReturn("GEO:52.506931;13.144558").`when`(mockLocationManager).locationDescription
         doReturn(connection1).`when`(mockConnectionsRepository).getById(connection1.id)
@@ -242,7 +233,7 @@ class AuthorizationDetailsInteractorV2Test {
 
     @Test
     @Throws(Exception::class)
-    fun onFetchAuthorizationFailedTestCase4() {
+    fun onFetchAuthorizationFailedTestCase4() = runTest {
         //given ConnectionNotFound error
         val error = ApiErrorData(
             errorClassName = ERROR_CLASS_CONNECTION_NOT_FOUND,

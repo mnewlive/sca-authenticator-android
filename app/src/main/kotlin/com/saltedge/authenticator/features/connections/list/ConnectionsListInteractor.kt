@@ -1,22 +1,5 @@
 /*
- * This file is part of the Salt Edge Authenticator distribution
- * (https://github.com/saltedge/sca-authenticator-android).
  * Copyright (c) 2021 Salt Edge Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 or later.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * For the additional permissions granted for Salt Edge Authenticator
- * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
 package com.saltedge.authenticator.features.connections.list
 
@@ -65,14 +48,16 @@ class ConnectionsListInteractor(
         get() = consentsV1 + consentsV2
 
     override fun updateConnections() {
-        val connections = connectionsRepository.getAllConnections()
-        richConnections = connections.mapNotNull { it.toRichConnection(keyStoreManager) }
-        notifyDatasetChanges()
+            val connections = connectionsRepository.getAllConnections()
+            richConnections = connections.mapNotNull { it.toRichConnection(keyStoreManager) }
+            notifyDatasetChanges()
     }
 
     override fun updateNameAndSave(connectionGuid: GUID, newConnectionName: String): Boolean {
         val connection = connectionsRepository.getByGuid(connectionGuid) ?: return false
-        connectionsRepository.updateNameAndSave(connection, newConnectionName)
+        contract?.coroutineScope?.launch(defaultDispatcher) {
+            connectionsRepository.updateNameAndSave(connection, newConnectionName)
+        }
         return true
     }
 
@@ -82,11 +67,13 @@ class ConnectionsListInteractor(
 
     override fun revokeConnection(connectionGuid: GUID) {
         val connection = connectionsRepository.getByGuid(connectionGuid) ?: return
-        if (connection.isActive()) {
-            sendRevokeRequestForConnection(connection)
-        } else {
-            deleteConnection(guid = connection.guid)
-            updateConnections()
+        contract?.coroutineScope?.launch(defaultDispatcher) {
+            if (connection.isActive()) {
+                sendRevokeRequestForConnection(connection)
+            } else {
+                deleteConnection(guid = connection.guid)
+                updateConnections()
+            }
         }
     }
 
@@ -97,7 +84,11 @@ class ConnectionsListInteractor(
         val errorTokens = apiErrors.mapNotNull { if (it.isConnectivityError()) null else it.accessToken }
         val allGuidsToRevoke = (revokedTokens + errorTokens).mapConnectionsTokensToGuids()
         deleteConnectionsAndKeysByGuid(allGuidsToRevoke)
-        if (allGuidsToRevoke.isNotEmpty()) updateConnections()
+        if (allGuidsToRevoke.isNotEmpty()) {
+            contract?.coroutineScope?.launch(defaultDispatcher) {
+                updateConnections()
+            }
+        }
     }
 
     override fun onConnectionsV2RevokeResult(revokedIDs: List<ID>, apiErrors: List<ApiErrorData>) {
@@ -105,7 +96,11 @@ class ConnectionsListInteractor(
         val errorGuids = errorsTokensToRevoke.mapConnectionsTokensToGuids()
         val successGuids = revokedIDs.mapConnectionsIDsToGuids()
         deleteConnectionsAndKeysByGuid(successGuids + errorGuids)
-        if (errorGuids.isNotEmpty() || successGuids.isNotEmpty()) updateConnections()
+        if (errorGuids.isNotEmpty() || successGuids.isNotEmpty()) {
+            contract?.coroutineScope?.launch(defaultDispatcher) {
+                updateConnections()
+            }
+        }
     }
 
     override fun onFetchEncryptedDataResult(
@@ -166,10 +161,16 @@ class ConnectionsListInteractor(
     }
 
     private fun deleteConnectionsAndKeysByGuid(revokedGuids: List<GUID>) {
-        revokedGuids.forEach { deleteConnection(guid = it) }
+        contract?.coroutineScope?.launch(defaultDispatcher) {
+            revokedGuids.forEach { guid ->
+                launch {
+                    deleteConnection(guid)
+                }
+            }
+        }
     }
 
-    private fun deleteConnection(guid: GUID) {
+    private suspend fun deleteConnection(guid: GUID) {
         keyStoreManager.deleteKeyPairIfExist(guid)
         connectionsRepository.deleteConnection(guid)
     }
@@ -178,8 +179,7 @@ class ConnectionsListInteractor(
         encryptedList: List<EncryptedData>,
         apiVersion: String
     ) {
-        val richConnectionsByVersion =
-            richConnections.filter { it.connection.apiVersion == apiVersion }
+        val richConnectionsByVersion = richConnections.filter { it.connection.apiVersion == apiVersion }
         contract?.coroutineScope?.launch(defaultDispatcher) {
             val data = encryptedList.decryptConsents(
                 cryptoTools = cryptoTools,
@@ -211,13 +211,15 @@ class ConnectionsListInteractor(
     }
 
     override fun onShowConnectionConfigurationSuccess(result: ConfigurationDataV2) {
-        richConnections.filter {
-            it.connection.code == result.providerId && result.providerLogoUrl != it.connection.logoUrl
-        }.forEach {
-            it.connection.logoUrl = result.providerLogoUrl ?: ""
-            connectionsRepository.saveModel(it.connection as Connection)
+        contract?.coroutineScope?.launch(defaultDispatcher) {
+            richConnections.filter {
+                it.connection.code == result.providerId && result.providerLogoUrl != it.connection.logoUrl
+            }.forEach {
+                it.connection.logoUrl = result.providerLogoUrl ?: ""
+                connectionsRepository.saveModel(it.connection as Connection)
+            }
+            notifyDatasetChanges()
         }
-        notifyDatasetChanges()
     }
 
     override fun onShowConnectionConfigurationFailed(error: ApiErrorData) {

@@ -1,27 +1,12 @@
 /*
- * This file is part of the Salt Edge Authenticator distribution
- * (https://github.com/saltedge/sca-authenticator-android).
  * Copyright (c) 2019 Salt Edge Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 or later.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * For the additional permissions granted for Salt Edge Authenticator
- * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
 package com.saltedge.android.security.checkers
 
 import android.content.Context
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import com.saltedge.android.security.checkers.RaspConstants.Companion.BINARY_MAGISK
 import com.saltedge.android.security.checkers.RaspConstants.Companion.BINARY_SU
@@ -156,7 +141,7 @@ private fun checkSuExists(): Boolean {
     var process: Process? = null
     return try {
         process = Runtime.getRuntime().exec(arrayOf("which", BINARY_SU))
-        var line = BufferedReader(InputStreamReader(process.inputStream)).readLine()
+        val line = BufferedReader(InputStreamReader(process.inputStream)).readLine()
         if (line != null) Log.e("RootChecker", "Detected SU: $line ")
         line != null
     } catch (t: Throwable) {
@@ -175,9 +160,11 @@ private fun checkSuExists(): Boolean {
  * @return true if any of the packages are installed
  */
 private fun Context.isAnyPackageFromListInstalled(packages: Array<String>): Boolean {
-    val manager = this.packageManager
-    val result = packages.any { manager.packageInstalled(packageName = it) }
-    if (result) Log.e("RootChecker", "Detected harmful packages: [${packages.filter { manager.packageInstalled(packageName = it) }.joinToString(separator = ", ")}]")
+    val result = packages.any { this.packageInstalled(packageName = it) }
+    if (result) {
+        val list = packages.filter { this.packageInstalled(packageName = it) }.joinToString(separator = ", ")
+        Log.e("RootChecker", "Detected harmful packages: [$list]")
+    }
     return result
 }
 
@@ -188,9 +175,14 @@ private fun Context.isAnyPackageFromListInstalled(packages: Array<String>): Bool
  * @param packageName - packageName to search for
  * @return true if the package is installed
  */
-private fun PackageManager.packageInstalled(packageName: String): Boolean {
+@Suppress("DEPRECATION")
+private fun Context.packageInstalled(packageName: String): Boolean {
     return try {
-        this.getPackageInfo(packageName, 0)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
+        } else {
+            packageManager.getPackageInfo(packageName, 0)
+        }
         true
     } catch (ignored: PackageManager.NameNotFoundException) {
         false

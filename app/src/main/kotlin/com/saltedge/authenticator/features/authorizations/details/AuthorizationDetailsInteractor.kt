@@ -1,22 +1,5 @@
 /*
- * This file is part of the Salt Edge Authenticator distribution
- * (https://github.com/saltedge/sca-authenticator-android).
  * Copyright (c) 2021 Salt Edge Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 or later.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * For the additional permissions granted for Salt Edge Authenticator
- * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
 package com.saltedge.authenticator.features.authorizations.details
 
@@ -28,11 +11,13 @@ import com.saltedge.authenticator.core.model.ID
 import com.saltedge.authenticator.core.model.RichConnection
 import com.saltedge.authenticator.core.tools.secure.KeyManagerAbs
 import com.saltedge.authenticator.models.createRichConnection
+import com.saltedge.authenticator.models.repository.ConnectionsRepository
 import com.saltedge.authenticator.models.repository.ConnectionsRepositoryAbs
+import kotlinx.coroutines.launch
 
 abstract class AuthorizationDetailsInteractor(
     private val connectionsRepository: ConnectionsRepositoryAbs,
-    private val keyStoreManager: KeyManagerAbs,
+    private val keyStoreManager: KeyManagerAbs
 ) : AuthorizationDetailsInteractorAbs {
 
     override var contract: AuthorizationDetailsInteractorCallback? = null
@@ -42,6 +27,13 @@ abstract class AuthorizationDetailsInteractor(
         get() = richConnection == null
     override val connectionApiVersion: String?
         get() = richConnection?.connection?.apiVersion
+
+    companion object {
+        fun getApiVersion(connectionID: String): String? {
+            val connection = ConnectionsRepository.getById(connectionID)
+            return connection?.apiVersion
+        }
+    }
 
     override fun setInitialData(connectionID: ID) {
         richConnection = createRichConnection(
@@ -55,7 +47,9 @@ abstract class AuthorizationDetailsInteractor(
         when {
             error.isConnectionNotFound() -> {
                 richConnection?.connection?.accessToken?.let {
-                    connectionsRepository.invalidateConnectionsByTokens(accessTokens = listOf(it))
+                    contract?.coroutineScope?.launch {
+                        connectionsRepository.invalidateConnectionsByTokens(accessTokens = listOf(it))
+                    }
                 }
                 stopPolling()
                 contract?.onConnectionNotFoundError()

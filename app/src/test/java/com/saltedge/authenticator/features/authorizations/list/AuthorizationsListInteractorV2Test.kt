@@ -1,22 +1,5 @@
 /*
- * This file is part of the Salt Edge Authenticator distribution
- * (https://github.com/saltedge/sca-authenticator-android).
  * Copyright (c) 2021 Salt Edge Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 or later.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * For the additional permissions granted for Salt Edge Authenticator
- * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
 package com.saltedge.authenticator.features.authorizations.list
 
@@ -46,7 +29,9 @@ import com.saltedge.authenticator.sdk.v2.polling.PollingAuthorizationsContract
 import com.saltedge.authenticator.sdk.v2.tools.CryptoToolsV2Abs
 import com.saltedge.authenticator.widget.security.ActivityUnlockType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runTest
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.junit.Assert
@@ -103,7 +88,9 @@ class AuthorizationsListInteractorV2Test : CoroutineViewModelTest() {
         AppTools.lastUnlockType = ActivityUnlockType.BIOMETRICS
         given(mockContract.coroutineScope).willReturn(TestCoroutineScope(testDispatcher))
         given(mockApiManagerV2.createAuthorizationsPollingService()).willReturn(mockPollingServiceV2)
-        given(mockConnectionsRepository.getAllActiveConnectionsByApi(API_V2_VERSION)).willReturn(listOf(mockConnectionV2))
+        runBlocking {
+            given(mockConnectionsRepository.getAllActiveConnectionsByApi(API_V2_VERSION)).willReturn(listOf(mockConnectionV2))
+        }
         given(mockKeyStoreManager.enrichConnection(mockConnectionV2, addProviderKey = true)).willReturn(richConnectionV2)
         encryptedAuthorizations.forEachIndexed { index, encryptedData ->
             given(mockCryptoToolsV2.decryptAuthorizationData(encryptedData, richConnectionV2.private))
@@ -133,7 +120,7 @@ class AuthorizationsListInteractorV2Test : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onResumeCase1() {
+    fun onResumeCase1() = runTest {
         //given onResume event, no connection, no items
         given(mockConnectionsRepository.getAllActiveConnectionsByApi(API_V2_VERSION)).willReturn(emptyList())
 
@@ -148,7 +135,7 @@ class AuthorizationsListInteractorV2Test : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onResumeCase2() {
+    fun onResumeCase2() = runTest {
         //when
         interactor.onResume()
 
@@ -185,7 +172,7 @@ class AuthorizationsListInteractorV2Test : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onFetchAuthorizationsResultTestCase3() {
+    fun onFetchAuthorizationsResultTestCase3() = runTest {
         //when
         interactor.onFetchAuthorizationsResult(
             result = emptyList(),
@@ -399,6 +386,8 @@ class AuthorizationsListInteractorV2Test : CoroutineViewModelTest() {
     @Throws(Exception::class)
     fun updateAuthorizationTestCase1() {
         //when
+        interactor.onResume()
+
         val result = interactor.updateAuthorization(
             connectionID = items[0].connectionID,
             authorizationID = items[0].authorizationID,
@@ -425,6 +414,8 @@ class AuthorizationsListInteractorV2Test : CoroutineViewModelTest() {
     @Throws(Exception::class)
     fun updateAuthorizationTestCase2() {
         //when
+        interactor.onResume()
+
         val result = interactor.updateAuthorization(
             connectionID = items[0].connectionID,
             authorizationID = items[0].authorizationID,

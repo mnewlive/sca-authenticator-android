@@ -1,27 +1,9 @@
 /*
- * This file is part of the Salt Edge Authenticator distribution
- * (https://github.com/saltedge/sca-authenticator-android).
  * Copyright (c) 2020 Salt Edge Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 or later.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * For the additional permissions granted for Salt Edge Authenticator
- * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
 package com.saltedge.authenticator.features.settings.list
 
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.test.core.app.ApplicationProvider
@@ -42,6 +24,7 @@ import com.saltedge.authenticator.sdk.AuthenticatorApiManagerAbs
 import com.saltedge.authenticator.sdk.constants.API_V1_VERSION
 import com.saltedge.authenticator.sdk.v2.ScaServiceClientAbs
 import junit.framework.TestCase.assertNull
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -76,32 +59,20 @@ class SettingsListViewModelTest : ViewModelTest() {
     private val mockPrivateKey = Mockito.mock(PrivateKey::class.java)
     private val richConnectionV1 = RichConnection(mockConnectionV1, mockPrivateKey)
     private lateinit var viewModel: SettingsListViewModel
-    private lateinit var interactorV1: SettingsListInteractorV1
-    private lateinit var interactorV2: SettingsListInteractorV2
     private val mockApiManagerV1 = Mockito.mock(AuthenticatorApiManagerAbs::class.java)
     private val mockApiManagerV2 = Mockito.mock(ScaServiceClientAbs::class.java)
 
     @Before
     fun setUp() {
         Mockito.doReturn(true).`when`(mockPreferences).screenshotLockEnabled
-        given(mockConnectionsRepository.getAllActiveConnections()).willReturn(listOf(mockConnectionV1))
+        runBlocking {
+            given(mockConnectionsRepository.getAllActiveConnections()).willReturn(listOf(mockConnectionV1))
+        }
         given(mockKeyStoreManager.enrichConnection(mockConnectionV1, addProviderKey = false)).willReturn(richConnectionV1)
 
-        interactorV1 = SettingsListInteractorV1(
-            connectionsRepository = mockConnectionsRepository,
-            keyStoreManager = mockKeyStoreManager,
-            apiManager = mockApiManagerV1
-        )
-        interactorV2 = SettingsListInteractorV2(
-            connectionsRepository = mockConnectionsRepository,
-            keyStoreManager = mockKeyStoreManager,
-            apiManager = mockApiManagerV2
-        )
         viewModel = SettingsListViewModel(
             appContext = context,
             appTools = mockAppTools,
-            interactorV1 = interactorV1,
-            interactorV2 = interactorV2,
             preferenceRepository = mockPreferences
         )
     }
@@ -114,8 +85,6 @@ class SettingsListViewModelTest : ViewModelTest() {
         viewModel = SettingsListViewModel(
             appContext = context,
             appTools = mockAppTools,
-            interactorV1 = interactorV1,
-            interactorV2 = interactorV2,
             preferenceRepository = mockPreferences
         )
 
@@ -123,7 +92,7 @@ class SettingsListViewModelTest : ViewModelTest() {
         val values = viewModel.listItems.value!!
 
         //then
-        assertThat(values.size, equalTo(7))
+        assertThat(values.size, equalTo(6))
         assertThat(
             values,
             equalTo(
@@ -157,12 +126,6 @@ class SettingsListViewModelTest : ViewModelTest() {
                         iconId = R.drawable.ic_setting_support,
                         titleId = R.string.settings_report,
                         itemIsClickable = true
-                    ),
-                    SettingsItemViewModel(
-                        iconId = R.drawable.ic_setting_clear,
-                        titleId = R.string.settings_clear_data,
-                        titleColorRes = R.color.red,
-                        itemIsClickable = true
                     )
                 )
             )
@@ -177,8 +140,6 @@ class SettingsListViewModelTest : ViewModelTest() {
         viewModel = SettingsListViewModel(
             appContext = context,
             appTools = mockAppTools,
-            interactorV1 = interactorV1,
-            interactorV2 = interactorV2,
             preferenceRepository = mockPreferences
         )
 
@@ -186,7 +147,7 @@ class SettingsListViewModelTest : ViewModelTest() {
         val values = viewModel.listItems.value!!
 
         //then
-        assertThat(values.size, equalTo(6))
+        assertThat(values.size, equalTo(5))
         assertThat(
             values,
             equalTo(
@@ -215,40 +176,10 @@ class SettingsListViewModelTest : ViewModelTest() {
                         iconId = R.drawable.ic_setting_support,
                         titleId = R.string.settings_report,
                         itemIsClickable = true
-                    ),
-                    SettingsItemViewModel(
-                        iconId = R.drawable.ic_setting_clear,
-                        titleId = R.string.settings_clear_data,
-                        titleColorRes = R.color.red,
-                        itemIsClickable = true
                     )
                 )
             )
         )
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun onDialogActionIdClickTestCase1() {
-        //when
-        viewModel.onDialogActionIdClick(DialogInterface.BUTTON_POSITIVE)
-
-        //then
-        Mockito.verify(mockConnectionsRepository).deleteAllConnections()
-        Mockito.verify(mockApiManagerV1).revokeConnections(
-            connectionsAndKeys = listOf(richConnectionV1),
-            resultCallback = null
-        )
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun onDialogActionIdClickTestCase2() {
-        //when
-        viewModel.onDialogActionIdClick(DialogInterface.BUTTON_NEGATIVE)
-
-        //then
-        Mockito.never()
     }
 
     @Test
@@ -275,7 +206,6 @@ class SettingsListViewModelTest : ViewModelTest() {
         assertNull(viewModel.languageClickEvent.value)
         assertNull(viewModel.aboutClickEvent.value)
         assertNull(viewModel.supportClickEvent.value)
-        assertNull(viewModel.clearClickEvent.value)
     }
 
     @Test
@@ -292,7 +222,6 @@ class SettingsListViewModelTest : ViewModelTest() {
         assertThat(viewModel.languageClickEvent.value, equalTo(ViewModelEvent(Unit)))
         assertNull(viewModel.aboutClickEvent.value)
         assertNull(viewModel.supportClickEvent.value)
-        assertNull(viewModel.clearClickEvent.value)
     }
 
     @Test
@@ -309,7 +238,6 @@ class SettingsListViewModelTest : ViewModelTest() {
         assertNull(viewModel.passcodeClickEvent.value)
         assertThat(viewModel.aboutClickEvent.value, equalTo(ViewModelEvent(Unit)))
         assertNull(viewModel.supportClickEvent.value)
-        assertNull(viewModel.clearClickEvent.value)
     }
 
     @Test
@@ -326,29 +254,11 @@ class SettingsListViewModelTest : ViewModelTest() {
         assertNull(viewModel.passcodeClickEvent.value)
         assertNull(viewModel.aboutClickEvent.value)
         assertThat(viewModel.supportClickEvent.value, equalTo(ViewModelEvent(Unit)))
-        assertNull(viewModel.clearClickEvent.value)
     }
 
     @Test
     @Throws(Exception::class)
     fun onListItemClickTestCase5() {
-        //given
-        val itemId = R.string.settings_clear_data
-
-        //when
-        viewModel.onListItemClick(itemId = itemId)
-
-        //them
-        assertNull(viewModel.languageClickEvent.value)
-        assertNull(viewModel.passcodeClickEvent.value)
-        assertNull(viewModel.aboutClickEvent.value)
-        assertNull(viewModel.supportClickEvent.value)
-        assertThat(viewModel.clearClickEvent.value, equalTo(ViewModelEvent(Unit)))
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun onListItemClickTestCase6() {
         //given
         val itemId = R.string.settings_screenshot_lock
 
@@ -360,27 +270,11 @@ class SettingsListViewModelTest : ViewModelTest() {
         assertNull(viewModel.passcodeClickEvent.value)
         assertNull(viewModel.aboutClickEvent.value)
         assertNull(viewModel.supportClickEvent.value)
-        assertNull(viewModel.clearClickEvent.value)
     }
 
     @Test
     @Throws(Exception::class)
     fun onListItemCheckedStateChangedTestCase1() {
-        //given
-        val itemId = R.string.settings_clear_data
-        Mockito.clearInvocations(mockPreferences)
-
-        //when
-        viewModel.onListItemCheckedStateChanged(itemId = itemId, checked = true)
-
-        //then
-        Mockito.verifyNoMoreInteractions(mockPreferences)
-        assertNull(viewModel.screenshotClickEvent.value)
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun onListItemCheckedStateChangedTestCase2() {
         //given
         val itemId = R.string.settings_screenshot_lock
         given(mockPreferences.screenshotLockEnabled).willReturn(false)
@@ -395,7 +289,7 @@ class SettingsListViewModelTest : ViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onListItemCheckedStateChangedTestCase3() {
+    fun onListItemCheckedStateChangedTestCase2() {
         //given
         val itemId = R.string.settings_system_dark_mode
         val checked = true
@@ -413,7 +307,7 @@ class SettingsListViewModelTest : ViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onListItemCheckedStateChangedTestCase4() {
+    fun onListItemCheckedStateChangedTestCase3() {
         //given
         val itemId = R.string.settings_system_dark_mode
         val checked = false
@@ -459,12 +353,6 @@ class SettingsListViewModelTest : ViewModelTest() {
         Mockito.verify(mockPreferences).systemNightMode = false
         Mockito.verify(mockPreferences).nightMode = AppCompatDelegate.MODE_NIGHT_NO
         assertThat(viewModel.setNightModelEvent.value, equalTo(ViewModelEvent(AppCompatDelegate.MODE_NIGHT_NO)))
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun testSpacesPositions() {
-        assertThat(viewModel.spacesPositions, equalTo(arrayOf(0, viewModel.listItemsValues!!.lastIndex)))
     }
 
     @Test

@@ -52,7 +52,7 @@ and [Android Authenticator workflow](docs/WORKFLOW.md).
 ## Prerequisites
 In order to build Salt Edge Authenticator for Android locally, it is necessary to install the following tools on the local machine:
 
-* JDK 8
+* JDK 17
 * Android SDK
 * Android Studio
 
@@ -61,8 +61,10 @@ In order to build Salt Edge Authenticator for Android locally, it is necessary t
 1. Fork this repository
 2. Import project as `Gradle project` in Android Studio
 3. Add `google-services.json` configuration file to `/app` directory
-4. Add `signing.properties` configuration file with release signing credentials for auto sign. (see: `signing.example.properties`) 
-5. Build and run application on target device or emulator
+4. Add `signing.properties` configuration file with release signing credentials for auto sign. (see: `signing.example.properties`)
+5. Fetch to local repository https://github.com/saltedge/sca-authenticator-android-sdk 
+6. Add `authenticatorSdkDir` value to `local.properties` configuration file with path to local sdk maven repo.
+7. Build and run application on target device or emulator
 
 ## Contribute
 

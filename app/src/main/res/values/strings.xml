@@ -1,23 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-     This file is part of the Salt Edge Authenticator distribution
-    (https://github.com/saltedge/sca-authenticator-android)
-    Copyright (c) 2019 Salt Edge Inc.
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, version 3 or later.
-
-    This program is distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-    For the additional permissions granted for Salt Edge Authenticator
-    under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
+   Copyright (c) 2019 Salt Edge Inc.
 -->
 <resources>
     <string name="actions_cancel">Cancel</string>
@@ -158,7 +141,6 @@
     <string name="settings_feature_title">Settings</string>
     <string name="settings_report">Report an issue</string>
     <string name="settings_language">Language</string>
-    <string name="settings_clear_data">Clear all data</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_passcode">Passcode</string>
     <string name="settings_passcode_description">Change passcode</string>
@@ -168,8 +150,6 @@
     <string name="settings_screenshot_lock">Screenshot lock</string>
     <string name="settings_system_dark_mode">System dark mode</string>
     <string name="settings_restart_app">Restart app for these changes to take effect</string>
-    <string name="settings_clear_message">App data including connected providers and user data will be permanently deleted.</string>
-    <string name="settings_clear_success">App data cleared successfully</string>
 
     <string name="about_feature_title">About</string>
     <string name="about_app_version">App Version</string>

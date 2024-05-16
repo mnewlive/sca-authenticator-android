@@ -1,22 +1,5 @@
 /*
- * This file is part of the Salt Edge Authenticator distribution
- * (https://github.com/saltedge/sca-authenticator-android).
  * Copyright (c) 2020 Salt Edge Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 or later.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * For the additional permissions granted for Salt Edge Authenticator
- * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
 package com.saltedge.authenticator.features.connections.list
 
@@ -33,10 +16,10 @@ import com.saltedge.authenticator.sdk.v2.ScaServiceClientAbs
 import com.saltedge.authenticator.sdk.v2.api.model.configuration.ConfigurationDataV2
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.BDDMockito.given
@@ -81,7 +64,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun updateConnectionsTestCase1() {
+    fun updateConnectionsTestCase1() = runTest {
         //given
         given(mockConnectionsRepository.getAllConnections()).willReturn(emptyList())
 
@@ -94,7 +77,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun updateNameAndSaveTestCase1() {
+    fun updateNameAndSaveTestCase1() = runTest {
         //given
         val newName = "new name"
         val guid = testFactory.connection2.guid
@@ -108,7 +91,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun updateNameAndSaveTestCase2() {
+    fun updateNameAndSaveTestCase2() = runTest {
         //given
         val newName = "new name"
         val guid = "guidX"
@@ -123,7 +106,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun updateConsentsTestCase1() {
+    fun updateConsentsTestCase1() = runTest {
         //given
         given(mockConnectionsRepository.getAllConnections()).willReturn(emptyList())
         interactor.updateConnections()
@@ -138,7 +121,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun updateConsentsTestCase2() {
+    fun updateConsentsTestCase2() = runTest {
         //given
         interactor.updateConnections()
         Mockito.clearInvocations(mockConnectionsRepository, mockApiManagerV1, mockApiManagerV2)
@@ -160,7 +143,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun updateConnectionConfigurationCase1() {
+    fun updateConnectionConfigurationCase1() = runTest {
         //given
         interactor.updateConnections()
         Mockito.clearInvocations(mockConnectionsRepository, mockApiManagerV1, mockApiManagerV2)
@@ -184,7 +167,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun updateConnectionConfigurationCase2() {
+    fun updateConnectionConfigurationCase2() = runTest {
         //given
         interactor.updateConnections()
         testFactory.richConnection2.connection.apply {
@@ -207,7 +190,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun updateConnectionConfigurationCase3() {
+    fun updateConnectionConfigurationCase3() = runTest {
         //given
         interactor.updateConnections()
         testFactory.richConnection2.connection.apply {
@@ -229,7 +212,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onShowConnectionConfigurationSuccessCase1() {
+    fun onShowConnectionConfigurationSuccessCase1() = runTest {
         //given
         interactor.updateConnections()
 
@@ -257,7 +240,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onShowConnectionConfigurationSuccessCase2() {
+    fun onShowConnectionConfigurationSuccessCase2() = runTest {
         //given
         interactor.updateConnections()
 
@@ -285,7 +268,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun revokeConnectionTestCase1() {
+    fun revokeConnectionTestCase1() = runTest {
         //given
         interactor.updateConnections()
         Mockito.clearInvocations(mockConnectionsRepository, mockApiManagerV1, mockApiManagerV2)
@@ -302,7 +285,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun revokeConnectionTestCase2() {
+    fun revokeConnectionTestCase2() = runTest {
         //given
         interactor.updateConnections()
         Mockito.clearInvocations(mockConnectionsRepository, mockApiManagerV1, mockApiManagerV2)
@@ -323,7 +306,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun revokeConnectionTestCase3() {
+    fun revokeConnectionTestCase3() = runTest {
         //given
         interactor.updateConnections()
         Mockito.clearInvocations(mockConnectionsRepository, mockApiManagerV1, mockApiManagerV2)
@@ -339,7 +322,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onConnectionsRevokeResultTestCase1() {
+    fun onConnectionsRevokeResultTestCase1() = runTest {
         //given
         interactor.updateConnections()
         Mockito.clearInvocations(mockConnectionsRepository, mockApiManagerV1, mockApiManagerV2, mockCallback)
@@ -362,7 +345,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onConnectionsV2RevokeResultTestCase1() {
+    fun onConnectionsV2RevokeResultTestCase1() = runTest {
         //given
         interactor.updateConnections()
         Mockito.clearInvocations(mockConnectionsRepository, mockApiManagerV1, mockApiManagerV2, mockCallback)
@@ -385,7 +368,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onFetchEncryptedDataResultTestCase1() {
+    fun onFetchEncryptedDataResultTestCase1() = runTest {
         //given
         interactor.updateConnections()
         Mockito.clearInvocations(mockConnectionsRepository, mockApiManagerV1, mockApiManagerV2, mockCallback)
@@ -401,7 +384,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onFetchEncryptedDataResultTestCase2() {
+    fun onFetchEncryptedDataResultTestCase2() = runTest {
         //given
         interactor.updateConnections()
         Mockito.clearInvocations(mockConnectionsRepository, mockApiManagerV1, mockApiManagerV2, mockCallback)
@@ -417,7 +400,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun getConsentsTestCase1() {
+    fun getConsentsTestCase1() = runTest {
         //given
         interactor.updateConnections()
         interactor.onFetchEncryptedDataResult(testFactory.encV1Consents, emptyList())
@@ -435,7 +418,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun getConsentsTestCase2() {
+    fun getConsentsTestCase2() = runTest {
         //given
         interactor.updateConnections()
         interactor.onFetchEncryptedDataResult(testFactory.encV1Consents, emptyList())
@@ -452,7 +435,7 @@ class ConnectionsListInteractorTest : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun getConsentsTestCase3() {
+    fun getConsentsTestCase3() = runTest {
         //given
         interactor.updateConnections()
         interactor.onFetchEncryptedDataResult(testFactory.encV1Consents, emptyList())

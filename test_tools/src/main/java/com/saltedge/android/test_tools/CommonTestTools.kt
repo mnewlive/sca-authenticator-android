@@ -1,22 +1,5 @@
 /*
- * This file is part of the Salt Edge Authenticator distribution
- * (https://github.com/saltedge/sca-authenticator-android).
  * Copyright (c) 2020 Salt Edge Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 or later.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * For the additional permissions granted for Salt Edge Authenticator
- * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
 package com.saltedge.android.test_tools
 
@@ -28,11 +11,10 @@ import com.saltedge.authenticator.core.tools.encodeToPemBase64String
 import com.saltedge.authenticator.sdk.api.model.authorization.AuthorizationData
 import com.saltedge.authenticator.sdk.v2.api.model.authorization.AuthorizationResponseData
 import com.saltedge.authenticator.sdk.v2.api.model.authorization.AuthorizationV2Data
-import java.io.ByteArrayOutputStream
+import com.saltedge.authenticator.sdk.v2.tools.CryptoToolsV2
 import java.security.PrivateKey
 import java.security.PublicKey
 import javax.crypto.Cipher
-import javax.crypto.CipherOutputStream
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
@@ -62,8 +44,8 @@ fun AuthorizationV2Data.encryptWithTestKey(): AuthorizationResponseData {
         id = this.authorizationID!!,
         connectionId = this.connectionID!!,
         status = this.status!!,
-        key = rsaEncrypt(CommonTestTools.aesKey, publicKey)!!,
-        iv = rsaEncrypt(CommonTestTools.aesIV, publicKey)!!,
+        key = CryptoToolsV2.rsaEncrypt(CommonTestTools.aesKey, publicKey)!!,
+        iv = CryptoToolsV2.rsaEncrypt(CommonTestTools.aesIV, publicKey)!!,
         data = encryptAesCBCString(jsonString, CommonTestTools.aesKey, CommonTestTools.aesIV)!!,
         finishedAt = this.finishedAt
     )
@@ -89,22 +71,6 @@ fun getDefaultTestConnection(): ConnectionAbs =
         accessToken = "accessToken"
     )
 
-fun rsaEncrypt(input: ByteArray, publicKey: PublicKey): String? {
-    try {
-        val encryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
-        encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey)
-
-        val outputStream = ByteArrayOutputStream()
-        val cipherOutputStream = CipherOutputStream(outputStream, encryptCipher)
-        cipherOutputStream.write(input)
-        cipherOutputStream.close()
-        return encodeToPemBase64String(outputStream.toByteArray())
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-    return null
-}
-
 fun encryptAesCBCString(text: String, key: ByteArray, iv: ByteArray): String? {
     val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
     cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "AES"), IvParameterSpec(iv))
@@ -121,8 +87,8 @@ private fun encryptWithTestKey(
         id = id,
         connectionId = connectionId ?: "",
         algorithm = "AES-256-CBC",
-        key = rsaEncrypt(CommonTestTools.aesKey, publicKey)!!,
-        iv = rsaEncrypt(CommonTestTools.aesIV, publicKey)!!,
+        key = CryptoToolsV2.rsaEncrypt(CommonTestTools.aesKey, publicKey)!!,
+        iv = CryptoToolsV2.rsaEncrypt(CommonTestTools.aesIV, publicKey)!!,
         data = encryptAesCBCString(jsonString, CommonTestTools.aesKey, CommonTestTools.aesIV)!!
     )
 }

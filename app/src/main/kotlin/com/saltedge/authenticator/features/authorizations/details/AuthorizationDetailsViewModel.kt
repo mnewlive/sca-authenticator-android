@@ -1,22 +1,5 @@
 /*
- * This file is part of the Salt Edge Authenticator distribution
- * (https://github.com/saltedge/sca-authenticator-android).
  * Copyright (c) 2020 Salt Edge Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 or later.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * For the additional permissions granted for Salt Edge Authenticator
- * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
 package com.saltedge.authenticator.features.authorizations.details
 
@@ -24,7 +7,6 @@ import androidx.lifecycle.*
 import com.saltedge.authenticator.R
 import com.saltedge.authenticator.core.api.model.DescriptionData
 import com.saltedge.authenticator.core.api.model.error.ApiErrorData
-import com.saltedge.authenticator.core.model.ID
 import com.saltedge.authenticator.features.authorizations.common.AuthorizationItemViewModel
 import com.saltedge.authenticator.features.authorizations.common.AuthorizationStatus
 import com.saltedge.authenticator.features.authorizations.common.BaseAuthorizationViewModel
@@ -47,16 +29,18 @@ class AuthorizationDetailsViewModel(
     LifecycleObserver,
     AuthorizationDetailsInteractorCallback {
 
+    override val coroutineScope: CoroutineScope
+        get() = viewModelScope
     val onErrorEvent = MutableLiveData<ViewModelEvent<ApiErrorData>>()
     val onCloseAppEvent = MutableLiveData<ViewModelEvent<Unit>>()
     val onCloseViewEvent = MutableLiveData<ViewModelEvent<Unit>>()
     val onTimeUpdateEvent = MutableLiveData<ViewModelEvent<Unit>>()
     val authorizationModel = MutableLiveData<AuthorizationItemViewModel>()
+    val onShowAuthorizationsListEvent = MutableLiveData<ViewModelEvent<Unit>>()
     var titleRes: ResId = R.string.authorization_feature_title
         private set
-    override val coroutineScope: CoroutineScope
-        get() = viewModelScope
     private lateinit var interactor: AuthorizationDetailsInteractorAbs
+    private var isConfirmationInProgress = false
     private var closeAppOnBackPress: Boolean = true
     private val currentStatus: AuthorizationStatus
         get() = authorizationModel.value?.status ?: AuthorizationStatus.LOADING
@@ -72,7 +56,16 @@ class AuthorizationDetailsViewModel(
         this.titleRes = titleRes ?: R.string.authorization_feature_title
         if (this.titleRes == 0) this.titleRes = R.string.authorization_feature_title
 
-        initInteractor(connectionID = identifier?.connectionID ?: "")
+        val connectionID = identifier?.connectionID ?: ""
+        val apiVersion = AuthorizationDetailsInteractor.getApiVersion(connectionID)
+
+        interactor = if (apiVersion == API_V2_VERSION) {
+            interactorV2
+        } else {
+            interactorV1
+        }
+        interactor.setInitialData(connectionID = connectionID)
+        interactor.contract = this
 
         val status = if (interactor.noConnection || identifier == null || !identifier.hasAuthorizationID) {
                 AuthorizationStatus.UNAVAILABLE
@@ -154,10 +147,12 @@ class AuthorizationDetailsViewModel(
     }
 
     override fun onConfirmDenySuccess(newStatus: AuthorizationStatus?) {
+        isConfirmationInProgress = false
         updateAuthorizationStatus(newStatus = newStatus ?: currentStatus.computeConfirmedStatus())
     }
 
     override fun updateAuthorization(item: AuthorizationItemViewModel, confirm: Boolean) {
+        isConfirmationInProgress = true
         updateAuthorizationStatus(if (confirm) AuthorizationStatus.CONFIRM_PROCESSING else AuthorizationStatus.DENY_PROCESSING)
         interactor.updateAuthorization(
             authorizationID = item.authorizationID,
@@ -181,21 +176,17 @@ class AuthorizationDetailsViewModel(
 
     private fun startPolling() {
         val authorizationID = authorizationModel.value?.authorizationID ?: return
-        if (currentStatus != AuthorizationStatus.UNAVAILABLE && !currentStatus.isFinal()) {
+        if (currentStatus != AuthorizationStatus.UNAVAILABLE &&
+            !currentStatus.isFinal() && !isConfirmationInProgress) {
             interactor.startPolling(authorizationID = authorizationID)
+        } else {
+            onShowAuthorizationsListEvent.postUnitEvent()
         }
     }
 
     private fun closeView() {
         if (closeAppOnBackPress) onCloseAppEvent.postUnitEvent()
         else onCloseViewEvent.postUnitEvent()
-    }
-
-    private fun initInteractor(connectionID: ID) {
-        interactorV2.setInitialData(connectionID)
-        interactor = if (interactorV2.connectionApiVersion == API_V2_VERSION) interactorV2
-        else interactorV1.apply { setInitialData(connectionID) }
-        interactor.contract = this
     }
 
     private fun createInitialItem(

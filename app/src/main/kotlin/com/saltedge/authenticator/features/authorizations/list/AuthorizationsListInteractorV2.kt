@@ -1,22 +1,5 @@
 /*
- * This file is part of the Salt Edge Authenticator distribution
- * (https://github.com/saltedge/sca-authenticator-android).
  * Copyright (c) 2021 Salt Edge Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 or later.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * For the additional permissions granted for Salt Edge Authenticator
- * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
 package com.saltedge.authenticator.features.authorizations.list
 
@@ -58,17 +41,16 @@ class AuthorizationsListInteractorV2(
     private val keyStoreManager: KeyManagerAbs,
     private val cryptoTools: CryptoToolsV2Abs,
     private val apiManager: ScaServiceClientAbs,
-    private val defaultDispatcher: CoroutineDispatcher
+    private val defaultDispatcher: CoroutineDispatcher,
 ) : AuthorizationsListInteractorAbs,
     AuthorizationConfirmListener,
     AuthorizationDenyListener,
-    PollingAuthorizationsContract
-{
+    PollingAuthorizationsContract {
     override var contract: AuthorizationsListInteractorCallback? = null
     override val noConnections: Boolean
         get() = richConnections.isEmpty()
     private var pollingService = apiManager.createAuthorizationsPollingService()
-    private var richConnections: Map<ID, RichConnection> = collectRichConnections()
+    private var richConnections: Map<ID, RichConnection> = emptyMap()
 
     override fun onResume() {
         richConnections = collectRichConnections()
@@ -172,8 +154,10 @@ class AuthorizationsListInteractorV2(
         val invalidTokens = errors.filter { it.isConnectionNotFound() || it.isConnectionRevoked() }
             .mapNotNull { it.accessToken }
         if (invalidTokens.isNotEmpty()) {
-            connectionsRepository.invalidateConnectionsByTokens(accessTokens = invalidTokens)
-            richConnections = collectRichConnections()
+            contract?.coroutineScope?.launch {
+                connectionsRepository.invalidateConnectionsByTokens(accessTokens = invalidTokens)
+                richConnections = collectRichConnections()
+            }
         }
     }
 
@@ -186,7 +170,10 @@ class AuthorizationsListInteractorV2(
             val items: List<AuthorizationItemViewModel> = createViewModels((activeData.filter { it.isNotExpired() } + finishedData))
 
             withContext(Dispatchers.Main) {
-                contract?.onAuthorizationsReceived(data = items, newModelsApiVersion = API_V2_VERSION)
+                contract?.onAuthorizationsReceived(
+                    data = items,
+                    newModelsApiVersion = API_V2_VERSION
+                )
             }
         }
     }

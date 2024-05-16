@@ -1,22 +1,5 @@
 /*
- * This file is part of the Salt Edge Authenticator distribution
- * (https://github.com/saltedge/sca-authenticator-android).
  * Copyright (c) 2021 Salt Edge Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 or later.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * For the additional permissions granted for Salt Edge Authenticator
- * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
 package com.saltedge.authenticator.features.authorizations.list
 
@@ -57,12 +40,14 @@ class AuthorizationsListInteractorV1(
     override val noConnections: Boolean
         get() = richConnections.isEmpty()
     private var pollingService = apiManager.createAuthorizationsPollingService()
-    private var richConnections: Map<ID, RichConnection> = collectRichConnections()
+    private var richConnections: Map<ID, RichConnection> = emptyMap()
 
     override fun onResume() {
-        richConnections = collectRichConnections()
-        pollingService.contract = this
-        pollingService.start()
+        contract?.coroutineScope?.launch {
+            richConnections = collectRichConnections()
+            pollingService.contract = this@AuthorizationsListInteractorV1
+            pollingService.start()
+        }
     }
 
     override fun onStop() {
@@ -126,8 +111,10 @@ class AuthorizationsListInteractorV1(
         val invalidTokens = errors.filter { it.isConnectionNotFound() || it.isConnectionRevoked() }
             .mapNotNull { it.accessToken }
         if (invalidTokens.isNotEmpty()) {
-            connectionsRepository.invalidateConnectionsByTokens(accessTokens = invalidTokens)
-            richConnections = collectRichConnections()
+            contract?.coroutineScope?.launch {
+                connectionsRepository.invalidateConnectionsByTokens(accessTokens = invalidTokens)
+                richConnections = collectRichConnections()
+            }
         }
     }
 
@@ -161,5 +148,5 @@ class AuthorizationsListInteractorV1(
         }
     }
 
-    private fun collectRichConnections() = collectRichConnections(connectionsRepository, keyStoreManager, API_V1_VERSION)
+    private suspend fun collectRichConnections() = collectRichConnections(connectionsRepository, keyStoreManager, API_V1_VERSION)
 }

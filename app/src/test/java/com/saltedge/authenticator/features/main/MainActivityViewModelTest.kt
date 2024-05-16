@@ -1,22 +1,5 @@
 /*
- * This file is part of the Salt Edge Authenticator distribution
- * (https://github.com/saltedge/sca-authenticator-android).
  * Copyright (c) 2020 Salt Edge Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3 or later.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * For the additional permissions granted for Salt Edge Authenticator
- * under Section 7 of the GNU General Public License see THIRD_PARTY_NOTICES.md
  */
 package com.saltedge.authenticator.features.main
 
@@ -26,11 +9,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.test.core.app.ApplicationProvider
-import com.saltedge.android.test_tools.ViewModelTest
+import com.saltedge.android.test_tools.CoroutineViewModelTest
 import com.saltedge.authenticator.R
 import com.saltedge.authenticator.app.KEY_CLOSE_APP
 import com.saltedge.authenticator.app.KEY_DEEP_LINK
 import com.saltedge.authenticator.app.QR_SCAN_REQUEST_CODE
+import com.saltedge.authenticator.cloud.PushTokenUpdater
 import com.saltedge.authenticator.core.api.*
 import com.saltedge.authenticator.core.model.ActionAppLinkData
 import com.saltedge.authenticator.core.model.ConnectAppLinkData
@@ -42,6 +26,8 @@ import com.saltedge.authenticator.models.repository.PreferenceRepositoryAbs
 import com.saltedge.authenticator.sdk.AuthenticatorApiManagerAbs
 import com.saltedge.authenticator.sdk.api.model.authorization.AuthorizationIdentifier
 import com.saltedge.authenticator.sdk.v2.ScaServiceClientAbs
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert.assertNotNull
@@ -51,8 +37,9 @@ import org.mockito.BDDMockito.given
 import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
 
+@ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
-class MainActivityViewModelTest : ViewModelTest() {
+class MainActivityViewModelTest : CoroutineViewModelTest() {
 
     private lateinit var interactor: MainActivityInteractor
     private val mockConnectionsRepository = mock(ConnectionsRepositoryAbs::class.java)
@@ -61,6 +48,7 @@ class MainActivityViewModelTest : ViewModelTest() {
     private val mockApiManagerV1 = mock(AuthenticatorApiManagerAbs::class.java)
     private val mockApiManagerV2 = mock(ScaServiceClientAbs::class.java)
     private val mockKeyStoreManager = mock(KeyManagerAbs::class.java)
+    private val mockPushTokenUpdater = mock(PushTokenUpdater::class.java)
 
     private fun createViewModel(): MainActivityViewModel {
         interactor = MainActivityInteractor(
@@ -68,7 +56,8 @@ class MainActivityViewModelTest : ViewModelTest() {
             apiManagerV2 = mockApiManagerV2,
             connectionsRepository = mockConnectionsRepository,
             keyStoreManager = mockKeyStoreManager,
-            preferenceRepository = mockPreferenceRepository
+            preferenceRepository = mockPreferenceRepository,
+            pushTokenUpdater = mockPushTokenUpdater
         )
         return MainActivityViewModel(
             appContext = context,
@@ -78,7 +67,7 @@ class MainActivityViewModelTest : ViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onLifeCycleCreateTestCase1() {
+    fun onLifeCycleCreateTestCase1() = runTest {
         /**
          * given null savedInstanceState, null intent, no connections
          */
@@ -100,7 +89,7 @@ class MainActivityViewModelTest : ViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onLifeCycleCreateTestCase2() {
+    fun onLifeCycleCreateTestCase2() = runTest {
         /**
          * given null savedInstanceState, empty intent, no empty repository
          */
@@ -120,7 +109,7 @@ class MainActivityViewModelTest : ViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onLifeCycleCreateTestCase3() {
+    fun onLifeCycleCreateTestCase3() = runTest {
         /**
          * given null savedInstanceState, intent with Pending Authorization Data
          */
@@ -147,7 +136,7 @@ class MainActivityViewModelTest : ViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onLifeCycleCreateTestCase4() {
+    fun onLifeCycleCreateTestCase4() = runTest {
         /**
          * given null savedInstanceState, intent with Deep-link Data for Connection creation
          */
@@ -179,7 +168,7 @@ class MainActivityViewModelTest : ViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onLifeCycleCreateTestCase5() {
+    fun onLifeCycleCreateTestCase5() = runTest {
         /**
          * given null savedInstanceState, intent with Deep-link Data for Instant Action
          */
@@ -216,7 +205,7 @@ class MainActivityViewModelTest : ViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onLifeCycleCreateTestCase6() {
+    fun onLifeCycleCreateTestCase6() = runTest {
         /**
          * given not null savedInstanceState
          */
@@ -236,7 +225,7 @@ class MainActivityViewModelTest : ViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onLifeCycleCreateTestCase7() {
+    fun onLifeCycleCreateTestCase7() = runTest {
         val viewModel = createViewModel()
         val savedInstanceState: Bundle? = null
         val intent: Intent? = Intent().putExtra(
@@ -567,7 +556,7 @@ class MainActivityViewModelTest : ViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onLanguageChangedTest() {
+    fun onLanguageChangedTest() = runTest {
         //given
         val viewModel = createViewModel()
 
