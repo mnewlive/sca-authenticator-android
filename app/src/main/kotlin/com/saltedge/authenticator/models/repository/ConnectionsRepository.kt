@@ -21,10 +21,14 @@ import com.saltedge.authenticator.models.realm.RealmManager
 import io.realm.Realm
 import io.realm.RealmQuery
 import io.realm.kotlin.executeTransactionAwait
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.withContext
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
+import java.util.concurrent.Executors
 
 object ConnectionsRepository : ConnectionsRepositoryAbs {
+    private val singleThreadDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     /**
      * Checks if the database doesn't contains a connections
@@ -148,8 +152,12 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * Delete all connections from database
      */
     override suspend fun deleteAllConnections() {
-        RealmManager.getDefaultInstance().use { realmDb ->
-            realmDb.executeTransactionAwait { transactionRealm -> transactionRealm.delete(Connection::class.java) }
+        withContext(singleThreadDispatcher) {
+            RealmManager.getDefaultInstance().use { realmDb ->
+                realmDb.executeTransactionAwait { transactionRealm ->
+                    transactionRealm.delete(Connection::class.java)
+                }
+            }
         }
     }
 
@@ -162,12 +170,14 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
     override suspend fun deleteConnection(connectionGuid: GUID): Boolean {
         if (connectionGuid.isEmpty() || !connectionExists(connectionGuid)) return false
 
-        RealmManager.getDefaultInstance().use { realmDb ->
-            realmDb.executeTransactionAwait { transactionRealm ->
-                transactionRealm.where(Connection::class.java)
-                    .equalTo(KEY_GUID, connectionGuid)
-                    .findAll()
-                    .deleteAllFromRealm()
+        withContext(singleThreadDispatcher) {
+            RealmManager.getDefaultInstance().use { realmDb ->
+                realmDb.executeTransactionAwait { transactionRealm ->
+                    transactionRealm.where(Connection::class.java)
+                        .equalTo(KEY_GUID, connectionGuid)
+                        .findAll()
+                        .deleteAllFromRealm()
+                }
             }
         }
         return true
@@ -184,9 +194,11 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
         connection.updatedAt = DateTime.now().withZone(DateTimeZone.UTC).millis
 
         var resultConnection: Connection? = null
-        RealmManager.getDefaultInstance().use { realmDb ->
-            realmDb.executeTransactionAwait { transactionRealm ->
-                resultConnection = transactionRealm.copyFromRealm(transactionRealm.copyToRealmOrUpdate(connection))
+        withContext(singleThreadDispatcher) {
+            RealmManager.getDefaultInstance().use { realmDb ->
+                realmDb.executeTransactionAwait { transactionRealm ->
+                    resultConnection = transactionRealm.copyFromRealm(transactionRealm.copyToRealmOrUpdate(connection))
+                }
             }
         }
         return resultConnection
@@ -200,14 +212,16 @@ object ConnectionsRepository : ConnectionsRepositoryAbs {
      * @param accessTokens - list of access tokens
      */
     override suspend fun invalidateConnectionsByTokens(accessTokens: List<Token>) {
-        RealmManager.getDefaultInstance().use { realmDb ->
-            realmDb.executeTransactionAwait { transactionRealm ->
-                transactionRealm.where(Connection::class.java)
-                    .`in`(DB_KEY_ACCESS_TOKEN, accessTokens.toTypedArray())
-                    .findAll().forEach { connection ->
-                        connection?.status = ConnectionStatus.INACTIVE.toString()
-                        connection?.accessToken = ""
-                    }
+        withContext(singleThreadDispatcher) {
+            RealmManager.getDefaultInstance().use { realmDb ->
+                realmDb.executeTransactionAwait { transactionRealm ->
+                    transactionRealm.where(Connection::class.java)
+                        .`in`(DB_KEY_ACCESS_TOKEN, accessTokens.toTypedArray())
+                        .findAll().forEach { connection ->
+                            connection?.status = ConnectionStatus.INACTIVE.toString()
+                            connection?.accessToken = ""
+                        }
+                }
             }
         }
     }
