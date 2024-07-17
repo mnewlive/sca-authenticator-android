@@ -214,7 +214,7 @@ class AuthorizationDetailsInteractorV2Test : CoroutineViewModelTest() {
         interactor.onFetchAuthorizationSuccess(result = encryptedDataWithClosedStatus)
 
         //then
-        verify(mockCallback).onAuthorizationClosed()
+        verify(mockCallback).onFinalStatus(newStatus = AuthorizationStatus.CLOSED)
     }
 
     @Test
@@ -403,6 +403,6 @@ class AuthorizationDetailsInteractorV2Test : CoroutineViewModelTest() {
         )
 
         //then
-        verify(mockCallback).onConfirmDenySuccess(newStatus = AuthorizationStatus.CONFIRMED)
+        verify(mockCallback).onFinalStatus(newStatus = AuthorizationStatus.CONFIRMED)
     }
 }

@@ -110,15 +110,4 @@ class ViewModeTest {
         assertFalse(AuthorizationStatus.TIME_OUT.processingMode)
         assertFalse(AuthorizationStatus.UNAVAILABLE.processingMode)
     }
-
-    @Test
-    @Throws(Exception::class)
-    fun isClosedTest() {
-        assertTrue("closed".isClosed)
-        assertFalse("pending".isClosed)
-        assertFalse("confirmed".isClosed)
-        assertFalse("denied".isClosed)
-        assertFalse("deny_processing".isClosed)
-        assertFalse("confirm_processing".isClosed)
-    }
 }

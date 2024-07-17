@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 
 interface AuthorizationDetailsInteractorCallback {
     fun onAuthorizationReceived(data: AuthorizationItemViewModel?, newModelApiVersion: String)
-    fun onConfirmDenySuccess(newStatus: AuthorizationStatus? = null)
+    fun onFinalStatus(newStatus: AuthorizationStatus? = null)
     fun onConnectionNotFoundError()
     fun onAuthorizationNotFoundError()
     fun onConnectivityError(error: ApiErrorData)

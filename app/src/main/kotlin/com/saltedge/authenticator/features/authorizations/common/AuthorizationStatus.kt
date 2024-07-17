@@ -4,7 +4,6 @@
 package com.saltedge.authenticator.features.authorizations.common
 
 import com.saltedge.authenticator.R
-import com.saltedge.authenticator.app.KEY_STATUS_CLOSED
 import com.saltedge.authenticator.tools.ResId
 import java.util.*
 
@@ -15,6 +14,7 @@ enum class AuthorizationStatus {//pending confirm_processing deny_processing con
     DENY_PROCESSING,
     CONFIRMED,
     DENIED,
+    CLOSED,
     ERROR,
     TIME_OUT,
     UNAVAILABLE;
@@ -22,6 +22,7 @@ enum class AuthorizationStatus {//pending confirm_processing deny_processing con
     fun isFinal(): Boolean {
         return this == CONFIRMED
             || this == DENIED
+            || this == CLOSED
             || this == ERROR
             || this == TIME_OUT
             || this == UNAVAILABLE
@@ -38,7 +39,7 @@ enum class AuthorizationStatus {//pending confirm_processing deny_processing con
                 DENIED -> R.drawable.ic_status_denied
                 ERROR -> R.drawable.ic_status_error
                 TIME_OUT -> R.drawable.ic_status_timeout
-                UNAVAILABLE -> R.drawable.ic_status_unavailable
+                UNAVAILABLE, CLOSED -> R.drawable.ic_status_unavailable
                 else -> null
             }
         }
@@ -52,7 +53,7 @@ enum class AuthorizationStatus {//pending confirm_processing deny_processing con
                 DENIED -> R.string.authorizations_denied
                 ERROR -> R.string.authorizations_error
                 TIME_OUT -> R.string.authorizations_time_out
-                UNAVAILABLE -> R.string.authorizations_unavailable
+                UNAVAILABLE, CLOSED -> R.string.authorizations_unavailable
             }
         }
 
@@ -65,7 +66,7 @@ enum class AuthorizationStatus {//pending confirm_processing deny_processing con
                 DENIED -> R.string.authorizations_denied_description
                 ERROR -> R.string.authorizations_error_description
                 TIME_OUT -> R.string.authorizations_time_out_description
-                UNAVAILABLE -> R.string.authorizations_unavailable_description
+                UNAVAILABLE, CLOSED -> R.string.authorizations_unavailable_description
             }
         }
 
@@ -96,12 +97,4 @@ fun AuthorizationStatus.computeConfirmedStatus(): AuthorizationStatus {
 val String.isFinalStatus: Boolean
     get() = this.toAuthorizationStatus()?.isFinal() ?: false
 
-
-/**
- * Check that STRING status is equal to closed authorization status
- *
- * @return true if is closed status
- */
-val String.isClosed: Boolean
-    get() = this == KEY_STATUS_CLOSED
 

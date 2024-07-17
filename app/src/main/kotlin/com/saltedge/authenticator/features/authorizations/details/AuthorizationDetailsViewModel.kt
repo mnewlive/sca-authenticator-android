@@ -150,7 +150,7 @@ class AuthorizationDetailsViewModel(
         updateToFinalViewMode(AuthorizationStatus.UNAVAILABLE)
     }
 
-    override fun onConfirmDenySuccess(newStatus: AuthorizationStatus?) {
+    override fun onFinalStatus(newStatus: AuthorizationStatus?) {
         isConfirmationInProgress = false
         updateAuthorizationStatus(newStatus = newStatus ?: currentStatus.computeConfirmedStatus())
     }
