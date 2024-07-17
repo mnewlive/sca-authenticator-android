@@ -9,6 +9,7 @@ import com.saltedge.authenticator.core.model.ID
 import com.saltedge.authenticator.core.model.RichConnection
 import com.saltedge.authenticator.core.tools.secure.KeyManagerAbs
 import com.saltedge.authenticator.features.authorizations.common.AuthorizationItemViewModel
+import com.saltedge.authenticator.features.authorizations.common.isClosed
 import com.saltedge.authenticator.features.authorizations.common.toAuthorizationItemViewModel
 import com.saltedge.authenticator.features.authorizations.common.toAuthorizationStatus
 import com.saltedge.authenticator.models.repository.ConnectionsRepositoryAbs
@@ -53,6 +54,9 @@ class AuthorizationDetailsInteractorV2(
         if (newStatus?.isFinal() == true) {
             stopPolling()
             contract?.onConfirmDenySuccess(newStatus)
+        } else if (result.status.isClosed) {
+            stopPolling()
+            contract?.onAuthorizationClosed()
         } else {
             val newViewModel: AuthorizationItemViewModel? = cryptoTools.decryptAuthorizationData(
                 encryptedData = result,
