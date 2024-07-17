@@ -120,7 +120,6 @@ class SubmitActionViewModelTest : CoroutineViewModelTest() {
 
         interactor = SubmitActionInteractor(
             connectionsRepository = mockConnectionsRepository,
-            defaultDispatcher = testDispatcher,
             keyStoreManager = mockKeyStoreManager,
         )
         interactor.contract = mockContract
