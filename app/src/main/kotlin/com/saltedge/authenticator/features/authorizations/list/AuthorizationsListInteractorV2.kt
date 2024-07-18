@@ -13,7 +13,6 @@ import com.saltedge.authenticator.core.model.RichConnection
 import com.saltedge.authenticator.core.tools.secure.KeyManagerAbs
 import com.saltedge.authenticator.features.authorizations.common.AuthorizationItemViewModel
 import com.saltedge.authenticator.features.authorizations.common.LIFE_TIME_OF_FINAL_MODEL
-import com.saltedge.authenticator.features.authorizations.common.isClosed
 import com.saltedge.authenticator.features.authorizations.common.isFinalStatus
 import com.saltedge.authenticator.features.authorizations.common.toAuthorizationItemViewModel
 import com.saltedge.authenticator.features.authorizations.common.toAuthorizationStatus
@@ -164,7 +163,7 @@ class AuthorizationsListInteractorV2(
     private fun processEncryptedAuthorizationsResult(encryptedList: List<AuthorizationResponseData>) {
         contract?.coroutineScope?.launch(defaultDispatcher) {
             val splitList: Pair<List<AuthorizationResponseData>, List<AuthorizationResponseData>> =
-                encryptedList.filterNot { it.status.isClosed }.partition { it.status.isFinalStatus }
+                encryptedList.partition { it.status.isFinalStatus }
             val finishedData: List<AuthorizationV2Data> = prepareFinishedAuthorizationData(splitList.first)
             val activeData: List<AuthorizationV2Data> = decryptAuthorizations(splitList.second)
             val items: List<AuthorizationItemViewModel> = createViewModels((activeData.filter { it.isNotExpired() } + finishedData))

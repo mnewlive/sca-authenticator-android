@@ -77,7 +77,7 @@ class AuthorizationDetailsInteractorV1(
     }
 
     override fun onConfirmDenySuccess(result: ConfirmDenyResponseData, connectionID: ID) {
-        contract?.onConfirmDenySuccess()
+        contract?.onFinalStatus()
     }
 
     override fun onConfirmDenyFailure(error: ApiErrorData, connectionID: ID, authorizationID: ID) {

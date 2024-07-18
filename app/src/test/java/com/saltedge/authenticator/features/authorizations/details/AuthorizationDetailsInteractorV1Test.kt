@@ -382,6 +382,6 @@ class AuthorizationDetailsInteractorV1Test : CoroutineViewModelTest() {
         interactor.onConfirmDenySuccess(result = ConfirmDenyResponseData(), connectionID = "1")
 
         //then
-        verify(mockCallback).onConfirmDenySuccess()
+        verify(mockCallback).onFinalStatus()
     }
 }

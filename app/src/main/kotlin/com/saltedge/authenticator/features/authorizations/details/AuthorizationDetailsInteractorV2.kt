@@ -52,7 +52,7 @@ class AuthorizationDetailsInteractorV2(
         val newStatus = result.status.toAuthorizationStatus()
         if (newStatus?.isFinal() == true) {
             stopPolling()
-            contract?.onConfirmDenySuccess(newStatus)
+            contract?.onFinalStatus(newStatus)
         } else {
             val newViewModel: AuthorizationItemViewModel? = cryptoTools.decryptAuthorizationData(
                 encryptedData = result,
@@ -99,7 +99,7 @@ class AuthorizationDetailsInteractorV2(
         result: UpdateAuthorizationResponseData,
         connectionID: ID
     ) {
-        contract?.onConfirmDenySuccess(result.status.toAuthorizationStatus())
+        contract?.onFinalStatus(result.status.toAuthorizationStatus())
     }
 
     override fun onAuthorizationConfirmFailure(
@@ -114,7 +114,7 @@ class AuthorizationDetailsInteractorV2(
         result: UpdateAuthorizationResponseData,
         connectionID: ID
     ) {
-        contract?.onConfirmDenySuccess(result.status.toAuthorizationStatus())
+        contract?.onFinalStatus(result.status.toAuthorizationStatus())
     }
 
     override fun onAuthorizationDenyFailure(
