@@ -15,7 +15,6 @@ interface AuthorizationDetailsInteractorCallback {
     fun onAuthorizationNotFoundError()
     fun onConnectivityError(error: ApiErrorData)
     fun onError(error: ApiErrorData)
-    fun onAuthorizationClosed()
 
     val coroutineScope: CoroutineScope
 }
