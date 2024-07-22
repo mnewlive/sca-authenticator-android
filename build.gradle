@@ -15,10 +15,10 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.3.1'
+        classpath 'com.android.tools.build:gradle:8.3.2'
         classpath "org.jacoco:org.jacoco.core:0.8.8"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.4.1'
+        classpath 'com.google.gms:google-services:4.4.2'
         classpath "io.realm:realm-gradle-plugin:$realm_version"
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.9'
         classpath "org.jlleitschuh.gradle:ktlint-gradle:8.2.0"
