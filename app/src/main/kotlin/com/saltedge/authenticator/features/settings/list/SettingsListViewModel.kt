@@ -47,7 +47,7 @@ class SettingsListViewModel(
 
     fun onOkClick() {
         onCloseEvent.postUnitEvent()
-        if (selectedItemIndex <= 0 && selectedItemIndex < languageListItems.size) {
+        if (selectedItemIndex >= 0 && selectedItemIndex < languageListItems.size) {
             if (appContext.currentAppLocaleName() != languageListItems[selectedItemIndex]) {
                 preferenceRepository.currentLocale = availableLocales[selectedItemIndex]
                 onLanguageChangedEvent.postUnitEvent()

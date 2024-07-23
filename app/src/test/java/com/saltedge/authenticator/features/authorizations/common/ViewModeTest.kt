@@ -21,6 +21,7 @@ class ViewModeTest {
             AuthorizationStatus.DENY_PROCESSING,
             AuthorizationStatus.CONFIRMED,
             AuthorizationStatus.DENIED,
+            AuthorizationStatus.CLOSED,
             AuthorizationStatus.ERROR,
             AuthorizationStatus.TIME_OUT,
             AuthorizationStatus.UNAVAILABLE
@@ -38,6 +39,7 @@ class ViewModeTest {
         assertTrue(AuthorizationStatus.DENIED.isFinal())
         assertTrue(AuthorizationStatus.ERROR.isFinal())
         assertTrue(AuthorizationStatus.TIME_OUT.isFinal())
+        assertTrue(AuthorizationStatus.CLOSED.isFinal())
         assertTrue(AuthorizationStatus.UNAVAILABLE.isFinal())
     }
 
@@ -52,6 +54,7 @@ class ViewModeTest {
         assertFalse(AuthorizationStatus.DENIED.isProcessing())
         assertFalse(AuthorizationStatus.ERROR.isProcessing())
         assertFalse(AuthorizationStatus.TIME_OUT.isProcessing())
+        assertFalse(AuthorizationStatus.CLOSED.isProcessing())
         assertFalse(AuthorizationStatus.UNAVAILABLE.isProcessing())
     }
 
@@ -66,6 +69,7 @@ class ViewModeTest {
         assertThat(AuthorizationStatus.DENIED.statusImageResId, equalTo(R.drawable.ic_status_denied))
         assertThat(AuthorizationStatus.ERROR.statusImageResId, equalTo(R.drawable.ic_status_error))
         assertThat(AuthorizationStatus.TIME_OUT.statusImageResId, equalTo(R.drawable.ic_status_timeout))
+        assertThat(AuthorizationStatus.CLOSED.statusImageResId, equalTo(R.drawable.ic_status_unavailable))
         assertThat(AuthorizationStatus.UNAVAILABLE.statusImageResId, equalTo(R.drawable.ic_status_unavailable))
     }
 
@@ -80,6 +84,7 @@ class ViewModeTest {
         assertThat(AuthorizationStatus.DENIED.statusTitleResId, equalTo(R.string.authorizations_denied))
         assertThat(AuthorizationStatus.ERROR.statusTitleResId, equalTo(R.string.authorizations_error))
         assertThat(AuthorizationStatus.TIME_OUT.statusTitleResId, equalTo(R.string.authorizations_time_out))
+        assertThat(AuthorizationStatus.CLOSED.statusTitleResId, equalTo(R.string.authorizations_unavailable))
         assertThat(AuthorizationStatus.UNAVAILABLE.statusTitleResId, equalTo(R.string.authorizations_unavailable))
     }
 
@@ -94,6 +99,7 @@ class ViewModeTest {
         assertThat(AuthorizationStatus.DENIED.statusDescriptionResId, equalTo(R.string.authorizations_denied_description))
         assertThat(AuthorizationStatus.ERROR.statusDescriptionResId, equalTo(R.string.authorizations_error_description))
         assertThat(AuthorizationStatus.TIME_OUT.statusDescriptionResId, equalTo(R.string.authorizations_time_out_description))
+        assertThat(AuthorizationStatus.CLOSED.statusDescriptionResId, equalTo(R.string.authorizations_unavailable_description))
         assertThat(AuthorizationStatus.UNAVAILABLE.statusDescriptionResId, equalTo(R.string.authorizations_unavailable_description))
     }
 
@@ -108,17 +114,7 @@ class ViewModeTest {
         assertFalse(AuthorizationStatus.DENIED.processingMode)
         assertFalse(AuthorizationStatus.ERROR.processingMode)
         assertFalse(AuthorizationStatus.TIME_OUT.processingMode)
+        assertFalse(AuthorizationStatus.CLOSED.processingMode)
         assertFalse(AuthorizationStatus.UNAVAILABLE.processingMode)
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun isClosedTest() {
-        assertTrue("closed".isClosed)
-        assertFalse("pending".isClosed)
-        assertFalse("confirmed".isClosed)
-        assertFalse("denied".isClosed)
-        assertFalse("deny_processing".isClosed)
-        assertFalse("confirm_processing".isClosed)
     }
 }

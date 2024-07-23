@@ -192,7 +192,7 @@ class AuthorizationDetailsInteractorV2Test : CoroutineViewModelTest() {
 
     @Test
     @Throws(Exception::class)
-    fun onFetchAuthorizationSuccessTest() {
+    fun onFetchAuthorizationSuccessTestCase1() {
         //given
         interactor.setInitialData(connectionID = "1")
 
@@ -201,6 +201,20 @@ class AuthorizationDetailsInteractorV2Test : CoroutineViewModelTest() {
 
         //then
         verify(mockCallback).onAuthorizationReceived(testViewItem1, API_V2_VERSION)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun onFetchAuthorizationSuccessTestCase2() {
+        //given
+        val encryptedDataWithClosedStatus = encryptedData1.apply { status = "closed" }
+        interactor.setInitialData(connectionID = "1")
+
+        //when
+        interactor.onFetchAuthorizationSuccess(result = encryptedDataWithClosedStatus)
+
+        //then
+        verify(mockCallback).onFinalStatus(newStatus = AuthorizationStatus.CLOSED)
     }
 
     @Test
@@ -389,6 +403,6 @@ class AuthorizationDetailsInteractorV2Test : CoroutineViewModelTest() {
         )
 
         //then
-        verify(mockCallback).onConfirmDenySuccess(newStatus = AuthorizationStatus.CONFIRMED)
+        verify(mockCallback).onFinalStatus(newStatus = AuthorizationStatus.CONFIRMED)
     }
 }

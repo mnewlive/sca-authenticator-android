@@ -743,7 +743,7 @@ class AuthorizationDetailsViewModelTest : ViewModelTest() {
         viewModel.authorizationModel.value = viewModel1
 
         //when
-        viewModel.onConfirmDenySuccess(newStatus = AuthorizationStatus.CONFIRMED)
+        viewModel.onFinalStatus(newStatus = AuthorizationStatus.CONFIRMED)
 
         //then
         assertThat(viewModel.authorizationModel.value, equalTo(viewModel1.copy(status = AuthorizationStatus.CONFIRMED)))
@@ -756,7 +756,7 @@ class AuthorizationDetailsViewModelTest : ViewModelTest() {
         viewModel.authorizationModel.value = viewModel1.copy(status = AuthorizationStatus.TIME_OUT)
 
         //when
-        viewModel.onConfirmDenySuccess(newStatus = null)
+        viewModel.onFinalStatus(newStatus = null)
 
         //then
         assertThat(viewModel.authorizationModel.value, equalTo(viewModel1.copy(status = AuthorizationStatus.ERROR)))
@@ -769,7 +769,7 @@ class AuthorizationDetailsViewModelTest : ViewModelTest() {
         viewModel.authorizationModel.value = viewModel1.copy(status = AuthorizationStatus.CONFIRM_PROCESSING)
 
         //when
-        viewModel.onConfirmDenySuccess(newStatus = null)
+        viewModel.onFinalStatus(newStatus = null)
 
         //then
         assertThat(viewModel.authorizationModel.value!!.status, equalTo(AuthorizationStatus.CONFIRMED))
@@ -782,7 +782,7 @@ class AuthorizationDetailsViewModelTest : ViewModelTest() {
         viewModel.authorizationModel.value = viewModel1.copy(status = AuthorizationStatus.DENY_PROCESSING)
 
         //when
-        viewModel.onConfirmDenySuccess(newStatus = null)
+        viewModel.onFinalStatus(newStatus = null)
 
         //then
         assertThat(viewModel.authorizationModel.value!!.status, equalTo(AuthorizationStatus.DENIED))
