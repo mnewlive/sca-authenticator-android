@@ -200,7 +200,7 @@
     <string name="consent_title_pisp_future">Consent for future payment</string>
     <string name="consent_title_pisp_recurring">Consent for recurring payment</string>
     <string name="consent_unknown">Unknown consent</string>
-    <string name="consent_granted_to">Consent granted to \%s application on the following accounts from \%s</string>
+    <string name="consent_granted_to">Consent granted to \%1$s application on the following accounts from \%2$s</string>
     <string name="granted">Granted</string>
     <string name="expires">Expires</string>
     <string name="shared_data">Shared data</string>

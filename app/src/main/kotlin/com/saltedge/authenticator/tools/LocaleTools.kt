@@ -7,7 +7,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.LocaleList
 import com.saltedge.authenticator.R
-import com.saltedge.authenticator.app.buildVersion24orGreater
 import com.saltedge.authenticator.models.repository.PreferenceRepository
 import java.util.*
 
@@ -32,15 +31,11 @@ fun Context.applyPreferenceLocale() {
  * @receiver context - application context
  * @param locale - application locale
  */
-@SuppressLint("NewApi")
-@Suppress("DEPRECATION")
 fun Context.updateApplicationLocale(locale: Locale) {
     val resources = this.resources
     val configuration = resources?.configuration
     Locale.setDefault(locale)
-    if (buildVersion24orGreater) configuration?.setLocales(LocaleList(locale))
-    else configuration?.locale = locale
-
+    configuration?.setLocales(LocaleList(locale))
     resources?.updateConfiguration(configuration, resources.displayMetrics)
 }
 
@@ -71,11 +66,8 @@ fun Context.currentAppLocaleName(): String? = getCurrentAppLocale()?.languageNam
  * @receiver context - application context
  * @return current application locale object
  */
-@Suppress("DEPRECATION")
-@SuppressLint("NewApi")
 fun Context.getCurrentAppLocale(): Locale? {
-    return if (buildVersion24orGreater) resources.configuration?.locales?.get(0)
-    else resources?.configuration?.locale
+    return resources.configuration?.locales?.get(0)
 }
 
 /**

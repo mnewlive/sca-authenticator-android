@@ -46,7 +46,7 @@ class MainActivity : LockableActivity(), ViewModelContract, SnackbarAnchorContai
         DeviceLocationManager.initManager(context = this)
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         viewModel.onNewIntent(intent)
     }

@@ -10,7 +10,6 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-    <uses-permission android:name="android.permission.USE_FINGERPRINT" /> <!-- This permission is depreciated in Android P  -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -41,7 +40,15 @@
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/LauncherScreenTheme"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:windowSoftInputMode="adjustResize">
+            <layout android:defaultWidth="720dp"
+                android:defaultHeight="1280dp"
+                android:gravity="center"
+                android:minWidth="320dp"
+                android:minHeight="320dp" />
+            <meta-data android:name="android.activity.layout_in_display_cutout_mode"
+                android:value="shortEdges" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -70,21 +77,30 @@
             android:screenOrientation="portrait"
             android:theme="@style/SetupScreenTheme"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
-            android:launchMode="singleInstance"/>
+            android:launchMode="singleInstance">
+            <meta-data android:name="android.activity.layout_in_display_cutout_mode"
+                android:value="shortEdges" />
+        </activity>
 
         <activity
             android:name=".features.main.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/MainScreenTheme"
-            android:launchMode="singleInstance"/>
+            android:launchMode="singleInstance">
+            <meta-data android:name="android.activity.layout_in_display_cutout_mode"
+                android:value="shortEdges" />
+        </activity>
 
         <activity
             android:name=".features.qr.QrScannerActivity"
             android:theme="@style/SetupScreenTheme"
             android:label="@string/scan_qr_code"
             android:screenOrientation="portrait"
-            android:launchMode="singleInstance"/>
+            android:launchMode="singleInstance">
+            <meta-data android:name="android.activity.layout_in_display_cutout_mode"
+                android:value="shortEdges" />
+        </activity>
 
         <service
             android:name=".cloud.CloudMessagingService"
@@ -96,15 +112,6 @@
             </intent-filter>
         </service>
 
-        <!-- The below code is for android OS version below N -->
-        <receiver
-            android:name=".app.ConnectivityReceiver"
-            android:exported="true"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
