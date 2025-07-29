@@ -8,6 +8,7 @@ import com.saltedge.authenticator.app.ViewModelsFactory
 import com.saltedge.authenticator.app.buildVersion28orGreater
 import com.saltedge.authenticator.app.ConnectivityReceiver
 import com.saltedge.authenticator.app.ConnectivityReceiverAbs
+import com.saltedge.authenticator.app.buildVersion23orGreater
 import com.saltedge.authenticator.cloud.PushTokenUpdater
 import com.saltedge.authenticator.core.tools.biometric.BiometricTools
 import com.saltedge.authenticator.core.tools.biometric.BiometricToolsAbs
@@ -54,8 +55,11 @@ class AppModule(context: Context) {
 
     @Provides
     fun provideBiometricPrompt(biometricTools: BiometricToolsAbs): BiometricPromptAbs? {
-        return if (buildVersion28orGreater) BiometricPromptManagerV28()
-        else BiometricsInputDialog(biometricTools)
+        return when {
+            buildVersion28orGreater -> BiometricPromptManagerV28()
+            buildVersion23orGreater -> BiometricsInputDialog(biometricTools)
+            else -> null
+        }
     }
 
     @Provides
