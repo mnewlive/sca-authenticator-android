@@ -103,16 +103,6 @@
                 android:value="shortEdges" />
         </activity>
 
-        <!-- The below code is for android OS version below N -->
-        <receiver
-            android:name=".app.ConnectivityReceiver"
-            android:exported="true"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
-
         <service
             android:name=".cloud.CloudMessagingService"
             android:exported="true"
@@ -122,7 +112,16 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-
+        
+        <!-- The below code is for android OS version below N -->
+        <receiver
+            android:name=".app.ConnectivityReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
