@@ -103,6 +103,8 @@ android {
 configurations.configureEach {
     resolutionStrategy {
         force 'com.android.support:support-annotations:29.0.0'
+        force 'androidx.core:core-ktx:1.13.1'
+        force 'androidx.core:core:1.13.1'
     }
 }
 
@@ -118,7 +120,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
-    implementation 'androidx.core:core-ktx:1.15.0'
+    implementation 'androidx.core:core-ktx:1.13.1'
     implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
@@ -139,7 +141,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
     implementation project(':rasp')
     implementation ('com.saltedge.authenticator:sdk_v1:1.6.1@aar')
-    implementation ('com.saltedge.authenticator:sdk_v2:2.3.1@aar') {
+    implementation ('com.saltedge.authenticator:sdk_v2:2.4.1@aar') {
         transitive = true
     }
 

@@ -103,6 +103,16 @@
                 android:value="shortEdges" />
         </activity>
 
+        <!-- The below code is for android OS version below N -->
+        <receiver
+            android:name=".app.ConnectivityReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".cloud.CloudMessagingService"
             android:exported="true"

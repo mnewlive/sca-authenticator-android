@@ -4,11 +4,7 @@
 package com.saltedge.authenticator.app.di
 
 import android.content.Context
-import com.saltedge.authenticator.app.ViewModelsFactory
-import com.saltedge.authenticator.app.buildVersion28orGreater
-import com.saltedge.authenticator.app.ConnectivityReceiver
-import com.saltedge.authenticator.app.ConnectivityReceiverAbs
-import com.saltedge.authenticator.app.buildVersion23orGreater
+import com.saltedge.authenticator.app.*
 import com.saltedge.authenticator.cloud.PushTokenUpdater
 import com.saltedge.authenticator.core.tools.biometric.BiometricTools
 import com.saltedge.authenticator.core.tools.biometric.BiometricToolsAbs
