@@ -11,6 +11,7 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
     </style>
 
     <style name="LauncherScreenTheme" parent="LauncherScreenThemeBase"/>
@@ -19,6 +20,7 @@
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
 
         <item name="colorPrimaryDark">@color/system_bar_color</item>
         <item name="colorAccent">@color/primary</item>
@@ -44,6 +46,7 @@
         <item name="android:colorButtonNormal">@color/button_blue_default</item>
         <item name="android:colorControlHighlight">@color/colorControlHighlight</item><!--ripple effect color-->
         <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
     </style>
 
     <style name="MainScreenTheme" parent="MainScreenThemeBase"/>

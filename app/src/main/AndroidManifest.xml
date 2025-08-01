@@ -48,8 +48,6 @@
                 android:gravity="center"
                 android:minWidth="320dp"
                 android:minHeight="320dp" />
-            <meta-data android:name="android.activity.layout_in_display_cutout_mode"
-                android:value="shortEdges" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -79,8 +77,6 @@
             android:theme="@style/SetupScreenTheme"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             android:launchMode="singleInstance">
-            <meta-data android:name="android.activity.layout_in_display_cutout_mode"
-                android:value="shortEdges" />
         </activity>
 
         <activity
@@ -89,8 +85,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/MainScreenTheme"
             android:launchMode="singleInstance">
-            <meta-data android:name="android.activity.layout_in_display_cutout_mode"
-                android:value="shortEdges" />
         </activity>
 
         <activity
@@ -99,8 +93,6 @@
             android:label="@string/scan_qr_code"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance">
-            <meta-data android:name="android.activity.layout_in_display_cutout_mode"
-                android:value="shortEdges" />
         </activity>
 
         <service
@@ -112,7 +104,7 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        
+
         <!-- The below code is for android OS version below N -->
         <receiver
             android:name=".app.ConnectivityReceiver"
